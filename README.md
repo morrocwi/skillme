@@ -1,0 +1,158 @@
+<div align="center">
+
+# Universal Issue Analysis (UIA)
+
+**A finite issue never gets named before it's found.** _by Yaoharee Lahtee_
+
+[![tier](https://img.shields.io/badge/claim%20tier-Dr%20(design%20rationale)-orange)](#tier-honesty)
+[![kernel](https://img.shields.io/badge/kernel-stdlib--only%2C%20run%20it%20yourself-brightgreen)](uia_protocol_kernel.py)
+[![self--test](https://img.shields.io/badge/self--test-14%2F14%20PASS-brightgreen)](tests/test_kernel_self_test.py)
+[![version](https://img.shields.io/badge/protocol-v0.4.6-blue)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+
+</div>
+
+## What this is
+
+UIA is a **philosophy-first protocol** for analyzing any reported issue — a software incident,
+a customer complaint, an organizational conflict, a policy question, a research anomaly, or an
+everyday decision — without smuggling in a name, a cause, or a fix before there's a finite,
+auditable basis for one.
+
+It does this with a small number of hard commitments:
+
+- **Issue is not a name.** It's a *retained difference* that, under a declared agency, context,
+  and query, changes what some agency can do, know, claim, or be responsible for.
+- **Zero ≠ unresolved.** "No relevant difference found under this operator" and "the evidence
+  cannot decide yet" are structurally different states — the protocol will not let you collapse
+  one into the other.
+- **Stakeholder ≠ agency.** Being affected by a decision and having power over it are tracked
+  separately, on purpose, so the people who bear a cost but have no voice don't disappear from
+  the analysis.
+- **A cause needs a falsifier, not just a story.** Every hypothesis is put through a
+  bidirectional (support **and** challenge) evidence search, split into a global track and a
+  local-context track, before it's allowed anywhere near a candidate solution.
+- **Three genuinely different candidates, or an honest partial.** Known-Direct,
+  Cross-Adaptive, and Generative-Transformative — a search duty, not license to fabricate a
+  third option to hit the count.
+
+This repository packages the standalone spec plus a stdlib-only Python kernel that validates
+**protocol structure** — as an installable Claude Code skill, so an AI assistant can load the
+discipline before it analyzes your next incident.
+
+## Tier honesty
+
+> **This project is `Dr` — design rationale — not `Th_coqc` or `exact`.**
+
+The spec is an original architectural synthesis of well-established methods (root-cause
+analysis, FMEA/DMAIC, stakeholder mapping, GRADE-style evidence grading, PRISMA-style search
+transparency, systems thinking, decision analysis) held together by one shared contract. It has
+**no proofs, no field trials, and no independent domain evaluation** behind it yet. The kernel
+in this repo checks that a *record of a run* is internally consistent and complete against the
+spec's schema and gates — it does **not** verify that any issue, cause, or fix reported through
+the protocol is actually true. See spec §0, §13 ("What is original in this synthesis") and §9
+of this README for exactly what is and isn't checked. Do not cite this repo as proof that a UIA
+run's conclusions are correct — only that the run followed the protocol's structure.
+
+This stance is deliberate and matches the sibling projects
+[`information-discrete-math`](https://github.com/morrocwi/information-discrete-math) and
+`readout_genesis`: a claim is only as strong as its weakest load-bearing link, and it is
+labeled honestly rather than rounded up.
+
+## Quickstart — as a Claude Code skill
+
+```
+/plugin marketplace add morrocwi/universal-issue-analysis
+/plugin install universal-issue-analysis@yaoharee-lahtee-uia
+```
+
+Once installed, an AI assistant loads the `universal-issue-analysis` skill before analyzing a
+reported issue — see
+[`plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md`](plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md)
+for the operational summary it follows (the two-question intake gate, the agency/stakeholder
+map, the evidence-challenge protocol, the three-lane candidate generator, and the 48 hard
+invariants it will not violate).
+
+## Quickstart — the kernel, standalone
+
+No dependencies beyond the Python standard library.
+
+```bash
+python3 uia_protocol_kernel.py --self-test          # 14 structural test cases, run them yourself
+python3 uia_protocol_kernel.py --print-demo          # a full, valid, [SimulatedData]-labeled run
+python3 uia_protocol_kernel.py --demo                # validate that demo run -> VALID
+python3 uia_protocol_kernel.py --print-checkpoint-demo  # the same run, stopped at hypothesis
+python3 uia_protocol_kernel.py --checkpoint-demo     # validate the checkpoint -> VALID_CHECKPOINT
+python3 uia_protocol_kernel.py my_run.json           # validate your own run record
+python3 -m pytest tests/ -q                          # pytest wrapper around the above
+```
+
+Every fixture in the demo is explicitly labeled `[SimulatedData]` — the protocol forbids
+reporting simulated evidence as field evidence (spec §0, invariant list §11).
+
+## The protocol at a glance
+
+| Phase | What happens | What the user sees |
+|---|---|---|
+| 0 | Two-question intake gate (mandatory, asked together) | "Issue คืออะไร?" + "มีข้อเสนอไหม?" |
+| 1 | Protect — minimal, reversible containment only if there's ongoing harm | what must stop/be protected right now |
+| 2–4 | Read philosophically, map agencies (10 discovery scans), compile perspectives | who's affected, involved, or missing a voice |
+| 5–8 | Admit the issue, detect domain/topology, route adapters, execute, integrate | issue status in plain language |
+| 9–10 | Compile the retained-difference model into a claim/warrant graph | mechanism vs. hypothesis vs. unknown |
+| 11 | **Hypothesis Evidence Challenge** — global + local, support + challenge, citation-audited | evidence for/against each hypothesis |
+| 12 | Certify the **three-lane hypothesis portfolio**; optional `STOP_AT_HYPOTHESIS` checkpoint | hypotheses + legal/representation status |
+| 13–16 | Generate & audit **three-lane candidates**, decide | genuinely different options, with trade-offs |
+| 17–19 | Act, verify, correct | what was tried, what it showed, what changes next |
+
+Full phase-by-phase detail, all symbol definitions, and the 48 protocol invariants are in
+[`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`](UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md) — this README is an
+entry point, not a replacement for it.
+
+## Repository map
+
+```
+universal-issue-analysis/
+├── UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md   canonical spec — normative source of truth
+├── uia_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
+├── tests/test_kernel_self_test.py        pytest wrapper around the kernel's --self-test
+├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
+├── llms.txt                              machine-readable doc index
+├── CHANGELOG.md                          version history through v0.4.6
+├── plugins/universal-issue-analysis/     the installable Claude Code plugin
+│   └── skills/universal-issue-analysis/SKILL.md   operational summary the AI loads
+└── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-uia)
+```
+
+## What the kernel actually checks (and doesn't)
+
+`uia_protocol_kernel.py` (~2,100 lines, stdlib only) implements `validate(run: dict) -> dict`
+against the schema and enums defined in the spec. It checks, among other things:
+
+- the two-question intake gate was actually satisfied before analysis fields are trusted;
+- emergency-containment bypasses stayed inside their scope (no cause/decision smuggled in);
+- every hypothesis has a falsifier, an evidence-ledger reference, both an international and a
+  local-context evidence track, and citation cards with independently-flagged
+  `metadata_verification` / `scope_verification`;
+- the three-lane hypothesis portfolio and candidate portfolio don't have duplicate mechanisms
+  masquerading as "diverse" options;
+- a run cannot close while its stakeholder map is still `OPEN`/`UNRESOLVED` or its translation
+  lost information (`loss_audit != PASS`);
+- old/renamed enum aliases (e.g. `HYBRID_BLIND`) are rejected, not silently accepted.
+
+It does **not** check whether the reported issue is real, whether a cited source actually says
+what it's claimed to say (only that a `scope_verification` flag was declared), whether a
+proposed mechanism is the true cause, or whether an intervention will work. Structural validity
+is necessary, not sufficient — see [Tier honesty](#tier-honesty) above.
+
+## Attribution
+
+Universal Issue Analysis — the thesis, the entity definitions (retained difference, agency,
+issue, problem, cause), the axioms, and the full 20-phase protocol — is Yaoharee Lahtee's work,
+building on the Readout Genesis / Information Discrete Mathematics foundation from the same
+author. This repository's packaging (marketplace listing, SKILL.md operational summary, README,
+pytest wrapper) was assembled with AI assistance from the standalone spec and kernel the author
+had already written; the AI did not originate the protocol's ideas.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).

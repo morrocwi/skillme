@@ -1,0 +1,51 @@
+# Universal Issue Analysis (UIA)
+
+> A philosophy-first protocol for analyzing any reported issue — software incident, complaint,
+> conflict, policy question, research anomaly, everyday decision — as a finite, auditable
+> retained difference instead of a guessed name, cause, or fix. Two-question intake gate,
+> stakeholder-vs-agency mapping, bidirectional global+local evidence-challenged hypotheses, and
+> a three-lane (Known-Direct / Cross-Adaptive / Generative-Transformative) candidate generator.
+> Tier: `Dr` (design rationale) — see README's Tier honesty section before citing this as proof
+> of anything beyond protocol structure.
+
+Do not infer this project's maturity from the spec's length. Start at `AI_START_HERE.md` and
+follow its discovery order before making any capability or correctness claim.
+
+## Docs
+
+- [AI_START_HERE.md](/AI_START_HERE.md): Start here — what this project is, the discovery
+  order, and how to verify the kernel's self-test yourself.
+- [README.md](/README.md): Full framing, tier-honesty statement, quickstart (Claude Code plugin
+  install and standalone kernel usage), repository map.
+- [UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md](/UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md): The canonical,
+  normative spec — thesis, root grammar, entities, axioms, the full 20-phase protocol, the
+  two-question intake gate, the hypothesis evidence challenge protocol, the three-lane
+  candidate generator, 48 protocol invariants, and the development roadmap.
+- [plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md](/plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md):
+  The operational summary an AI assistant loads and follows when actually applying the
+  protocol to a reported issue.
+- [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.6; states which later roadmap
+  milestones are not yet complete.
+
+## Verification (run this yourself — do not take claims on trust)
+
+- `python3 uia_protocol_kernel.py --self-test`: 14 structural test cases (happy path +
+  deliberate violation cases) against the reference kernel — stdlib only, no network.
+- `python3 -m pytest tests/ -q`: pytest wrapper around the self-test plus demo/checkpoint-demo
+  fixtures.
+- `python3 uia_protocol_kernel.py --print-demo` / `--print-checkpoint-demo`: prints the full
+  `[SimulatedData]`-labeled example run records referenced throughout the spec and README.
+
+## Install as a Claude Code skill
+
+```
+/plugin marketplace add morrocwi/universal-issue-analysis
+/plugin install universal-issue-analysis@yaoharee-lahtee-uia
+```
+
+## Scope note
+
+This kernel validates protocol *structure* (required fields, enum validity, gate ordering,
+cross-references) — it does not and cannot verify that any domain claim, cause, or fix
+reported through the protocol is true. Treat `protocol_status: VALID` as "well-formed", not
+"correct".
