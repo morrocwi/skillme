@@ -71,11 +71,15 @@ reported issue — see
 [`plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md`](plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md)
 for the operational summary it follows (the two-question intake gate, the agency/stakeholder
 map, the evidence-challenge protocol, the three-lane candidate generator, and the 48 hard
-invariants it will not violate).
+invariants it will not violate). **Note:** `git-subdir` plugin installs only pull
+`plugins/universal-issue-analysis/` — the canonical spec and the standalone kernel below are
+not installed with the skill; the SKILL.md is self-contained on its own, but running the
+kernel or reading the full spec text requires cloning this repo.
 
 ## Quickstart — the kernel, standalone
 
-No dependencies beyond the Python standard library.
+Clone the full repo first — the kernel and spec are repo-root files, not part of the installed
+plugin subtree above. No dependencies beyond the Python standard library.
 
 ```bash
 python3 uia_protocol_kernel.py --self-test          # 14 structural test cases, run them yourself
@@ -118,7 +122,9 @@ universal-issue-analysis/
 ├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
 ├── llms.txt                              machine-readable doc index
 ├── CHANGELOG.md                          version history through v0.4.6
-├── plugins/universal-issue-analysis/     the installable Claude Code plugin
+├── plugins/universal-issue-analysis/     the installable Claude Code plugin (self-contained subtree)
+│   ├── README.md, LICENSE                 plugin-scoped copies (git-subdir installs pull only this dir)
+│   ├── .claude-plugin/plugin.json         plugin manifest
 │   └── skills/universal-issue-analysis/SKILL.md   operational summary the AI loads
 └── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-uia)
 ```
