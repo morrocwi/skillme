@@ -85,6 +85,22 @@ example (payments/reconciliation issue — verified Saga pattern, event sourcing
 CQRS, Stripe idempotency-key mechanics, COSO framework via real searches, all with
 source links, with the weakest claim explicitly flagged as such).
 
+Two more worked examples, added specifically to test the founder's own framing
+("if an engineer wants to discuss X with a Y, what does the engineer need to
+know?") — cross-discipline issues where NONE of Layer 2's contributed vocabulary
+overlaps with Layer 1's raw extraction, confirming the glossary genuinely bridges
+two different professional vocabularies around one shared issue, not just one
+side's:
+- `examples/gut-health-nurse-triage/` — a symptom-tracker app's single "stomach
+  issue" label vs. what clinical nursing triage actually needs; Layer 2 verified
+  Rome IV criteria, NICE red-flag/alarm-symptom referral criteria, the Emergency
+  Severity Index, and SNOMED CT via real searches.
+- `examples/billing-engineer-accountant/` — a SaaS billing engine's revenue-
+  timing bug vs. what monthly-close accounting actually needs; Layer 2 verified
+  ASC 606 (including its specific contract-modification sub-rule for mid-cycle
+  upgrades), deferred revenue as a balance-sheet liability, and the matching
+  principle via real searches.
+
 ### Layer 3 — `build_glossary.py` (mechanical merge, issue-anchored)
 
 Purely mechanical — no new LLM calls, no new WebSearch. Merges Layer 1 + Layer 2's
@@ -154,6 +170,16 @@ tracked here for the next iteration, not silently deferred):
   script's CLI signature. `docs/FIELD_REFERENCE.md` (repo root) also doesn't yet
   document the `international_track`/`local_context_track.result_status` contract;
   a first-time user has to read `uia_protocol_kernel.py` source directly for that.
+
+**Cross-discipline confirmation (2026-08-01):** two more worked examples were run
+end-to-end specifically to test the founder's original framing directly — "if an
+engineer wants to discuss X with a Y, what does the engineer need to know?" — with
+a genuinely different pair of disciplines each time, both reaching `VALID_CHECKPOINT`
+on the first construction attempt and producing a glossary whose entire Layer-2
+contribution had zero literal overlap with Layer 1's raw extraction (confirmed via
+each example's own "Vocabulary this adds" section): `examples/gut-health-nurse-triage/`
+(engineering ↔ clinical nursing) and `examples/billing-engineer-accountant/`
+(engineering ↔ accounting). See the Layer 3 section above for what each verified.
 
 ## Prior status — 2026-08-01, v0.1 -> v0.3 (kg_extract.py only, pre-repo)
 

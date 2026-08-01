@@ -1,0 +1,586 @@
+{
+  "agency": {
+    "accountable_parties": [
+      "controller"
+    ],
+    "affected": [
+      "monthly close accounting team",
+      "finance systems team",
+      "engineering"
+    ],
+    "decision_owners": [
+      "VP of Finance"
+    ],
+    "future_or_indirect_parties": [
+      "external auditors"
+    ],
+    "intervention_owners": [
+      "engineering"
+    ],
+    "knowledge_holders": [
+      "monthly close accounting team",
+      "engineering",
+      "finance systems team"
+    ],
+    "observers": [
+      "billing-engine event log",
+      "general-ledger posting system"
+    ],
+    "oversight_parties": [
+      "controller"
+    ],
+    "power_exposure_voice_gaps": [
+      "accounting absorbs the manual-reconciliation burden but does not own the billing engine's data model"
+    ],
+    "represented_or_absent_parties": [
+      "external auditors who rely on the close process but are not consulted on engine design"
+    ],
+    "resource_holders": [
+      "engineering"
+    ],
+    "stakeholder_map_status": "CLOSED",
+    "veto_or_consent_holders": [
+      "controller"
+    ],
+    "voice_holders": [
+      "monthly close accounting team",
+      "engineering"
+    ]
+  },
+  "causal_analysis": {
+    "alternatives": [
+      "accounting is simply unaware of an existing proration field the engine already populates"
+    ],
+    "candidates": [
+      "the billing engine's 'revenue' field is computed as cash collected at invoice time, not as an accrual schedule",
+      "the engine emits a single point-in-time 'upgrade-billed' event that discards the remaining-service-period information needed to build a recognition schedule"
+    ],
+    "causal_tier": "MECHANISM_CANDIDATE",
+    "controls": [
+      "synthetic mid-cycle-upgrade replay",
+      "synthetic full-cycle-signup replay"
+    ],
+    "counterexamples": [
+      "a month with zero mid-cycle upgrades where the ledger and dashboard matched exactly"
+    ],
+    "intervention_evidence": []
+  },
+  "context": {
+    "boundary": "subscription upgrade event through general-ledger revenue posting",
+    "constraints": [
+      "no production customer billing data used in fixture"
+    ],
+    "horizon": "one monthly close cycle plus a 2-quarter pilot review",
+    "location_or_domain": "SaaS billing engine, monthly accounting close process",
+    "permissions": [
+      "synthetic trace only"
+    ],
+    "resolution": "one upgrade event per subscription per billing cycle",
+    "rights": [
+      "customer billing data handled in aggregate only, no PII in this fixture"
+    ],
+    "time_index": "synthetic observation window T0-T1",
+    "values": [
+      "accounting close speed",
+      "financial statement accuracy",
+      "engineering change-scope discipline"
+    ]
+  },
+  "emergency_containment": {
+    "status": "NOT_TRIGGERED"
+  },
+  "hypothesis_evidence_challenge": {
+    "frozen_at": "2026-07-31T00:00:00+07:00",
+    "hypotheses": [
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H1",
+            "claim_supported_or_challenged": "SIM-CIT-H1 boundary",
+            "context_country_or_region": "synthetic/finance",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H1",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H1 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "recognized revenue already matches service period without proration",
+        "global_certainty": "LOW",
+        "hypothesis": "the engine books the full upgrade amount immediately instead of prorating by remaining service period",
+        "hypothesis_id": "H1",
+        "international_track": {
+          "challenge_queries": [
+            "immediate-full-amount booking does not explain the reconciliation gap"
+          ],
+          "exclusion_rules": [
+            "unrelated billing-latency issues"
+          ],
+          "inclusion_rules": [
+            "revenue-recognition timing mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international financial-reporting index"
+          ],
+          "support_queries": [
+            "SaaS revenue recognition immediate-full-amount booking"
+          ]
+        },
+        "ledger_id": "EL-H1",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "monthly close shows immediate-full-amount booking without reconciliation delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated accounting close-log archive",
+            "simulated finance-systems incident record"
+          ],
+          "support_queries": [
+            "monthly close immediate-full-amount booking evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating immediate-full-amount booking",
+        "supporting_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H2",
+            "claim_supported_or_challenged": "SIM-CIT-H2 boundary",
+            "context_country_or_region": "synthetic/finance",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H2",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H2 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "revenue timing does not actually depend on cash-vs-accrual distinction here",
+        "global_certainty": "LOW",
+        "hypothesis": "the engine's revenue field is computed as cash-collected, not as an accrual schedule",
+        "hypothesis_id": "H2",
+        "international_track": {
+          "challenge_queries": [
+            "cash-vs-accrual field conflation does not explain the reconciliation gap"
+          ],
+          "exclusion_rules": [
+            "unrelated billing-latency issues"
+          ],
+          "inclusion_rules": [
+            "revenue-recognition timing mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international financial-reporting index"
+          ],
+          "support_queries": [
+            "SaaS revenue recognition cash-vs-accrual field conflation"
+          ]
+        },
+        "ledger_id": "EL-H2",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "monthly close shows cash-vs-accrual field conflation without reconciliation delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated accounting close-log archive",
+            "simulated finance-systems incident record"
+          ],
+          "support_queries": [
+            "monthly close cash-vs-accrual field conflation evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating cash-vs-accrual field conflation",
+        "supporting_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H3",
+            "claim_supported_or_challenged": "SIM-CIT-H3 boundary",
+            "context_country_or_region": "synthetic/finance",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H3",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H3 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "the event already carries enough data to reconstruct a schedule without manual work",
+        "global_certainty": "LOW",
+        "hypothesis": "a single point-in-time upgrade-billed event discards the remaining-service-period data needed to build a recognition schedule",
+        "hypothesis_id": "H3",
+        "international_track": {
+          "challenge_queries": [
+            "event-model schedule-data loss does not explain the reconciliation gap"
+          ],
+          "exclusion_rules": [
+            "unrelated billing-latency issues"
+          ],
+          "inclusion_rules": [
+            "revenue-recognition timing mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international financial-reporting index"
+          ],
+          "support_queries": [
+            "SaaS revenue recognition event-model schedule-data loss"
+          ]
+        },
+        "ledger_id": "EL-H3",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "monthly close shows event-model schedule-data loss without reconciliation delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated accounting close-log archive",
+            "simulated finance-systems incident record"
+          ],
+          "support_queries": [
+            "monthly close event-model schedule-data loss evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating event-model schedule-data loss",
+        "supporting_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      }
+    ],
+    "review_mode": "TARGETED_SEARCH",
+    "search_protocol_id": "SEARCH-UIA-BILLING-ACCT-DEMO",
+    "status": "EVIDENCE_CHALLENGE_COMPLETE",
+    "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
+    "target_context": {
+      "country": "synthetic SaaS finance context (locale unspecified)",
+      "institutions_and_population": "synthetic B2B SaaS billing + monthly-close accounting context",
+      "languages": [
+        "en"
+      ]
+    }
+  },
+  "hypothesis_portfolio": {
+    "checkpoint_certificate": "HYP-UIA-BILLING-ACCT-DEMO-001",
+    "diversity_test": "PASS",
+    "evidence_linkage_test": "PASS",
+    "hypothesis_cards": [
+      {
+        "affected_agencies": [
+          "monthly close accounting team",
+          "engineering"
+        ],
+        "alternative_explanations": [
+          "the ledger posting is correct and the MRR dashboard is the one computing it wrong"
+        ],
+        "authority_assumptions": [
+          "VP of Finance may authorize a billing-engine proration-logic pilot"
+        ],
+        "boundary": "upgrade event through invoice-amount calculation",
+        "causal_tier": "MECHANISM_HYPOTHESIS",
+        "claim": "the billing engine books the full new-plan amount as revenue on the upgrade date instead of spreading it across the remaining days of the billing cycle",
+        "conditions": [
+          "a customer upgrades their plan before the current billing cycle ends"
+        ],
+        "discriminating_information": [
+          "comparing ledger-posted amount vs. days-remaining-prorated amount for the same upgrade event"
+        ],
+        "evidence_ledger_ref": "EL-H1",
+        "falsifier": "recognized revenue already matches service period without proration",
+        "hypothesis_id": "H1",
+        "lane": "KNOWN_DIRECT",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "the upgrade-billed event handler posts the entire new charge to the general ledger at invoice time with no proration logic applied to the remaining service period",
+        "predicted_readout": "prorating the upgrade charge by remaining days before posting removes the manual adjustment need",
+        "proposal_relation": "SUPPORTS_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [
+            "external auditors"
+          ],
+          "authorized_proxy": [
+            "engineering"
+          ],
+          "direct_voice": [
+            "monthly close accounting team report"
+          ],
+          "inferred_only": []
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "engineering",
+          "finance systems team"
+        ],
+        "alternative_explanations": [
+          "proration alone (H1) is sufficient and the cash-vs-accrual distinction is not actually load-bearing here"
+        ],
+        "authority_assumptions": [
+          "finance systems governance may authorize a schema change touching the revenue field's meaning"
+        ],
+        "boundary": "billing-engine data schema through downstream revenue reporting",
+        "causal_tier": "STRUCTURAL_HYPOTHESIS",
+        "claim": "the billing engine's internal 'revenue' field is computed as cash collected at invoice time rather than as an accrual-based recognition schedule, conflating two distinct accounting concepts under one field name",
+        "conditions": [
+          "any consumer of the 'revenue' field assumes it means recognized revenue rather than cash collected"
+        ],
+        "discriminating_information": [
+          "a case where cash collected and recognized revenue diverge for reasons other than proration timing"
+        ],
+        "evidence_ledger_ref": "EL-H2",
+        "falsifier": "revenue timing does not actually depend on cash-vs-accrual distinction here",
+        "hypothesis_id": "H2",
+        "lane": "CROSS_ADAPTIVE",
+        "legal_relevance": "CONTEXTUAL",
+        "legal_status": "PRELIMINARY",
+        "legitimacy_status": "MIXED_GROUNDING",
+        "mechanism": "the schema was designed around 'money received' as the simplest single source of truth, so anything downstream (dashboards, exports) that reads 'revenue' is actually reading a cash-collection timestamp, not a recognition-period allocation",
+        "predicted_readout": "separating a distinct 'cash_collected' field from a computed 'recognized_revenue_schedule' field removes the conflation at the source",
+        "proposal_relation": "REFRAMES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [],
+          "authorized_proxy": [
+            "controller"
+          ],
+          "direct_voice": [
+            "finance systems team record"
+          ],
+          "inferred_only": [
+            "auditor expectations"
+          ]
+        },
+        "uncertainties": [
+          "schema-migration cost not field-confirmed"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "monthly close accounting team",
+          "engineering",
+          "controller"
+        ],
+        "alternative_explanations": [
+          "ambiguity originates solely from missing proration math (H1), not from the event model discarding schedule data entirely"
+        ],
+        "authority_assumptions": [],
+        "boundary": "billing-engine event model through revenue-recognition schedule construction",
+        "causal_tier": "DESIGN_HYPOTHESIS",
+        "claim": "the engine's single point-in-time 'upgrade-billed' event discards the remaining-service-period data needed to reconstruct a proper revenue-recognition schedule, forcing accounting to rebuild that schedule by hand every close",
+        "conditions": [
+          "a revenue-recognition schedule is needed for an event type the engine was not designed to answer that question for"
+        ],
+        "discriminating_information": [
+          "whether the engine's raw event payload contains remaining-service-period data that simply isn't surfaced downstream"
+        ],
+        "evidence_ledger_ref": "EL-H3",
+        "falsifier": "the event already carries enough data to reconstruct a schedule without manual work",
+        "hypothesis_id": "H3",
+        "lane": "GENERATIVE_TRANSFORMATIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "the event model was designed to answer 'was this invoice paid,' a binary question, not 'over what period should this amount be recognized,' a schedule question — so the data needed for the second question is computed nowhere and must be reconstructed manually downstream",
+        "predicted_readout": "emitting a recognition-schedule event (start date, end date, per-period amount) at upgrade time lets accounting close without manual reconstruction, with no change to customer-facing billing",
+        "proposal_relation": "CHALLENGES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [
+            "external auditors not consulted on event-model design"
+          ],
+          "authorized_proxy": [
+            "controller"
+          ],
+          "direct_voice": [
+            "engineering record"
+          ],
+          "inferred_only": [
+            "auditor future requirements"
+          ]
+        },
+        "uncertainties": [
+          "whether a schedule-event redesign is proportionate given migration cost"
+        ]
+      }
+    ],
+    "proposal_comparison_status": "COMPLETE",
+    "status": "HYPOTHESIS_PORTFOLIO_READY"
+  },
+  "issue": {
+    "candidate_state": "ISSUE_ADMITTED",
+    "minimal_quotient": "upgrade-event-to-revenue-schedule mapping",
+    "requested_readout": "recognized revenue per period reconstructable directly from the billing engine's own event log, with zero manual adjustment",
+    "type": "UNCERTAINTY",
+    "unresolved_semantics": "a single 'upgrade-billed' event cannot be mapped to a revenue-recognition schedule without manual spreadsheet work",
+    "zero_semantics": "no upgrade event under frozen readout that lacks a distinguishable revenue-recognition schedule"
+  },
+  "metadata": {
+    "fixture_id": "UIA-saas-billing-revenue-recognition-accountant-001",
+    "label": "[SimulatedData]",
+    "simulation": true
+  },
+  "proposal_input": {
+    "anchoring_control": "BLIND_FREEZE_VERIFIED",
+    "attribution_lineage": "proposal-tape/eng-acct-demo/1",
+    "outcome": "COMPLEMENTARY_COMPONENT",
+    "presence": "PROPOSAL_PRESENT",
+    "proposal_verbatim": "Have engineering just prorate the upgrade charge by days remaining in the billing cycle before sending it to the ledger.",
+    "requested_mode": "AUTO",
+    "resolved_mode": "HYBRID_BLIND_COMPARE"
+  },
+  "protocol_version": "0.4.6",
+  "registration": {
+    "abstention_rule": "UNRESOLVED if the billing engine's event log cannot be reconstructed into a revenue-recognition schedule at all",
+    "authorized_users": [
+      "accounting/controller",
+      "engineering",
+      "finance systems"
+    ],
+    "decision_to_support": "choose a reversible fix that lets accounting close the month without a manual spreadsheet reconciliation of every mid-cycle upgrade",
+    "failure_rule": "any period where recognized revenue and cash collected are conflated in a way that overstates or understates revenue for that period",
+    "forbidden_uses": [
+      "use this fixture in place of a real audit finding or real GL data"
+    ],
+    "query": "Why does recognized revenue in the general ledger diverge from the billing engine's MRR report every time a customer upgrades mid-cycle, and what should be tried first?",
+    "requester": "monthly close accounting team",
+    "success_rule": "recognized revenue per period matches the billing engine's own event log with zero manual adjustment entries for upgrade-related timing"
+  },
+  "retained_difference": {
+    "baseline": "recognized revenue for a period should match the service actually delivered in that period",
+    "comparison": "the billing engine currently books the full upgrade amount on the upgrade date regardless of remaining service period",
+    "lineage": "trace/eng-acct-demo/upgrade-event-to-gl-posting",
+    "missing_records": [],
+    "raw_records": [
+      "subscription-upgrade-event",
+      "invoice-record",
+      "gl-posting-entry"
+    ]
+  },
+  "run_control": {
+    "continuation_policy": "STOP_AT_HYPOTHESIS",
+    "continuation_record": "CONT-UIA-BILLING-ACCT-HYP-DEMO-001",
+    "requested_by": "engineer-accountant billing checkpoint (founder-requested worked example)"
+  },
+  "system_graph": {
+    "delays": [
+      "accounting must wait for engineering's monthly data export before reconciling"
+    ],
+    "edges": [
+      "upgrade",
+      "invoice",
+      "collect-cash",
+      "post-to-gl",
+      "close-month"
+    ],
+    "feedback_loops": [
+      "accounting has started keeping a parallel manual spreadsheet to track upgrade timing separately from the ledger"
+    ],
+    "invariants": [
+      "one subscription-upgrade maps to at most one invoice"
+    ],
+    "nodes": [
+      "billing-engine",
+      "invoice-service",
+      "general-ledger",
+      "accountant",
+      "MRR-dashboard"
+    ]
+  },
+  "translation": {
+    "adapter_cards": [
+      "revenue-recognition schedule reconstruction",
+      "proration-method redesign",
+      "cash-vs-accrual data-model separation"
+    ],
+    "canonical_uia_mapping": "retained difference between the billing engine's cash-collected-at-invoice readout and the revenue-recognition schedule accounting actually needs",
+    "loss_audit": "PASS",
+    "raw_user_expression": "every month we spend two extra days manually fixing upgrade entries because the ledger and the MRR dashboard never match",
+    "selected_domain_projection": "SaaS billing event granularity vs. accrual revenue-recognition schedule granularity",
+    "topology": "NETWORK",
+    "user_facing_issue_statement": "The billing engine books the full upgrade amount as revenue on the upgrade date instead of spreading it across the remaining service period, forcing manual reconciliation every close."
+  },
+  "two_question_intake": {
+    "certificate": "J2-UIA-BILLING-ACCT-001",
+    "entry_status": "INTAKE_COMPLETE",
+    "q1_answer_verbatim": "Every time a customer upgrades their subscription mid-billing-cycle, the billing engine immediately books the full new-plan amount as revenue on the upgrade date, instead of spreading it across the remaining service period. The monthly close team has to manually adjust dozens of entries by hand every month because the general ledger and the engineering team's MRR dashboard never agree.",
+    "q1_prompt": "What is the issue?",
+    "q2_answer_verbatim": "Have engineering just prorate the upgrade charge by days remaining in the billing cycle before sending it to the ledger.",
+    "q2_presence": "PROPOSAL_PRESENT",
+    "q2_prompt": "Any proposal for this?"
+  }
+}
