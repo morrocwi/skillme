@@ -77,15 +77,26 @@ def extract_human_checks(run: dict) -> list[dict]:
 
 
 def extract_open_questions(expert_md: str) -> str:
-    # Loosened to match on the "## Open questions" prefix only (case-insensitive),
-    # not the full literal heading text — an exact-string match silently dropped
-    # real content whenever Layer 2 phrased the rest of the heading differently.
+    # Prefer the exact canonical heading (the load-bearing wording Layer 2's own
+    # prompt template specifies) — unambiguous, no risk of matching an unrelated
+    # section that happens to also start with "Open questions".
     m = re.search(
-        r"^## +Open questions[^\n]*\n(.*?)(?=^## |\Z)",
+        r"^## Open questions / where a human expert should override this\n(.*?)(?=^## |\Z)",
         expert_md,
-        re.M | re.S | re.I,
+        re.M | re.S,
     )
-    return m.group(1).strip() if m else ""
+    if m:
+        return m.group(1).strip()
+    # Fallback for real-world heading-wording drift: any "## Open questions..."
+    # prefix, case-insensitive. Take the LAST such heading, not the first — an
+    # independent review (2026-08-01) found `re.search`'s first-match behavior
+    # here would silently capture an earlier, differently-scoped decoy heading
+    # (e.g. "## Open questions for unrelated funding topic") instead of the
+    # real one; Layer 2's template always places this section near the end.
+    matches = list(
+        re.finditer(r"^## +Open questions[^\n]*\n(.*?)(?=^## |\Z)", expert_md, re.M | re.S | re.I)
+    )
+    return matches[-1].group(1).strip() if matches else ""
 
 
 def extract_glossary_title(glossary_md: str) -> str:
