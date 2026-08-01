@@ -147,6 +147,44 @@ passing):
    (including `--seed-docs` and the new "Who decides" lookup) in the same way the
    original demo fixture does.
 
+## Status — 2026-08-01, ultracode weak-point scan + `attach_communication()` hardening
+
+An ultracode scenario-testing run adversarially tested `attach_communication()`
+(added earlier the same day) for real, alongside `communication_glossary/skill_plan.py`
+— see that repo's README for the full 12-item fix list. The 5 findings that landed
+in this file, each re-verified by actually re-running the scenario that found it:
+
+- A directory at a known artifact filename (e.g. a folder literally named
+  `skill_plan.md`) crashed with an unhandled `IsADirectoryError`, aborting the
+  whole run mid-loop with no report of what had already been copied. Now
+  skipped per-artifact with a reported reason; the run continues.
+- A symlink at a known artifact filename was silently dereferenced and copied
+  through regardless of where it pointed (could read outside `source_dir`).
+  Now refused per-artifact with a reported reason, nothing copied through.
+- Writes were non-atomic — a concurrent reader/writer against the same target
+  could observe a half-written file. Fixed with write-to-temp-then-`os.replace()`.
+- Neither `target` nor `target/communication` was checked for being a symlink
+  before writing — could silently resolve a write outside the intended target
+  tree. Both now refuse (`SystemExit`) if either is a symlink.
+- `seed_docs()`'s `PLAN.md` section had the same unescaped-backtick markdown
+  corruption bug found in `skill_plan.py` (a backtick in `hypothesis_id`/
+  `claim` split the intended code span). `_escape_cell()` extended to also
+  neutralize backticks and applied to the `PLAN.md` bullet line.
+
+`attach_communication()` now returns `{"attached": [...], "skipped": [(name,
+reason), ...]}` instead of a bare list — `main()`'s call site updated to print
+each skip reason. Re-verified end-to-end via the real CLI (`--seed-docs
+--attach-communication` together against a harsh, deliberately backtick/pipe-
+laden but still-`VALID_CHECKPOINT` fixture): all 4 artifacts attached, `PLAN.md`
+renders clean escaped markdown, `pytest tests/ -q` (13/13) and
+`uia_protocol_kernel.py --self-test` (14/14) both re-confirmed unaffected.
+
+Not fixed / explicitly out of scope: full cross-process locking for concurrent
+`bridge.py` invocations against the same target — atomic per-file writes close
+the file-corruption risk found; a lock file would additionally serialize
+concurrent *invocations* of the whole script, judged unnecessary complexity
+for a local, single-operator CLI tool.
+
 ## Status — 2026-08-01, `--attach-communication` added
 
 Added to connect `communication_glossary`'s full output (all 4 layers, once

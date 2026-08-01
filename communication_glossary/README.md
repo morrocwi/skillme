@@ -143,7 +143,7 @@ Answers the founder's follow-up request directly ("มนุษย์ต้อ�
   science claim.
 
 ```bash
-python3 skill_plan.py <uia_checkpoint.json> <kg_raw_word.md> <kg_expert_layer.md> <out_skill_plan.md>
+python3 skill_plan.py <uia_checkpoint.json> <glossary.md> <kg_expert_layer.md> <out_skill_plan.md>
 ```
 
 Ran against all 3 existing worked examples (`examples/fintech/`,
@@ -216,6 +216,70 @@ contribution had zero literal overlap with Layer 1's raw extraction (confirmed v
 each example's own "Vocabulary this adds" section): `examples/gut-health-nurse-triage/`
 (engineering ↔ clinical nursing) and `examples/billing-engineer-accountant/`
 (engineering ↔ accounting). See the Layer 3 section above for what each verified.
+
+## Status — 2026-08-01, v0.6 — ultracode weak-point scan + 9 fixes
+
+A 5-scenario + 2-code-review ultracode Workflow (real execution, not
+reasoning-only) stress-tested `skill_plan.py` and `bridge.py`'s
+`attach_communication()`. 22 candidate findings were each independently
+re-verified by a fresh agent (all 22 confirmed real). Fixed here, each
+re-verified by actually re-running the scenario that found it:
+
+1. **[CRITICAL, fixed]** `skill_plan.py` had no `uia_protocol_kernel.validate()`
+   guard at all — unlike `bridge.py`, it would happily produce a confident-
+   looking `skill_plan.md` from a checkpoint the kernel actually rejects.
+   Ported `bridge.py`'s `validate_checkpoint()` pattern; `main()` now refuses
+   with the same `REFUSED:` message shape.
+2. **[CRITICAL, fixed]** `hypothesis_cards` was used raw, without the module's
+   own `as_list()` guard — a dict (or any non-list) would raise `AttributeError`.
+   Fixed with `as_list()` + a per-card `isinstance(card, dict)` skip.
+3. **[MAJOR, fixed]** A literal backtick in `hypothesis_id`/`claim`/`falsifier`
+   corrupted the bold+code-span markdown wrapping (in both `skill_plan.py` and
+   `doc_ecosystem_bridge/bridge.py`'s `seed_docs()` — same defect class in two
+   files). Fixed with a `_md_escape()` helper (backtick -> apostrophe);
+   `bridge.py`'s existing `_escape_cell()` extended the same way and reused.
+4. **[MAJOR, fixed]** `extract_open_questions()` matched an exact literal
+   heading string — any real-world heading-wording drift silently dropped
+   real open-questions content (silent-wrong, not a crash). Loosened to match
+   any `## Open questions` prefix, case-insensitive.
+5. **[MAJOR, fixed]** List-join calls (`"; ".join(...)`) assumed list-of-strings;
+   a non-string element raised `TypeError`. Fixed by coercing every element
+   through `_md_escape()` (which also `str()`-coerces) before joining.
+6. **[MAJOR, fixed]** The "สิ่งที่ต้องตรวจ" header rendered unconditionally even
+   with zero hypothesis cards, producing a misleadingly empty checklist. Now
+   gated on `if checks:` with an explicit "no hypothesis_cards" fallback line.
+7. **[MAJOR, fixed]** A checkpoint missing `hypothesis_evidence_challenge`
+   entirely silently defaulted to `review_mode = TARGETED_SEARCH`'s confident
+   note. Now routes through the same "not recognized, verify manually" branch,
+   with a specific "field is entirely missing" message.
+8. **[MAJOR, fixed]** `bridge.py`'s `attach_communication()` crashed with an
+   unhandled `IsADirectoryError` if a source-dir entry was a directory rather
+   than a file, aborting the whole run mid-loop. Now skips with a reported
+   reason per artifact instead of crashing.
+9. **[MAJOR, fixed]** A symlink at a known artifact filename (e.g.
+   `glossary.md`) was silently dereferenced and copied through, regardless of
+   where it pointed. Now refused per-artifact with a reported reason, nothing
+   copied through.
+10. **[MAJOR, fixed]** Non-atomic writes in `attach_communication()` could let
+    a concurrent invocation observe a half-written file. Fixed with
+    write-to-temp-then-`os.replace()` (atomic within `dest_dir`).
+11. **[MAJOR, fixed]** `dest_dir`/`target` were used without checking for a
+    symlink, which could resolve a write outside the intended target tree.
+    Both now refuse (`SystemExit`) if either is a symlink.
+12. **Doc bug (unrelated to the scan, self-caught while regenerating
+    examples):** the README's own `skill_plan.py` usage line said
+    `<kg_raw_word.md>` for argument 2, but the script's actual signature
+    (and its own `usage:` string) takes `<glossary.md>` — the arg2 file is
+    used to extract the glossary title via `extract_glossary_title()`. All 3
+    committed example outputs had silently been generated with the wrong
+    file and showed `unknown-checkpoint` as the title; regenerated with the
+    correct arg, now showing each real `checkpoint_certificate` id.
+
+Not fixed / explicitly out of scope: full cross-process locking for
+concurrent `bridge.py` invocations against the same target (atomic per-file
+writes close the corruption risk found; a lock file would additionally
+serialize concurrent *invocations*, judged unnecessary complexity for a
+local, single-operator CLI tool — revisit if that assumption stops holding).
 
 ## Status — 2026-08-01, v0.5 — Layer 4 (`skill_plan.py`) added
 

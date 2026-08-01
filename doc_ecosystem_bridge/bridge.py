@@ -22,8 +22,10 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 DECISIONS_OPEN_MARKER = "| # | Question | Blocks | Who decides | Since |\n|---|---|---|---|---|\n"
@@ -127,7 +129,8 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
             "**Candidate directions to evaluate before UIA phase 13** (from this "
             "checkpoint's hypothesis portfolio, not yet decided):\n\n"
             + "\n".join(
-                f"- `{c.get('hypothesis_id', '?')}` ({c.get('lane', '?')}): {c.get('claim', '?')}"
+                f"- `{_escape_cell(c.get('hypothesis_id', '?'))}` "
+                f"({_escape_cell(c.get('lane', '?'))}): {_escape_cell(c.get('claim', '?'))}"
                 for c in (run.get("hypothesis_portfolio") or {}).get("hypothesis_cards", [])
             )
             + "\n"
@@ -150,7 +153,7 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
 COMMUNICATION_ARTIFACTS = ("kg_raw_word.md", "kg_expert_layer.md", "glossary.md", "skill_plan.md")
 
 
-def attach_communication(source_dir: Path, target: Path) -> list[str]:
+def attach_communication(source_dir: Path, target: Path) -> dict:
     """Copy whichever communication_glossary artifacts exist for this checkpoint
     (kg_raw_word.md / kg_expert_layer.md / glossary.md / skill_plan.md — Layers
     1-4) into target/communication/. This does NOT run kg_extract.py/
@@ -160,24 +163,59 @@ def attach_communication(source_dir: Path, target: Path) -> list[str]:
     project so they live alongside GOAL.md/DECISIONS.md/logbook.jsonl instead of
     staying in a separate, easy-to-lose location. A straight overwrite-copy, not
     an append — safe to re-run after any layer is regenerated, and naturally
-    idempotent when nothing changed (same bytes back)."""
+    idempotent when nothing changed (same bytes back).
+
+    Each artifact is copied via write-to-temp-then-os.replace() (atomic within
+    dest_dir) so a reader never observes a half-written file; a directory or
+    symlink where a real artifact file is expected is skipped with a reported
+    reason instead of crashing the whole run (a 2026-08-01 ultracode scenario
+    scan found the prior implementation would raise IsADirectoryError on the
+    former and silently follow the latter outside source_dir on the latter).
+    Returns {"attached": [name, ...], "skipped": [(name, reason), ...]}."""
     if not source_dir.is_dir():
         raise SystemExit(f"REFUSED: --attach-communication source {source_dir} is not a directory")
+    if target.is_symlink():
+        raise SystemExit(f"REFUSED: target {target} is a symlink — refusing to write through it")
     dest_dir = target / "communication"
+    if dest_dir.is_symlink():
+        raise SystemExit(f"REFUSED: {dest_dir} is a symlink — refusing to write through it")
     dest_dir.mkdir(parents=True, exist_ok=True)
+
     attached = []
+    skipped = []
     for name in COMMUNICATION_ARTIFACTS:
         src = source_dir / name
+        if src.is_symlink():
+            skipped.append((name, "is a symlink — refusing to follow it (could point outside source_dir)"))
+            continue
         if not src.exists():
             continue
-        (dest_dir / name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+        if not src.is_file():
+            skipped.append((name, "exists but is not a regular file (e.g. a directory)"))
+            continue
+        try:
+            data = src.read_text(encoding="utf-8")
+        except OSError as e:
+            skipped.append((name, f"read failed: {e}"))
+            continue
+        dest = dest_dir / name
+        fd, tmp_path = tempfile.mkstemp(dir=dest_dir, prefix=f".{name}.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(data)
+            os.replace(tmp_path, dest)
+        except OSError as e:
+            Path(tmp_path).unlink(missing_ok=True)
+            skipped.append((name, f"write failed: {e}"))
+            continue
         attached.append(name)
-    return attached
+    return {"attached": attached, "skipped": skipped}
 
 
 def _escape_cell(text: str) -> str:
-    """Neutralize characters that would break a Markdown table row's column count."""
-    return str(text).replace("|", "\\|").replace("\n", " ").replace("\r", " ")
+    """Neutralize characters that would break a Markdown table row's column count,
+    or corrupt an inline `code`/bold wrapper elsewhere in this file (backtick)."""
+    return str(text).replace("`", "'").replace("|", "\\|").replace("\n", " ").replace("\r", " ")
 
 
 def already_ingested(target: Path) -> set[tuple[str, str]]:
@@ -330,11 +368,15 @@ def main() -> None:
             print(f"SEEDED {n_seeded} doc(s) with a draft from checkpoint fields (marked AI-drafted)")
 
     if args.attach_communication:
-        attached = attach_communication(args.attach_communication, args.target)
+        attach_result = attach_communication(args.attach_communication, args.target)
+        attached = attach_result["attached"]
+        skipped = attach_result["skipped"]
         if attached:
             print(f"ATTACHED {len(attached)} communication artifact(s) to target/communication/: {', '.join(attached)}")
         else:
             print(f"ATTACHED 0 communication artifacts — none of {COMMUNICATION_ARTIFACTS} found in {args.attach_communication}")
+        for name, reason in skipped:
+            print(f"  SKIPPED {name}: {reason}")
 
     decision_owners = (run.get("agency", {}) or {}).get("decision_owners") or []
 
