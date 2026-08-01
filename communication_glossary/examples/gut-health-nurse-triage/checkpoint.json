@@ -1,0 +1,590 @@
+{
+  "agency": {
+    "accountable_parties": [
+      "clinical nursing triage lead"
+    ],
+    "affected": [
+      "clinical nursing triage",
+      "patients",
+      "product engineering"
+    ],
+    "decision_owners": [
+      "patient safety officer"
+    ],
+    "future_or_indirect_parties": [
+      "on-call gastroenterology consult line"
+    ],
+    "intervention_owners": [
+      "product engineering"
+    ],
+    "knowledge_holders": [
+      "clinical nursing triage",
+      "product engineering",
+      "patient safety officer"
+    ],
+    "observers": [
+      "symptom-tracker app telemetry",
+      "triage-queue dashboard"
+    ],
+    "oversight_parties": [
+      "patient safety officer"
+    ],
+    "power_exposure_voice_gaps": [
+      "nurses absorb triage-delay risk but do not own the app's data schema"
+    ],
+    "represented_or_absent_parties": [
+      "patients who log symptoms but never see how triage uses the data"
+    ],
+    "resource_holders": [
+      "product engineering"
+    ],
+    "stakeholder_map_status": "CLOSED",
+    "veto_or_consent_holders": [
+      "patient safety officer"
+    ],
+    "voice_holders": [
+      "clinical nursing triage",
+      "patients"
+    ]
+  },
+  "causal_analysis": {
+    "alternatives": [
+      "nurses are simply undertrained on the existing free-text detail field"
+    ],
+    "candidates": [
+      "the app's symptom picker was designed around ease-of-entry for patients, not clinical taxonomy for triage",
+      "the triage-queue dashboard renders whatever category label the app sends, with no independent urgency-scoring layer"
+    ],
+    "causal_tier": "MECHANISM_CANDIDATE",
+    "controls": [
+      "synthetic red-flag-entry replay",
+      "synthetic benign-entry replay"
+    ],
+    "counterexamples": [
+      "a shift where nurses opened every case regardless of label and found no red-flag ever hidden"
+    ],
+    "intervention_evidence": []
+  },
+  "context": {
+    "boundary": "patient symptom entry through nurse triage-queue review",
+    "constraints": [
+      "no production patient data used in fixture",
+      "clinical scope: GI symptoms only"
+    ],
+    "horizon": "one triage shift plus a 14-day pilot review",
+    "location_or_domain": "digital gut-health symptom-tracker app, clinical triage backend",
+    "permissions": [
+      "synthetic trace only"
+    ],
+    "resolution": "one symptom-entry per patient per submission",
+    "rights": [
+      "patient symptom text handled in aggregate only, no PII in this fixture"
+    ],
+    "time_index": "synthetic observation window T0-T1",
+    "values": [
+      "nurse triage speed",
+      "patient safety (no missed red-flag)",
+      "engineering change-scope discipline"
+    ]
+  },
+  "emergency_containment": {
+    "status": "NOT_TRIGGERED"
+  },
+  "hypothesis_evidence_challenge": {
+    "frozen_at": "2026-07-31T00:00:00+07:00",
+    "hypotheses": [
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H1",
+            "claim_supported_or_challenged": "SIM-CIT-H1 boundary",
+            "context_country_or_region": "synthetic/clinical",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H1",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H1 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "nurses can already reliably distinguish urgency from the single label alone",
+        "global_certainty": "LOW",
+        "hypothesis": "single generic symptom label conflates distinct GI symptom categories",
+        "hypothesis_id": "H1",
+        "international_track": {
+          "challenge_queries": [
+            "symptom-label granularity does not explain triage delay"
+          ],
+          "exclusion_rules": [
+            "unrelated app-performance issues"
+          ],
+          "inclusion_rules": [
+            "GI symptom triage mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international clinical-informatics index"
+          ],
+          "support_queries": [
+            "clinical symptom-taxonomy granularity symptom-label granularity"
+          ]
+        },
+        "ledger_id": "EL-H1",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "triage-queue shows symptom-label granularity without delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated clinic triage-log archive",
+            "simulated nursing incident record"
+          ],
+          "support_queries": [
+            "triage-queue symptom-label granularity evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating symptom-label granularity",
+        "supporting_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H2",
+            "claim_supported_or_challenged": "SIM-CIT-H2 boundary",
+            "context_country_or_region": "synthetic/clinical",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H2",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H2 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "urgency triage does not actually depend on duration/frequency data",
+        "global_certainty": "LOW",
+        "hypothesis": "missing symptom-duration/frequency field prevents applying standard clinical pattern criteria",
+        "hypothesis_id": "H2",
+        "international_track": {
+          "challenge_queries": [
+            "duration-frequency data absence does not explain triage delay"
+          ],
+          "exclusion_rules": [
+            "unrelated app-performance issues"
+          ],
+          "inclusion_rules": [
+            "GI symptom triage mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international clinical-informatics index"
+          ],
+          "support_queries": [
+            "clinical symptom-taxonomy granularity duration-frequency data absence"
+          ]
+        },
+        "ledger_id": "EL-H2",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "triage-queue shows duration-frequency data absence without delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated clinic triage-log archive",
+            "simulated nursing incident record"
+          ],
+          "support_queries": [
+            "triage-queue duration-frequency data absence evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating duration-frequency data absence",
+        "supporting_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H3",
+            "claim_supported_or_challenged": "SIM-CIT-H3 boundary",
+            "context_country_or_region": "synthetic/clinical",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://SIM-CIT-H3",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H3 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "red-flag and benign symptoms already render at visibly different queue positions",
+        "global_certainty": "LOW",
+        "hypothesis": "binary logged-symptom event model collapses red-flag and benign symptoms into one queue tier",
+        "hypothesis_id": "H3",
+        "international_track": {
+          "challenge_queries": [
+            "event-model urgency collapse does not explain triage delay"
+          ],
+          "exclusion_rules": [
+            "unrelated app-performance issues"
+          ],
+          "inclusion_rules": [
+            "GI symptom triage mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international clinical-informatics index"
+          ],
+          "support_queries": [
+            "clinical symptom-taxonomy granularity event-model urgency collapse"
+          ]
+        },
+        "ledger_id": "EL-H3",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "triage-queue shows event-model urgency collapse without delay"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated clinic triage-log archive",
+            "simulated nursing incident record"
+          ],
+          "support_queries": [
+            "triage-queue event-model urgency collapse evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating event-model urgency collapse",
+        "supporting_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      }
+    ],
+    "review_mode": "TARGETED_SEARCH",
+    "search_protocol_id": "SEARCH-UIA-GUT-NURSE-DEMO",
+    "status": "EVIDENCE_CHALLENGE_COMPLETE",
+    "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
+    "target_context": {
+      "country": "synthetic clinical setting (locale unspecified, not tied to Thailand specifically)",
+      "institutions_and_population": "synthetic outpatient GI symptom-tracking + nursing triage context",
+      "languages": [
+        "th",
+        "en"
+      ]
+    }
+  },
+  "hypothesis_portfolio": {
+    "checkpoint_certificate": "HYP-UIA-GUT-NURSE-DEMO-001",
+    "diversity_test": "PASS",
+    "evidence_linkage_test": "PASS",
+    "hypothesis_cards": [
+      {
+        "affected_agencies": [
+          "clinical nursing triage",
+          "patients"
+        ],
+        "alternative_explanations": [
+          "nurses are undertrained on reading the existing free-text detail field"
+        ],
+        "authority_assumptions": [
+          "patient safety officer may authorize a symptom-picker taxonomy pilot"
+        ],
+        "boundary": "symptom entry through category-label assignment",
+        "causal_tier": "MECHANISM_HYPOTHESIS",
+        "claim": "the app's symptom picker uses one generic 'stomach issue' checkbox that conflates bloating, cramping, diarrhea, constipation, and red-flag symptoms like rectal bleeding into a single undifferentiated label",
+        "conditions": [
+          "patient selects any GI symptom from the picker without a subtype distinction available"
+        ],
+        "discriminating_information": [
+          "nurse triage-time measured with subtype label present vs. absent"
+        ],
+        "evidence_ledger_ref": "EL-H1",
+        "falsifier": "nurses can already reliably distinguish urgency from the single label alone",
+        "hypothesis_id": "H1",
+        "lane": "KNOWN_DIRECT",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "the symptom picker was designed for fast patient entry, not for clinical taxonomy, so all GI symptom subtypes map to the same category value at submission time",
+        "predicted_readout": "adding subtype categories at entry lets the queue display a distinguishable label without opening the case",
+        "proposal_relation": "REFRAMES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [
+            "patients who log symptoms but never see triage outcomes"
+          ],
+          "authorized_proxy": [
+            "product engineering"
+          ],
+          "direct_voice": [
+            "clinical nursing triage report"
+          ],
+          "inferred_only": [
+            "patient symptom-severity self-perception"
+          ]
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "clinical nursing triage",
+          "product engineering"
+        ],
+        "alternative_explanations": [
+          "nurses could infer duration from submission timestamps alone without a dedicated field"
+        ],
+        "authority_assumptions": [
+          "clinical data-governance board may authorize a schema change touching structured health data"
+        ],
+        "boundary": "symptom-entry schema through clinical pattern-matching at triage",
+        "causal_tier": "STRUCTURAL_HYPOTHESIS",
+        "claim": "the app does not log symptom duration or frequency, so nurses cannot apply standard clinical pattern criteria (e.g. distinguishing acute vs. chronic GI symptom presentation) that require that data",
+        "conditions": [
+          "a clinical criterion requiring duration/frequency data is applied to an entry lacking that field"
+        ],
+        "discriminating_information": [
+          "comparison of triage accuracy with vs. without structured duration data available"
+        ],
+        "evidence_ledger_ref": "EL-H2",
+        "falsifier": "urgency triage does not actually depend on duration/frequency data",
+        "hypothesis_id": "H2",
+        "lane": "CROSS_ADAPTIVE",
+        "legal_relevance": "CONTEXTUAL",
+        "legal_status": "PRELIMINARY",
+        "legitimacy_status": "MIXED_GROUNDING",
+        "mechanism": "the symptom-entry schema captures a point-in-time category and free-text note but no structured duration/frequency field, so pattern-based clinical criteria have no data to evaluate against",
+        "predicted_readout": "adding a structured duration/frequency field lets triage apply standard clinical pattern criteria directly from the queue",
+        "proposal_relation": "INDEPENDENT",
+        "representation_status": {
+          "absent_or_unreached": [],
+          "authorized_proxy": [
+            "patient safety officer"
+          ],
+          "direct_voice": [
+            "clinical nursing triage report"
+          ],
+          "inferred_only": [
+            "patient symptom-timeline recall accuracy"
+          ]
+        },
+        "uncertainties": [
+          "structured-field patient-compliance rate not field-confirmed"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "clinical nursing triage",
+          "product engineering",
+          "patients"
+        ],
+        "alternative_explanations": [
+          "ambiguity originates solely from the picker (H1), not from the event model discarding an already-available signal"
+        ],
+        "authority_assumptions": [],
+        "boundary": "backend event model through triage-queue row rendering",
+        "causal_tier": "DESIGN_HYPOTHESIS",
+        "claim": "the app's binary logged-symptom event model exposes only one undifferentiated queue tier to nurses, collapsing an already-existing red-flag-vs-benign distinction the app's own backend could compute but doesn't surface",
+        "conditions": [
+          "free-text symptom detail contains a computable red-flag signal that the event schema discards"
+        ],
+        "discriminating_information": [
+          "backend log showing whether a red-flag keyword was present but not surfaced in the queue-row render"
+        ],
+        "evidence_ledger_ref": "EL-H3",
+        "falsifier": "red-flag and benign symptoms already render at visibly different queue positions",
+        "hypothesis_id": "H3",
+        "lane": "GENERATIVE_TRANSFORMATIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "the event model emits a single 'symptom-logged' event type regardless of clinical severity, so the triage-queue dashboard has no signal to render distinguishable rows even though red-flag keywords are present in the free-text field",
+        "predicted_readout": "an urgency-tier field computed at ingestion and surfaced in the event model lets the queue render distinguishable rows without any change to patient-facing entry",
+        "proposal_relation": "CHALLENGES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [
+            "patients not consulted on triage-facing data design"
+          ],
+          "authorized_proxy": [
+            "patient safety officer"
+          ],
+          "direct_voice": [
+            "product engineering record"
+          ],
+          "inferred_only": [
+            "patient intent behind free-text wording"
+          ]
+        },
+        "uncertainties": [
+          "free-text red-flag keyword detection accuracy not field-confirmed"
+        ]
+      }
+    ],
+    "proposal_comparison_status": "COMPLETE",
+    "status": "HYPOTHESIS_PORTFOLIO_READY"
+  },
+  "issue": {
+    "candidate_state": "ISSUE_ADMITTED",
+    "minimal_quotient": "symptom-entry-to-urgency-tier mapping",
+    "requested_readout": "clinical urgency tier distinguishable at triage-queue-list level, per GI symptom entry",
+    "type": "UNCERTAINTY",
+    "unresolved_semantics": "a single 'stomach issue' label cannot be mapped to a clinical urgency tier without opening the entry",
+    "zero_semantics": "no symptom entry under frozen readout that lacks a distinguishable urgency tier at list level"
+  },
+  "metadata": {
+    "fixture_id": "UIA-gut-health-symptom-tracker-nurse-triage-001",
+    "label": "[SimulatedData]",
+    "simulation": true
+  },
+  "proposal_input": {
+    "anchoring_control": "BLIND_FREEZE_VERIFIED",
+    "attribution_lineage": "proposal-tape/gut-nurse-demo/1",
+    "outcome": "COMPLEMENTARY_COMPONENT",
+    "presence": "PROPOSAL_PRESENT",
+    "proposal_verbatim": "เพิ่มปุ่มให้ผู้ป่วยเลือกความรุนแรงของอาการเอง (mild/severe) ตอนล็อกอาการ",
+    "requested_mode": "AUTO",
+    "resolved_mode": "HYBRID_BLIND_COMPARE"
+  },
+  "protocol_version": "0.4.6",
+  "registration": {
+    "abstention_rule": "UNRESOLVED หากข้อมูล symptom-duration ที่ engineer เก็บไม่พอให้ nurse ใช้เกณฑ์ทางคลินิกจริง",
+    "authorized_users": [
+      "clinical nursing triage",
+      "product engineering",
+      "patient safety officer"
+    ],
+    "decision_to_support": "เลือก pilot ที่ reversible เพื่อให้ nurse แยก red-flag GI symptom ออกจาก benign symptom ได้เร็วขึ้นโดยไม่ทำให้ engineer ต้องเขียน schema ใหม่ทั้งหมด",
+    "failure_rule": "มี red-flag GI symptom เคสใดถูก triage ผิดเป็น benign หรือ nurse ใช้เวลาแยกเคสนานขึ้นกว่าก่อน pilot",
+    "forbidden_uses": [
+      "ใช้ fixture นี้แทนหลักฐาน production หรือ real patient data"
+    ],
+    "query": "ทำไม nurse ในทีม triage ถึงแยกความรุนแรงของอาการทางเดินอาหารจาก symptom log ในแอปไม่ได้ และควรลองแก้ทางไหนก่อน",
+    "requester": "clinical nursing triage team",
+    "success_rule": "เวลาเฉลี่ยที่ nurse ใช้แยก red-flag entry ออกจากคิว ลดลงต่ำกว่า 90 วินาทีต่อเคส โดยไม่มี red-flag เคสไหนถูกมองข้าม"
+  },
+  "retained_difference": {
+    "baseline": "a triage-queue entry should let a nurse distinguish clinical urgency without opening the case",
+    "comparison": "every GI symptom entry currently displays identically as 'stomach issue' regardless of urgency",
+    "lineage": "trace/gut-nurse-demo/symptom-to-triage-display",
+    "missing_records": [],
+    "raw_records": [
+      "symptom-log-event",
+      "triage-queue-render",
+      "nurse-open-case-event"
+    ]
+  },
+  "run_control": {
+    "continuation_policy": "STOP_AT_HYPOTHESIS",
+    "continuation_record": "CONT-UIA-GUT-NURSE-HYP-DEMO-001",
+    "requested_by": "gut-health symptom-tracker nurse-triage checkpoint (founder-requested worked example)"
+  },
+  "system_graph": {
+    "delays": [
+      "nurse must open each case individually to read free-text detail"
+    ],
+    "edges": [
+      "log-symptom",
+      "categorize",
+      "render-queue-row",
+      "open-case",
+      "escalate"
+    ],
+    "feedback_loops": [
+      "nurses have started skimming the queue in submission order instead of urgency order"
+    ],
+    "invariants": [
+      "one symptom-entry maps to at most one triage-queue row"
+    ],
+    "nodes": [
+      "symptom-tracker-app",
+      "symptom-entry-schema",
+      "triage-queue-dashboard",
+      "nurse",
+      "red-flag-escalation-line"
+    ]
+  },
+  "translation": {
+    "adapter_cards": [
+      "GI symptom triage taxonomy",
+      "event-schema granularity redesign",
+      "red-flag symptom escalation protocol"
+    ],
+    "canonical_uia_mapping": "retained difference between the app's single symptom-severity readout and the clinical urgency distinctions nursing triage actually needs",
+    "loss_audit": "PASS",
+    "raw_user_expression": "nurse บ่นว่าเปิด queue มาเจอแต่ 'stomach issue' เหมือนกันหมด แยกไม่ออกว่าเคสไหนต้องรีบดู",
+    "selected_domain_projection": "clinical symptom-taxonomy granularity vs. app data-schema granularity",
+    "topology": "NETWORK",
+    "user_facing_issue_statement": "Symptom log ของแอปรวมอาการทางเดินอาหารทุกชนิดไว้ในป้ายเดียว ทำให้ nurse แยกความรุนแรงทางคลินิกไม่ได้จากหน้าจอ triage"
+  },
+  "two_question_intake": {
+    "certificate": "J2-UIA-GUT-NURSE-001",
+    "entry_status": "INTAKE_COMPLETE",
+    "q1_answer_verbatim": "Nurse ในทีม triage เปิด symptom log จากแอปแล้วเห็นแค่ checkbox เดียวว่า 'stomach issue' รวมทุกอาการทางเดินอาหารไว้ด้วยกัน ไม่ว่าจะเป็นท้องอืดธรรมดา ปวดบิด ท้องเสีย ท้องผูก หรืออาการที่ควรเป็น red-flag เช่นถ่ายเป็นเลือด ทำให้ nurse ต้องเปิดดูทีละเคสเพื่อแยกความรุนแรงเอง เสียเวลาและเสี่ยงมองข้ามเคสฉุกเฉิน",
+    "q1_prompt": "Issue คืออะไร?",
+    "q2_answer_verbatim": "เพิ่มปุ่มให้ผู้ป่วยเลือกความรุนแรงของอาการเอง (mild/severe) ตอนล็อกอาการ",
+    "q2_presence": "PROPOSAL_PRESENT",
+    "q2_prompt": "มีข้อเสนออะไรเกี่ยวกับประเด็นนี้ไหม?"
+  }
+}
