@@ -1,0 +1,581 @@
+{
+  "agency": {
+    "accountable_parties": [
+      "R&D / Ops (24x7)"
+    ],
+    "affected": [
+      "merchant \"north-cluster\" (Tier-1)",
+      "cardholder"
+    ],
+    "decision_owners": [
+      "Payments Risk & Controls (PRC) — on-call"
+    ],
+    "future_or_indirect_parties": [
+      "operations"
+    ],
+    "intervention_owners": [
+      "engineering owner"
+    ],
+    "knowledge_holders": [
+      "payments engineering",
+      "settlement ops",
+      "vendor \"AcquirerX\"/gateway"
+    ],
+    "observers": [
+      "client telemetry",
+      "booking service"
+    ],
+    "oversight_parties": [
+      "Reconciliation & Ledger Integrity (R&LI) board"
+    ],
+    "power_exposure_voice_gaps": [
+      "customers receive impact but cannot inspect backend state"
+    ],
+    "represented_or_absent_parties": [
+      "customers without telemetry"
+    ],
+    "resource_holders": [
+      "platform operations"
+    ],
+    "stakeholder_map_status": "CLOSED",
+    "veto_or_consent_holders": [
+      "privacy reviewer"
+    ],
+    "voice_holders": [
+      "Müller — QA lead 🔧",
+      "merchant support desk"
+    ]
+  },
+  "causal_analysis": {
+    "alternatives": [
+      "notification delay without booking-state delay"
+    ],
+    "candidates": [
+      "retry-orchestrator writes SETTLED before acquirer ack is checked, treating a `202 Accepted` queue-receipt as if it were a final authorization outcome — this is the exact same class of premature-success bug quoted in the postmortem: the on-call engineer's own words were \"we assumed the queue accepting the retry meant the payment cleared, but [Accepted] just means AcquirerX enqueued it, not that it settled\" — and this single conflation between queue-acknowledgement and settlement-confirmation, repeated across every retry path in the orchestrator's state machine, propagates into the nightly reconciliation-job, the merchant-facing settlement dashboard, the tax-reporting extract, and the R&LI board's weekly variance report, meaning a single missing conditional branch has been silently inflating reported settled volume for an unknown number of billing cycles before anyone in R&LI noticed the anomaly during a routine audit"
+    ],
+    "causal_tier": "MECHANISM_CANDIDATE",
+    "controls": [
+      "shadow-write \"no-op\" mode",
+      "canary gateway (5% traffic)"
+    ],
+    "counterexamples": [
+      "confirmed booking with late email"
+    ],
+    "intervention_evidence": []
+  },
+  "context": {
+    "boundary": "confirm click through final booking readout",
+    "constraints": [
+      "no production mutation in fixture"
+    ],
+    "horizon": "same session plus 24-hour reconciliation",
+    "location_or_domain": "mobile web booking",
+    "permissions": [
+      "synthetic trace only"
+    ],
+    "resolution": "one booking attempt per correlation id",
+    "rights": [
+      "minimum necessary personal data"
+    ],
+    "time_index": "synthetic observation window T0-T1",
+    "values": [
+      "clarity",
+      "reversibility",
+      "non-duplication"
+    ]
+  },
+  "emergency_containment": {
+    "status": "NOT_TRIGGERED"
+  },
+  "hypothesis_evidence_challenge": {
+    "frozen_at": "2026-07-31T00:00:00+07:00",
+    "hypotheses": [
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H1",
+            "claim_supported_or_challenged": "H1 boundary",
+            "context_country_or_region": "Thailand/synthetic",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H1",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H1 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "ledger.status stays SETTLED even after acquirer confirms `soft_decline` on attempt #2",
+        "global_certainty": "LOW",
+        "hypothesis": "retry-orchestrator writes ledger.status=\"SETTLED\" on receiving a `202 Accepted` queue-ack from vendor \"AcquirerX\", without waiting for the actual settlement callback, so a later soft-decline on the same attempt-id never overwrites the premature SETTLED flag",
+        "hypothesis_id": "H1",
+        "international_track": {
+          "challenge_queries": [
+            "polling fails despite final backend state"
+          ],
+          "exclusion_rules": [
+            "unrelated interface latency"
+          ],
+          "inclusion_rules": [
+            "state-observation mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international engineering index"
+          ],
+          "support_queries": [
+            "async client final-state refresh"
+          ]
+        },
+        "ledger_id": "EL-H1",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "ระบบจองไทยสถานะค้างสาเหตุอื่น"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated Thai source",
+            "simulated local incident record"
+          ],
+          "support_queries": [
+            "สถานะธุรกรรมเว็บไทยกำลังประมวลผล"
+          ]
+        },
+        "next_discriminating_test": "shadow refresh by attempt id",
+        "supporting_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H2",
+            "claim_supported_or_challenged": "H2 boundary",
+            "context_country_or_region": "Thailand/synthetic",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H2",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H2 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "adding PENDING_CONFIRMATION state does not change the double-counted SETTLED rate",
+        "global_certainty": "LOW",
+        "hypothesis": "the same premature-ack-as-success pattern that caused double-booked appointments in the unrelated booking-service fixture (client observing a queue-ack before the backend reached a final state) is structurally the same failure adapted to payments: a queue-ack is being treated as a settlement truth-state — cross-domain the fix pattern is \"gate any external-facing status write behind the actual terminal callback, never behind an intermediate ack/nack\"",
+        "hypothesis_id": "H2",
+        "international_track": {
+          "challenge_queries": [
+            "complete tracing does not resolve ambiguous state"
+          ],
+          "exclusion_rules": [
+            "single-node-only failures"
+          ],
+          "inclusion_rules": [
+            "end-to-end state lineage"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international engineering index"
+          ],
+          "support_queries": [
+            "distributed event lineage ambiguity"
+          ]
+        },
+        "ledger_id": "EL-H2",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "มี trace ครบแต่สถานะธุรกรรมไทยยังไม่ชัด"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "official_or_practice_records"
+          ],
+          "sources_searched": [
+            "simulated Thai source",
+            "simulated local incident record"
+          ],
+          "support_queries": [
+            "การติดตามธุรกรรมระบบไทย"
+          ]
+        },
+        "next_discriminating_test": "one-route event mirror",
+        "supporting_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H3",
+            "claim_supported_or_challenged": "H3 boundary",
+            "context_country_or_region": "Thailand/synthetic",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H3",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H3 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "migrating to an event-sourced model still permits two conflicting settlement-events to coexist for the same attempt-id without a defined resolution rule",
+        "global_certainty": "LOW",
+        "hypothesis": "a generative redesign — replacing the binary ledger.status field entirely with an append-only settlement-event log keyed by (attempt-id, acquirer-response-code, acquirer-timestamp), and deriving the merchant-facing SETTLED/PENDING/FAILED label as a pure read-time projection over that log — removes the entire class of premature-write bugs structurally, because there is no longer a single mutable status field for a race condition to corrupt; every downstream consumer (reconciliation-job, tax-reporting extract, merchant dashboard, R&LI variance report) reads the same append-only truth instead of a cached label 🔧",
+        "hypothesis_id": "H3",
+        "international_track": {
+          "challenge_queries": [
+            "explicit recovery states do not reduce ambiguity"
+          ],
+          "exclusion_rules": [
+            "pure visual redesign"
+          ],
+          "inclusion_rules": [
+            "observable recovery states"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international design index"
+          ],
+          "support_queries": [
+            "finite recovery state user interface"
+          ]
+        },
+        "ledger_id": "EL-H3",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "เพิ่มสถานะแล้วผู้ใช้ไทยยังสับสน"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "stakeholder_or_practice_records"
+          ],
+          "sources_searched": [
+            "simulated Thai source",
+            "simulated usability record"
+          ],
+          "support_queries": [
+            "สถานะกู้คืนระบบจองภาษาไทย"
+          ]
+        },
+        "next_discriminating_test": "shadow recovery-state prototype",
+        "supporting_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      }
+    ],
+    "review_mode": "TARGETED_SEARCH \"Phase-2 (draft)\"",
+    "search_protocol_id": "SEARCH-UIA-046-DEMO",
+    "status": "EVIDENCE_CHALLENGE_COMPLETE",
+    "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
+    "target_context": {
+      "country": "Thailand",
+      "institutions_and_population": "synthetic Thai mobile-web booking context",
+      "languages": [
+        "th",
+        "en"
+      ]
+    }
+  },
+  "hypothesis_portfolio": {
+    "checkpoint_certificate": "HYP-UIA-046-DEMO-001",
+    "diversity_test": "PASS",
+    "evidence_linkage_test": "PASS",
+    "hypothesis_cards": [
+      {
+        "affected_agencies": [
+          "R&D / Ops (24x7)",
+          "merchant \"north-cluster\" (Tier-1)"
+        ],
+        "alternative_explanations": [
+          "reconciliation-job double-reads the same ledger row due to a non-idempotent join key"
+        ],
+        "authority_assumptions": [
+          "system owner may authorize synthetic observation"
+        ],
+        "boundary": "confirm click through final booking readout",
+        "causal_tier": "MECHANISM_HYPOTHESIS",
+        "claim": "retry-orchestrator writes ledger.status=\"SETTLED\" on receiving a `202 Accepted` queue-ack from vendor \"AcquirerX\", without waiting for the actual settlement callback, so a later soft-decline on the same attempt-id never overwrites the premature SETTLED flag",
+        "conditions": [
+          "backend reaches a final state after client timeout"
+        ],
+        "discriminating_information": [
+          "acquirer response code (`06`|`91`|`96`) vs ledger.status at attempt-id level"
+        ],
+        "evidence_ledger_ref": "EL-H1",
+        "falsifier": "ledger.status stays SETTLED even after acquirer confirms `soft_decline` on attempt #2",
+        "hypothesis_id": "H1",
+        "lane": "KNOWN_DIRECT",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "the write-settled-flag edge fires on ack/nack (soft-decline) queue receipt rather than on confirmed settlement callback, because an early sprint conflated HTTP 202 with payment success",
+        "predicted_readout": "reverting the write-settled-flag trigger to fire only after a confirmed settlement callback reduces the double-counted SETTLED rate toward zero within one reconciliation cycle",
+        "proposal_relation": "CHALLENGES_USER_PROPOSAL",
+        "representation_status": {
+          "direct_voice": [
+            "merchant \"north-cluster\" (Tier-1) support ticket"
+          ],
+          "authorized_proxy": [
+            "settlement ops record"
+          ],
+          "absent_or_unreached": [
+            "cardholder"
+          ],
+          "inferred_only": []
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "Payments Risk & Controls (PRC) — on-call"
+        ],
+        "alternative_explanations": [
+          "the two systems only superficially resemble each other and the payments bug has an unrelated root cause in the settlement-callback delivery layer"
+        ],
+        "authority_assumptions": [
+          "system owner may authorize synthetic observation"
+        ],
+        "boundary": "confirm click through final booking readout",
+        "causal_tier": "STRUCTURAL_HYPOTHESIS",
+        "claim": "the same premature-ack-as-success pattern that caused double-booked appointments in the unrelated booking-service fixture (client observing a queue-ack before the backend reached a final state) is structurally the same failure adapted to payments: a queue-ack is being treated as a settlement truth-state — cross-domain the fix pattern is \"gate any external-facing status write behind the actual terminal callback, never behind an intermediate ack/nack\"",
+        "conditions": [
+          "backend reaches a final state after client timeout"
+        ],
+        "discriminating_information": [
+          "presence/absence of an explicit PENDING_CONFIRMATION row between ack and settlement callback"
+        ],
+        "evidence_ledger_ref": "EL-H2",
+        "falsifier": "adding PENDING_CONFIRMATION state does not change the double-counted SETTLED rate",
+        "hypothesis_id": "H2",
+        "lane": "CROSS_ADAPTIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "both systems collapse an intermediate transport-layer acknowledgement into a business-layer terminal state, because neither state machine models an explicit PENDING_CONFIRMATION state between \"request accepted\" and \"request resolved\"",
+        "predicted_readout": "introducing an explicit PENDING_CONFIRMATION state in the retry-orchestrator, mirroring the fix already validated in the booking-service fixture, resolves the ambiguous-SETTLED class of bugs without needing acquirer-specific logic",
+        "proposal_relation": "INDEPENDENT",
+        "representation_status": {
+          "direct_voice": [
+            "payments engineering"
+          ],
+          "authorized_proxy": [
+            "booking-service fixture postmortem"
+          ],
+          "absent_or_unreached": [],
+          "inferred_only": [
+            "vendor \"AcquirerX\"/gateway"
+          ]
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "Reconciliation & Ledger Integrity (R&LI) board",
+          "Müller — QA lead 🔧"
+        ],
+        "alternative_explanations": [
+          "the migration cost and downstream rewrite scope outweighs the benefit versus simply gating the existing write on a confirmed callback (H1's narrower fix)"
+        ],
+        "authority_assumptions": [
+          "system owner may authorize synthetic observation"
+        ],
+        "boundary": "confirm click through final booking readout",
+        "causal_tier": "DESIGN_HYPOTHESIS",
+        "claim": "a generative redesign — replacing the binary ledger.status field entirely with an append-only settlement-event log keyed by (attempt-id, acquirer-response-code, acquirer-timestamp), and deriving the merchant-facing SETTLED/PENDING/FAILED label as a pure read-time projection over that log — removes the entire class of premature-write bugs structurally, because there is no longer a single mutable status field for a race condition to corrupt; every downstream consumer (reconciliation-job, tax-reporting extract, merchant dashboard, R&LI variance report) reads the same append-only truth instead of a cached label 🔧",
+        "conditions": [
+          "backend reaches a final state after client timeout"
+        ],
+        "discriminating_information": [
+          "whether the projection layer can reconstruct a consistent SETTLED/FAILED label for every historical attempt-id without manual reconciliation"
+        ],
+        "evidence_ledger_ref": "EL-H3",
+        "falsifier": "migrating to an event-sourced model still permits two conflicting settlement-events to coexist for the same attempt-id without a defined resolution rule",
+        "hypothesis_id": "H3",
+        "lane": "GENERATIVE_TRANSFORMATIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "moving from mutable-status to event-sourced settlement state eliminates write-ordering races by construction, at the cost of requiring every downstream consumer to be rewritten as a projection over the event log rather than a row read",
+        "predicted_readout": "after migration, the double-counted SETTLED rate becomes structurally undefined as a bug class (not merely reduced), because no single write can retroactively overwrite an already-emitted settlement-event",
+        "proposal_relation": "INDEPENDENT",
+        "representation_status": {
+          "direct_voice": [
+            "Müller — QA lead 🔧"
+          ],
+          "authorized_proxy": [
+            "Reconciliation & Ledger Integrity (R&LI) board"
+          ],
+          "absent_or_unreached": [
+            "merchant support desk"
+          ],
+          "inferred_only": []
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      }
+    ],
+    "proposal_comparison_status": "COMPLETE",
+    "status": "HYPOTHESIS_PORTFOLIO_READY"
+  },
+  "issue": {
+    "candidate_state": "ISSUE_ADMITTED",
+    "minimal_quotient": "retry-ack-vs-settlement-confirmation",
+    "requested_readout": "acquirer-confirmed settlement status per attempt-id",
+    "type": "UNCERTAINTY",
+    "unresolved_semantics": "ledger.status=\"SETTLED\" written on queue-ack, not on confirmed settlement callback",
+    "zero_semantics": "no attempt-id where ledger.status disagrees with acquirer response code"
+  },
+  "metadata": {
+    "fixture_id": "UIA-046-E2E-WEB-BOOKING-001",
+    "label": "[SimulatedData]",
+    "simulation": true
+  },
+  "proposal_input": {
+    "anchoring_control": "BLIND_FREEZE_VERIFIED",
+    "attribution_lineage": "proposal-tape/demo/1",
+    "outcome": "COMPLEMENTARY_COMPONENT",
+    "presence": "PROPOSAL_PRESENT",
+    "proposal_verbatim": "เพิ่มปุ่มกดซ้ำและส่งอีเมลยืนยันเมื่อการจองเสร็จ",
+    "requested_mode": "AUTO",
+    "resolved_mode": "HYBRID_BLIND_COMPARE"
+  },
+  "protocol_version": "0.4.6",
+  "registration": {
+    "abstention_rule": "UNRESOLVED หาก lineage ข้ามระบบไม่พอ",
+    "authorized_users": [
+      "product",
+      "engineering",
+      "support"
+    ],
+    "decision_to_support": "เลือก reversible fix ที่ gate การเขียน SETTLED ด้วย acquirer ack เท่านั้น",
+    "failure_rule": "ไม่ลดลง หรือ soft-decline [\"06\",\"91\",\"96\"] ยังถูกเขียนเป็น SETTLED ใน ledger",
+    "forbidden_uses": [
+      "ใช้ fixture แทนหลักฐาน production"
+    ],
+    "query": "ทำไม soft-decline retry ถึงถูกบันทึกเป็น settled ใน ledger",
+    "requester": "product team",
+    "success_rule": "double-counted \"SETTLED\" rate ต่ำกว่า 0.01% ต่อวัน หลังแก้ retry-state machine, วัดจาก field [ledger.status] เทียบกับ acquirer response code"
+  },
+  "retained_difference": {
+    "baseline": "customer readout becomes final within frozen limit",
+    "comparison": "some synthetic attempts remain ambiguous",
+    "lineage": "trace/demo/correlation-id",
+    "missing_records": [],
+    "raw_records": [
+      "client-event",
+      "booking-state",
+      "notification-event"
+    ]
+  },
+  "run_control": {
+    "continuation_policy": "STOP_AT_HYPOTHESIS",
+    "continuation_record": "CONT-UIA-046-HYP-DEMO-001",
+    "requested_by": "built-in checkpoint demo"
+  },
+  "system_graph": {
+    "delays": [
+      "asynchronous confirmation"
+    ],
+    "edges": [
+      "submit-retry",
+      "write-settled-flag",
+      "ack/nack (soft-decline)",
+      "reconcile"
+    ],
+    "feedback_loops": [
+      "manual retry"
+    ],
+    "invariants": [
+      "one attempt id maps to at most one booking"
+    ],
+    "nodes": [
+      "retry-orchestrator \"north wing\"",
+      "ledger-writer (async/batch)",
+      "acquirer-gateway \"AcquirerX\" (prod)",
+      "reconciliation-job (nightly, 02:00 ICT)"
+    ]
+  },
+  "translation": {
+    "adapter_cards": [
+      "Phase-2 (draft) review",
+      "idempotency-key protocol v2",
+      "ISO-8583 \"field 39\" mapping"
+    ],
+    "canonical_uia_mapping": "retained difference between ledger-recorded settlement status and acquirer-confirmed authorization outcome",
+    "loss_audit": "PASS",
+    "raw_user_expression": "ทีม reconciliation เจอว่า ledger เขียน \"SETTLED\" ทั้งที่ acquirer ส่ง `soft_decline` กลับมาใน retry ครั้งที่ 2 เลยทำให้ยอด settled เกินจริงทุกคืน",
+    "selected_domain_projection": "booking state/readout mismatch",
+    "topology": "NETWORK",
+    "user_facing_issue_statement": "ยอดเงินใน daily reconciliation report สูงกว่าความเป็นจริง เพราะ retry ที่ยัง [unresolved] ถูกนับเป็น \"settled\" ทั้งที่ acquirer ตอบ soft-decline"
+  },
+  "two_question_intake": {
+    "certificate": "J2-UIA-046-DEMO",
+    "entry_status": "INTAKE_COMPLETE",
+    "q1_answer_verbatim": "ผู้ใช้บางรายกดยืนยันการจองแล้วหน้าเว็บแสดงว่ากำลังประมวลผลนานเกินเกณฑ์และไม่ทราบว่าจองสำเร็จหรือไม่",
+    "q1_prompt": "Issue คืออะไร?",
+    "q2_answer_verbatim": "เสนอให้เพิ่มปุ่มกดซ้ำและส่งอีเมลยืนยันเมื่อการจองเสร็จ",
+    "q2_presence": "PROPOSAL_PRESENT",
+    "q2_prompt": "มีข้อเสนออะไรเกี่ยวกับประเด็นนี้ไหม?"
+  }
+}
