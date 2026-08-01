@@ -86,6 +86,41 @@ def main() -> None:
         lines.append(f"- `{name}` — {note}")
     lines.append("")
 
+    lines.append("## `agency` — which subfields are actually kernel-enforced (2026-08-01)")
+    lines.append("")
+    lines.append(
+        "§4.3 of the narrative spec describes 12 conceptual agency roles (affected, "
+        "observing, knowledge, voice, decision, intervention, resource, veto, "
+        "accountable, oversight, represented, future/latent) and the demo fixture "
+        "populates all of them — but a 10-domain fit test found agents assuming "
+        "every one of those 12 was kernel-required and manufacturing filler "
+        "content for domains with only 2-3 real actors talking directly (a single "
+        "farmer, a coach and one athlete, a small ensemble). It was not required. "
+        "The kernel (`validate()`, `AGENCY_ROLE_EMPTY`) only ever enforces these "
+        "5 as non-empty lists:"
+    )
+    lines.append("")
+    lines.append(
+        render_set(
+            {"affected", "observers", "decision_owners", "intervention_owners", "accountable_parties"}
+        )
+    )
+    lines.append("")
+    lines.append(
+        "The other 7 fields in the demo fixture "
+        "(`voice_holders`, `veto_or_consent_holders`, `oversight_parties`, "
+        "`represented_or_absent_parties`, `resource_holders`, `knowledge_holders`, "
+        "`future_or_indirect_parties`, `power_exposure_voice_gaps`) are **not** "
+        "checked for non-emptiness and may be left as `[]` when a domain "
+        "genuinely has no distinct party in that role — e.g. a single-farmer "
+        "decision has no separate \"represented but absent\" party to name. Leave "
+        "them empty rather than inventing a party to satisfy an assumed "
+        "requirement that isn't there. (`stakeholder_map_status` is checked "
+        "separately, against `ENUMS[\"stakeholder_map_status\"]`, and is always "
+        "required regardless of agency size.)"
+    )
+    lines.append("")
+
     lines.append("## `run_control.continuation_policy`")
     lines.append("")
     lines.append(render_set(k.ENUMS["continuation_policy"]))
@@ -123,29 +158,39 @@ def main() -> None:
     lines.append("## `hypothesis_evidence_challenge.review_mode`")
     lines.append("")
     lines.append(
-        "Free-text (not enum-constrained) with one recognized special value:"
+        "Free-text (not enum-constrained) with two recognized special values:"
     )
     lines.append("")
     lines.append(
         "- `\"TARGETED_SEARCH\"` (or any other value) — each hypothesis's "
         "`citation_cards[*]` must carry the full literature-citation field set: "
         "`authors_or_issuer`, `year`, `source_type`, `journal_or_repository`, "
-        "`persistent_id_or_official_url`, plus the fields shared with "
-        "`INTERNAL_DATA_AUDIT` below. This is the original schema shape."
+        "`persistent_id_or_official_url`, `retrieved_at`, plus the fields shared "
+        "across all modes below. This is the original schema shape."
     )
     lines.append(
         "- `\"INTERNAL_DATA_AUDIT\"` (2026-08-01) — for issues whose real evidence "
         "base is internal operational data (logs, tickets, sensor exports) rather "
         "than published literature. `citation_cards[*]` instead carry "
-        "`source_system`, `query_or_filter`, `record_id_or_url` in place of the "
-        "literature fields — everything else (falsifier, `source_classes_searched` "
-        "length >= 2, `result_status`, `citation_audit == \"PASS\"`, the "
-        "`global_certainty`/`local_applicability`/`evidence_balance`/"
-        "`transfer_status` enums) is unchanged; this mode does not relax rigor, "
-        "only the vocabulary of what counts as a citable source."
+        "`source_system`, `query_or_filter`, `record_id_or_url`, `retrieved_at` in "
+        "place of the literature fields — everything else (falsifier, "
+        "`source_classes_searched` length >= 2, `result_status`, "
+        "`citation_audit == \"PASS\"`, the `global_certainty`/`local_applicability`/"
+        "`evidence_balance`/`transfer_status` enums) is unchanged; this mode does "
+        "not relax rigor, only the vocabulary of what counts as a citable source."
+    )
+    lines.append(
+        "- `\"FIELD_OBSERVATION_LOG\"` (2026-08-01) — for issues whose real "
+        "evidence is a fresh sensory/field observation at the moment it was made "
+        "(a baker's dough, a tagged tree at a census date, a coach's session "
+        "notes), not a citable document or system log. `citation_cards[*]` "
+        "instead carry `observer`, `observation_method`, `observed_at`, "
+        "`location_or_context` — no `retrieved_at` (there is no separate "
+        "\"retrieval\" step from a \"publication\" here). Same rigor otherwise "
+        "as the other two modes."
     )
     lines.append("")
-    lines.append("`citation_cards[*]` fields shared by both modes:")
+    lines.append("`citation_cards[*]` fields shared across all three modes:")
     lines.append("")
     lines.append(
         render_set(
@@ -160,7 +205,6 @@ def main() -> None:
                 "context_fit",
                 "metadata_verification",
                 "scope_verification",
-                "retrieved_at",
             }
         )
     )
