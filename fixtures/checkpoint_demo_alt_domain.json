@@ -1,0 +1,580 @@
+{
+  "agency": {
+    "accountable_parties": [
+      "plant operations manager"
+    ],
+    "affected": [
+      "maintenance technicians",
+      "line supervisors"
+    ],
+    "decision_owners": [
+      "controls engineering lead"
+    ],
+    "future_or_indirect_parties": [
+      "downstream production scheduling"
+    ],
+    "intervention_owners": [
+      "controls engineering"
+    ],
+    "knowledge_holders": [
+      "maintenance technicians",
+      "controls engineering",
+      "line supervisors"
+    ],
+    "observers": [
+      "vibration sensor telemetry",
+      "maintenance ticketing system"
+    ],
+    "oversight_parties": [
+      "plant safety reviewer"
+    ],
+    "power_exposure_voice_gaps": [
+      "technicians absorb alert-fatigue risk but do not set threshold policy"
+    ],
+    "represented_or_absent_parties": [
+      "night-shift technicians not present in daytime review meetings"
+    ],
+    "resource_holders": [
+      "maintenance department"
+    ],
+    "stakeholder_map_status": "CLOSED",
+    "veto_or_consent_holders": [
+      "plant safety reviewer"
+    ],
+    "voice_holders": [
+      "maintenance technicians",
+      "line supervisors"
+    ]
+  },
+  "causal_analysis": {
+    "alternatives": [
+      "gateway sampling-rate misconfiguration inflating noise"
+    ],
+    "candidates": [
+      "sensor mounting resonance produces false vibration signatures unrelated to equipment wear",
+      "a single static threshold does not account for normal load-dependent vibration variation across shifts"
+    ],
+    "causal_tier": "MECHANISM_CANDIDATE",
+    "controls": [
+      "synthetic steady-state replay",
+      "synthetic induced-fault replay"
+    ],
+    "counterexamples": [
+      "a shift with elevated load and zero false alerts"
+    ],
+    "intervention_evidence": []
+  },
+  "context": {
+    "boundary": "vibration sensor reading through maintenance-alert dispatch",
+    "constraints": [
+      "no production-line stoppage in fixture"
+    ],
+    "horizon": "one production week plus a 30-day alert-log review",
+    "location_or_domain": "factory floor, Line 4 packaging cell",
+    "permissions": [
+      "synthetic trace only"
+    ],
+    "resolution": "one alert per sensor-id per shift",
+    "rights": [
+      "technician workload data handled in aggregate only"
+    ],
+    "time_index": "synthetic observation window T0-T1",
+    "values": [
+      "technician trust in alerts",
+      "fault detection coverage",
+      "response latency"
+    ]
+  },
+  "emergency_containment": {
+    "status": "NOT_TRIGGERED"
+  },
+  "hypothesis_evidence_challenge": {
+    "frozen_at": "2026-07-31T00:00:00+07:00",
+    "hypotheses": [
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H1",
+            "claim_supported_or_challenged": "H1 boundary",
+            "context_country_or_region": "synthetic/plant-floor",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H1",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H1 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "no resonance signature present in confirmed-fault alerts",
+        "global_certainty": "LOW",
+        "hypothesis": "sensor mounting resonance produces false readings",
+        "hypothesis_id": "H1",
+        "international_track": {
+          "challenge_queries": [
+            "mounting resonance does not explain elevated alert rate"
+          ],
+          "exclusion_rules": [
+            "unrelated network latency issues"
+          ],
+          "inclusion_rules": [
+            "vibration-alert precision mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international industrial-monitoring index"
+          ],
+          "support_queries": [
+            "industrial vibration alert false-positive mounting resonance"
+          ]
+        },
+        "ledger_id": "EL-H1",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "Line 4 shows mounting resonance without elevated alerts"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated plant maintenance log archive",
+            "simulated controls engineering incident record"
+          ],
+          "support_queries": [
+            "Line 4 mounting resonance evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating mounting resonance",
+        "supporting_evidence": [
+          "SIM-CIT-H1"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H2",
+            "claim_supported_or_challenged": "H2 boundary",
+            "context_country_or_region": "synthetic/plant-floor",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H2",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H2 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "false-alarm rate does not track shift-load level",
+        "global_certainty": "LOW",
+        "hypothesis": "a static threshold ignores load-dependent variation",
+        "hypothesis_id": "H2",
+        "international_track": {
+          "challenge_queries": [
+            "load-dependent threshold does not explain elevated alert rate"
+          ],
+          "exclusion_rules": [
+            "unrelated network latency issues"
+          ],
+          "inclusion_rules": [
+            "vibration-alert precision mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international industrial-monitoring index"
+          ],
+          "support_queries": [
+            "industrial vibration alert false-positive load-dependent threshold"
+          ]
+        },
+        "ledger_id": "EL-H2",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "Line 4 shows load-dependent threshold without elevated alerts"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated plant maintenance log archive",
+            "simulated controls engineering incident record"
+          ],
+          "support_queries": [
+            "Line 4 load-dependent threshold evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating load-dependent threshold",
+        "supporting_evidence": [
+          "SIM-CIT-H2"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      },
+      {
+        "challenging_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "citation_audit": "PASS",
+        "citation_cards": [
+          {
+            "authors_or_issuer": "UIA fixture",
+            "citation_id": "SIM-CIT-H3",
+            "claim_supported_or_challenged": "H3 boundary",
+            "context_country_or_region": "synthetic/plant-floor",
+            "context_fit": "LOW",
+            "direction": "MIXED",
+            "directness": "PARTIAL",
+            "journal_or_repository": "built-in fixture",
+            "metadata_verification": "SIMULATED_ONLY",
+            "persistent_id_or_official_url": "fixture://H3",
+            "quality": "LOW",
+            "retrieved_at": "2026-07-31",
+            "scope_verification": "SIMULATED_ONLY",
+            "source_type": "synthetic_fixture",
+            "title": "[SimulatedData] H3 evidence record",
+            "year": 2026
+          }
+        ],
+        "evidence_balance": "MIXED",
+        "evidence_gaps": [
+          "no field evidence in fixture"
+        ],
+        "falsifier": "false-alarm rate is unaffected by sampling-rate changes",
+        "global_certainty": "LOW",
+        "hypothesis": "gateway sampling rate is too low to distinguish transient spikes from sustained faults",
+        "hypothesis_id": "H3",
+        "international_track": {
+          "challenge_queries": [
+            "sampling-rate resolution does not explain elevated alert rate"
+          ],
+          "exclusion_rules": [
+            "unrelated network latency issues"
+          ],
+          "inclusion_rules": [
+            "vibration-alert precision mechanism"
+          ],
+          "result_status": "SIMULATED_EVIDENCE_FOUND",
+          "sources_searched": [
+            "simulated international industrial-monitoring index"
+          ],
+          "support_queries": [
+            "industrial vibration alert false-positive sampling-rate resolution"
+          ]
+        },
+        "ledger_id": "EL-H3",
+        "local_applicability": "LOW",
+        "local_context_track": {
+          "challenge_queries": [
+            "Line 4 shows sampling-rate resolution without elevated alerts"
+          ],
+          "result_status": "LOCAL_EVIDENCE_FOUND",
+          "source_classes_searched": [
+            "local_journals",
+            "practice_records"
+          ],
+          "sources_searched": [
+            "simulated plant maintenance log archive",
+            "simulated controls engineering incident record"
+          ],
+          "support_queries": [
+            "Line 4 sampling-rate resolution evidence"
+          ]
+        },
+        "next_discriminating_test": "targeted replay isolating sampling-rate resolution",
+        "supporting_evidence": [
+          "SIM-CIT-H3"
+        ],
+        "transfer_status": "ADAPT_WITH_CONDITIONS"
+      }
+    ],
+    "review_mode": "TARGETED_SEARCH",
+    "search_protocol_id": "SEARCH-UIA-ALT-DEMO",
+    "status": "EVIDENCE_CHALLENGE_COMPLETE",
+    "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
+    "target_context": {
+      "country": "synthetic/plant-floor (not tied to any real jurisdiction)",
+      "institutions_and_population": "synthetic industrial-manufacturing context",
+      "languages": [
+        "en"
+      ]
+    }
+  },
+  "hypothesis_portfolio": {
+    "checkpoint_certificate": "HYP-UIA-ALT-DEMO-001",
+    "diversity_test": "PASS",
+    "evidence_linkage_test": "PASS",
+    "hypothesis_cards": [
+      {
+        "affected_agencies": [
+          "maintenance technicians",
+          "controls engineering"
+        ],
+        "alternative_explanations": [
+          "threshold is simply set too low for normal operating vibration"
+        ],
+        "authority_assumptions": [],
+        "boundary": "vibration sensor reading through threshold check",
+        "causal_tier": "MECHANISM_HYPOTHESIS",
+        "claim": "sensor mounting resonance produces false vibration signatures that trigger alerts without a real equipment fault",
+        "conditions": [
+          "mount hardware has developed play or looseness over time"
+        ],
+        "discriminating_information": [
+          "post-remount alert rate compared to pre-remount baseline"
+        ],
+        "evidence_ledger_ref": "EL-H1",
+        "falsifier": "no resonance signature present in confirmed-fault alerts",
+        "hypothesis_id": "H1",
+        "lane": "KNOWN_DIRECT",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "mounting resonance amplitude crosses the alert threshold independent of actual bearing/gear wear",
+        "predicted_readout": "re-torquing or replacing sensor mounts reduces false-alarm rate without missing real faults",
+        "proposal_relation": "CHALLENGES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [
+            "night-shift technicians"
+          ],
+          "authorized_proxy": [
+            "controls engineering"
+          ],
+          "direct_voice": [
+            "maintenance technician report"
+          ],
+          "inferred_only": []
+        },
+        "uncertainties": [
+          "no production evidence"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "controls engineering",
+          "line supervisors"
+        ],
+        "alternative_explanations": [
+          "sensor hardware itself is miscalibrated, unrelated to load"
+        ],
+        "authority_assumptions": [],
+        "boundary": "threshold-check across shift-load conditions",
+        "causal_tier": "STRUCTURAL_HYPOTHESIS",
+        "claim": "a single static alert threshold does not account for normal load-dependent vibration variation across shifts",
+        "conditions": [
+          "load varies materially between shifts and threshold was calibrated at one load level"
+        ],
+        "discriminating_information": [
+          "false-alarm rate broken out by shift-load bucket"
+        ],
+        "evidence_ledger_ref": "EL-H2",
+        "falsifier": "false-alarm rate does not track shift-load level",
+        "hypothesis_id": "H2",
+        "lane": "CROSS_ADAPTIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "MIXED_GROUNDING",
+        "mechanism": "vibration baseline shifts with production load, so a fixed threshold over-fires during high-load shifts",
+        "predicted_readout": "a load-adaptive threshold reduces false-alarm rate concentrated in high-load shifts",
+        "proposal_relation": "REFRAMES_USER_PROPOSAL",
+        "representation_status": {
+          "absent_or_unreached": [],
+          "authorized_proxy": [
+            "plant operations manager"
+          ],
+          "direct_voice": [
+            "controls engineering record"
+          ],
+          "inferred_only": [
+            "technician workload interpretation"
+          ]
+        },
+        "uncertainties": [
+          "load data granularity not field-confirmed"
+        ]
+      },
+      {
+        "affected_agencies": [
+          "controls engineering",
+          "maintenance technicians"
+        ],
+        "alternative_explanations": [
+          "ambiguity originates solely at the mounting layer, not sampling resolution"
+        ],
+        "authority_assumptions": [],
+        "boundary": "edge-gateway sampling through alert dispatch",
+        "causal_tier": "DESIGN_HYPOTHESIS",
+        "claim": "the gateway's sampling rate is too coarse to distinguish a genuine sustained fault signature from a transient spike, so both raise the same binary alert",
+        "conditions": [
+          "current sampling interval exceeds the characteristic duration of a transient spike"
+        ],
+        "discriminating_information": [
+          "false-alarm rate before/after a sampling-rate increase pilot"
+        ],
+        "evidence_ledger_ref": "EL-H3",
+        "falsifier": "false-alarm rate is unaffected by sampling-rate changes",
+        "hypothesis_id": "H3",
+        "lane": "GENERATIVE_TRANSFORMATIVE",
+        "legal_relevance": "NONE",
+        "legal_status": "NOT_REQUIRED",
+        "legitimacy_status": "INFERRED_NOT_FIELD_CONFIRMED",
+        "mechanism": "low sampling resolution collapses transient and sustained vibration patterns into one undifferentiated alert type",
+        "predicted_readout": "higher-resolution sampling lets the dispatcher distinguish transient from sustained signatures and only alert on the latter",
+        "proposal_relation": "INDEPENDENT",
+        "representation_status": {
+          "absent_or_unreached": [
+            "technicians not consulted on sampling design"
+          ],
+          "authorized_proxy": [
+            "controls engineering"
+          ],
+          "direct_voice": [
+            "controls engineering record"
+          ],
+          "inferred_only": [
+            "technician trust impact"
+          ]
+        },
+        "uncertainties": [
+          "field comprehension of alert redesign not confirmed"
+        ]
+      }
+    ],
+    "proposal_comparison_status": "COMPLETE",
+    "status": "HYPOTHESIS_PORTFOLIO_READY"
+  },
+  "issue": {
+    "candidate_state": "ISSUE_ADMITTED",
+    "minimal_quotient": "alert-to-confirmed-fault linkage",
+    "requested_readout": "confirmed-fault rate per vibration alert on Line 4",
+    "type": "UNCERTAINTY",
+    "unresolved_semantics": "alert cannot be linked to a confirmed-fault outcome without manual technician follow-up",
+    "zero_semantics": "no alert under frozen readout that lacks an eventual confirmed-fault determination"
+  },
+  "metadata": {
+    "fixture_id": "UIA-alt-domain-manufacturing-sensor-fatigue-001",
+    "label": "[SimulatedData]",
+    "simulation": true
+  },
+  "proposal_input": {
+    "anchoring_control": "BLIND_FREEZE_VERIFIED",
+    "attribution_lineage": "proposal-tape/alt-demo/1",
+    "outcome": "COMPLEMENTARY_COMPONENT",
+    "presence": "PROPOSAL_PRESENT",
+    "proposal_verbatim": "Raise the vibration alert threshold so fewer alerts fire.",
+    "requested_mode": "AUTO",
+    "resolved_mode": "HYBRID_BLIND_COMPARE"
+  },
+  "protocol_version": "0.4.6",
+  "registration": {
+    "abstention_rule": "UNRESOLVED if maintenance-log linkage across systems is insufficient",
+    "authorized_users": [
+      "plant operations",
+      "controls engineering",
+      "maintenance"
+    ],
+    "decision_to_support": "choose a reversible pilot that cuts false-alarm rate without missing real faults",
+    "failure_rule": "any confirmed fault missed during the pilot window",
+    "forbidden_uses": [
+      "use fixture in place of production sensor evidence"
+    ],
+    "query": "Why do vibration sensors on Line 4 trigger far more maintenance alerts than confirmed equipment faults, and what should be tried first?",
+    "requester": "plant operations team",
+    "success_rule": "false-alarm rate below the frozen threshold with zero missed confirmed faults"
+  },
+  "retained_difference": {
+    "baseline": "an alert should correspond to a confirmable equipment fault within the shift",
+    "comparison": "most alerts on Line 4 close with no confirmed fault found",
+    "lineage": "trace/alt-demo/sensor-alert-correlation",
+    "missing_records": [],
+    "raw_records": [
+      "sensor-event",
+      "maintenance-ticket",
+      "technician-response-log"
+    ]
+  },
+  "run_control": {
+    "continuation_policy": "STOP_AT_HYPOTHESIS",
+    "continuation_record": "CONT-UIA-ALT-HYP-DEMO-001",
+    "requested_by": "built-in alt-domain checkpoint demo"
+  },
+  "system_graph": {
+    "delays": [
+      "technician travel time to sensor location"
+    ],
+    "edges": [
+      "sample",
+      "threshold-check",
+      "dispatch",
+      "ticket-open",
+      "ticket-close"
+    ],
+    "feedback_loops": [
+      "technician manually silences repeat alerts from the same sensor"
+    ],
+    "invariants": [
+      "one sensor-event maps to at most one open maintenance ticket"
+    ],
+    "nodes": [
+      "vibration-sensor",
+      "edge-gateway",
+      "alert-dispatcher",
+      "maintenance-ticketing",
+      "technician"
+    ]
+  },
+  "translation": {
+    "adapter_cards": [
+      "signal-processing threshold analysis",
+      "maintenance-log linkage",
+      "technician-response audit"
+    ],
+    "canonical_uia_mapping": "retained difference between sensor-triggered alert rate and confirmed-fault rate",
+    "loss_audit": "PASS",
+    "raw_user_expression": "sensors keep crying wolf and my techs are starting to ignore them",
+    "selected_domain_projection": "alert precision / technician trust in industrial monitoring",
+    "topology": "NETWORK",
+    "user_facing_issue_statement": "Vibration sensors on Line 4 raise far more maintenance alerts than there are real faults, and technicians have begun delaying response."
+  },
+  "two_question_intake": {
+    "certificate": "J2-UIA-ALT-001",
+    "entry_status": "INTAKE_COMPLETE",
+    "q1_answer_verbatim": "Line 4 vibration sensors trigger maintenance alerts several times per shift, but technicians confirm an actual fault in only a small fraction of those alerts, and they have started delaying response to new alerts.",
+    "q1_prompt": "What is the issue?",
+    "q2_answer_verbatim": "Raise the vibration alert threshold so fewer alerts fire.",
+    "q2_presence": "PROPOSAL_PRESENT",
+    "q2_prompt": "Any proposal for this?"
+  }
+}
