@@ -41,36 +41,62 @@ def as_list(value) -> list:
     return [value]
 
 
+def _md_escape(text) -> str:
+    """Neutralize backticks so interpolating arbitrary checkpoint text into an
+    inline bold+code-span wrapper (e.g. "**`{id}`**") can't split/corrupt it."""
+    return str(text).replace("`", "'")
+
+
 def extract_human_checks(run: dict) -> list[dict]:
     """One check-item per hypothesis card, straight from already-validated
     schema fields — nothing invented. This IS the checklist a human needs to
     verify before trusting the AI's output on this checkpoint, because these
     are exactly the fields the protocol itself uses to keep a hypothesis
     falsifiable (Invariant list §11, items ~39-41)."""
-    cards = ((run.get("hypothesis_portfolio") or {}).get("hypothesis_cards")) or []
+    cards = as_list((run.get("hypothesis_portfolio") or {}).get("hypothesis_cards"))
     checks = []
     for card in cards:
+        if not isinstance(card, dict):
+            continue
         checks.append(
             {
-                "hypothesis_id": card.get("hypothesis_id", "?"),
+                "hypothesis_id": _md_escape(card.get("hypothesis_id", "?")),
                 "lane": card.get("lane", "?"),
-                "claim": card.get("claim", "?"),
-                "falsifier": card.get("falsifier", "?"),
-                "discriminating_information": as_list(card.get("discriminating_information")),
-                "uncertainties": as_list(card.get("uncertainties")),
-                "alternative_explanations": as_list(card.get("alternative_explanations")),
+                "claim": _md_escape(card.get("claim", "?")),
+                "falsifier": _md_escape(card.get("falsifier", "?")),
+                "discriminating_information": [
+                    _md_escape(x) for x in as_list(card.get("discriminating_information"))
+                ],
+                "uncertainties": [_md_escape(x) for x in as_list(card.get("uncertainties"))],
+                "alternative_explanations": [
+                    _md_escape(x) for x in as_list(card.get("alternative_explanations"))
+                ],
             }
         )
     return checks
 
 
 def extract_open_questions(expert_md: str) -> str:
+    # Prefer the exact canonical heading (the load-bearing wording Layer 2's own
+    # prompt template specifies) — unambiguous, no risk of matching an unrelated
+    # section that happens to also start with "Open questions".
     m = re.search(
         r"^## Open questions / where a human expert should override this\n(.*?)(?=^## |\Z)",
         expert_md,
         re.M | re.S,
     )
-    return m.group(1).strip() if m else ""
+    if m:
+        return m.group(1).strip()
+    # Fallback for real-world heading-wording drift: any "## Open questions..."
+    # prefix, case-insensitive. Take the LAST such heading, not the first — an
+    # independent review (2026-08-01) found `re.search`'s first-match behavior
+    # here would silently capture an earlier, differently-scoped decoy heading
+    # (e.g. "## Open questions for unrelated funding topic") instead of the
+    # real one; Layer 2's template always places this section near the end.
+    matches = list(
+        re.finditer(r"^## +Open questions[^\n]*\n(.*?)(?=^## |\Z)", expert_md, re.M | re.S | re.I)
+    )
+    return matches[-1].group(1).strip() if matches else ""
 
 
 def extract_glossary_title(glossary_md: str) -> str:
@@ -108,16 +134,25 @@ def build(run: dict, glossary_md: str, expert_md: str) -> str:
     checks = extract_human_checks(run)
     open_questions = extract_open_questions(expert_md)
     decision_owners = (run.get("agency", {}) or {}).get("decision_owners") or []
-    review_mode = (run.get("hypothesis_evidence_challenge") or {}).get("review_mode", "TARGETED_SEARCH")
+    evidence = run.get("hypothesis_evidence_challenge")
+    review_mode = evidence.get("review_mode") if isinstance(evidence, dict) else None
     review_note = REVIEW_MODE_NOTE.get(review_mode)
     if review_note is None:
-        review_note = (
-            f"review_mode = {review_mode!r} is not one of the 3 recognized values "
-            "(TARGETED_SEARCH / INTERNAL_DATA_AUDIT / FIELD_OBSERVATION_LOG) — do NOT assume "
-            "TARGETED_SEARCH's evidence discipline applies; the doer/auditor must read the raw "
-            "hypothesis_evidence_challenge field themselves and confirm what kind of evidence "
-            "this checkpoint actually rests on."
-        )
+        if evidence is None:
+            review_note = (
+                "hypothesis_evidence_challenge is entirely missing from this checkpoint — do NOT "
+                "assume TARGETED_SEARCH's (or any) evidence discipline applies; the doer/auditor "
+                "must confirm what kind of evidence this checkpoint actually rests on before "
+                "proceeding."
+            )
+        else:
+            review_note = (
+                f"review_mode = {review_mode!r} is not one of the 3 recognized values "
+                "(TARGETED_SEARCH / INTERNAL_DATA_AUDIT / FIELD_OBSERVATION_LOG) — do NOT assume "
+                "TARGETED_SEARCH's evidence discipline applies; the doer/auditor must read the raw "
+                "hypothesis_evidence_challenge field themselves and confirm what kind of evidence "
+                "this checkpoint actually rests on."
+            )
 
     lines: list[str] = []
     lines.append(f"# Skill Plan — {checkpoint_ref}")
@@ -148,28 +183,34 @@ def build(run: dict, glossary_md: str, expert_md: str) -> str:
     if decision_owners:
         lines.append(f"**ผู้มีอำนาจตัดสินใจตาม checkpoint นี้:** {', '.join(decision_owners)}")
         lines.append("")
-    lines.append(
-        "**สิ่งที่ต้องตรวจ/verify ก่อนเชื่อผลลัพธ์ AI** (ดึงจาก field จริงที่ kernel validate แล้ว "
-        "ต่อ hypothesis card — ไม่ใช่รายการทั่วไป):"
-    )
-    lines.append("")
-    for c in checks:
+    if checks:
         lines.append(
-            f"- **`{c['hypothesis_id']}`** ({c['lane']}) — claim: {c['claim']}"
+            "**สิ่งที่ต้องตรวจ/verify ก่อนเชื่อผลลัพธ์ AI** (ดึงจาก field จริงที่ kernel validate แล้ว "
+            "ต่อ hypothesis card — ไม่ใช่รายการทั่วไป):"
         )
-        lines.append(f"  - falsifier ที่ต้องเช็คว่ายัง falsify ไม่ได้จริง: {c['falsifier']}")
-        if c["discriminating_information"]:
+        lines.append("")
+        for c in checks:
             lines.append(
-                "  - ข้อมูลที่ต้องหาเพิ่มเพื่อแยกสมมติฐานนี้จากอันอื่น: "
-                + "; ".join(c["discriminating_information"])
+                f"- **`{c['hypothesis_id']}`** ({c['lane']}) — claim: {c['claim']}"
             )
-        if c["uncertainties"]:
-            lines.append("  - ความไม่แน่นอนที่ประกาศไว้แล้ว (ต้องรู้ว่ายังไม่ปิด): " + "; ".join(c["uncertainties"]))
-        if c["alternative_explanations"]:
-            lines.append(
-                "  - คำอธิบายทางเลือกที่ AI พิจารณาแล้วแต่ยังไม่ตัด: "
-                + "; ".join(c["alternative_explanations"])
-            )
+            lines.append(f"  - falsifier ที่ต้องเช็คว่ายัง falsify ไม่ได้จริง: {c['falsifier']}")
+            if c["discriminating_information"]:
+                lines.append(
+                    "  - ข้อมูลที่ต้องหาเพิ่มเพื่อแยกสมมติฐานนี้จากอันอื่น: "
+                    + "; ".join(c["discriminating_information"])
+                )
+            if c["uncertainties"]:
+                lines.append("  - ความไม่แน่นอนที่ประกาศไว้แล้ว (ต้องรู้ว่ายังไม่ปิด): " + "; ".join(c["uncertainties"]))
+            if c["alternative_explanations"]:
+                lines.append(
+                    "  - คำอธิบายทางเลือกที่ AI พิจารณาแล้วแต่ยังไม่ตัด: "
+                    + "; ".join(c["alternative_explanations"])
+                )
+    else:
+        lines.append(
+            "**สิ่งที่ต้องตรวจ/verify ก่อนเชื่อผลลัพธ์ AI**: _(checkpoint นี้ไม่มี hypothesis_cards "
+            "ที่อ่านได้ — ไม่มีอะไรให้ตรวจในระดับ hypothesis-card)_"
+        )
     lines.append("")
     if open_questions:
         lines.append("**คำถามเปิดจาก Layer 2 ที่ human ต้อง override/ตัดสินเอง (AI ตอบไม่ได้):**")
@@ -282,6 +323,30 @@ def build(run: dict, glossary_md: str, expert_md: str) -> str:
     return "\n".join(lines)
 
 
+def load_kernel():
+    repo_root = Path(__file__).resolve().parent.parent
+    sys.path.insert(0, str(repo_root))
+    import uia_protocol_kernel  # type: ignore
+
+    return uia_protocol_kernel
+
+
+def validate_checkpoint(run: dict) -> dict:
+    """Refuse to produce an authoritative-looking skill_plan.md from a checkpoint
+    the kernel itself would reject — mirrors doc_ecosystem_bridge/bridge.py's own
+    validate_checkpoint() guard, which this script was missing."""
+    kernel = load_kernel()
+    result = kernel.validate(run)
+    if result.get("protocol_status") != "VALID_CHECKPOINT":
+        raise SystemExit(
+            "REFUSED: run is not a VALID_CHECKPOINT hypothesis portfolio "
+            f"(protocol_status={result.get('protocol_status')!r}, errors={result.get('errors')}). "
+            "skill_plan.py must not produce a confident-looking role/skill plan from data the "
+            "kernel hasn't actually validated."
+        )
+    return result
+
+
 def main() -> None:
     if len(sys.argv) != 5:
         print(
@@ -289,7 +354,13 @@ def main() -> None:
             file=sys.stderr,
         )
         raise SystemExit(2)
-    run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    try:
+        run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise SystemExit(f"REFUSED: {sys.argv[1]} not found")
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"REFUSED: {sys.argv[1]} is not valid JSON: {e}")
+    validate_checkpoint(run)
     glossary_md = Path(sys.argv[2]).read_text(encoding="utf-8")
     expert_md = Path(sys.argv[3]).read_text(encoding="utf-8")
     out = build(run, glossary_md, expert_md)

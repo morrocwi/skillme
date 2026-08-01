@@ -4,15 +4,15 @@
 
 ## 1. Human
 
-**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `unknown-checkpoint`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
+**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `HYP-UIA-046-DEMO-001`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
 
 **ผู้มีอำนาจตัดสินใจตาม checkpoint นี้:** Payments Risk & Controls (PRC) — on-call
 
 **สิ่งที่ต้องตรวจ/verify ก่อนเชื่อผลลัพธ์ AI** (ดึงจาก field จริงที่ kernel validate แล้ว ต่อ hypothesis card — ไม่ใช่รายการทั่วไป):
 
-- **`H1`** (KNOWN_DIRECT) — claim: retry-orchestrator writes ledger.status="SETTLED" on receiving a `202 Accepted` queue-ack from vendor "AcquirerX", without waiting for the actual settlement callback, so a later soft-decline on the same attempt-id never overwrites the premature SETTLED flag
-  - falsifier ที่ต้องเช็คว่ายัง falsify ไม่ได้จริง: ledger.status stays SETTLED even after acquirer confirms `soft_decline` on attempt #2
-  - ข้อมูลที่ต้องหาเพิ่มเพื่อแยกสมมติฐานนี้จากอันอื่น: acquirer response code (`06`|`91`|`96`) vs ledger.status at attempt-id level
+- **`H1`** (KNOWN_DIRECT) — claim: retry-orchestrator writes ledger.status="SETTLED" on receiving a '202 Accepted' queue-ack from vendor "AcquirerX", without waiting for the actual settlement callback, so a later soft-decline on the same attempt-id never overwrites the premature SETTLED flag
+  - falsifier ที่ต้องเช็คว่ายัง falsify ไม่ได้จริง: ledger.status stays SETTLED even after acquirer confirms 'soft_decline' on attempt #2
+  - ข้อมูลที่ต้องหาเพิ่มเพื่อแยกสมมติฐานนี้จากอันอื่น: acquirer response code ('06'|'91'|'96') vs ledger.status at attempt-id level
   - ความไม่แน่นอนที่ประกาศไว้แล้ว (ต้องรู้ว่ายังไม่ปิด): no production evidence
   - คำอธิบายทางเลือกที่ AI พิจารณาแล้วแต่ยังไม่ตัด: reconciliation-job double-reads the same ledger row due to a non-idempotent join key
 - **`H2`** (CROSS_ADAPTIVE) — claim: the same premature-ack-as-success pattern that caused double-booked appointments in the unrelated booking-service fixture (client observing a queue-ack before the backend reached a final state) is structurally the same failure adapted to payments: a queue-ack is being treated as a settlement truth-state — cross-domain the fix pattern is "gate any external-facing status write behind the actual terminal callback, never behind an intermediate ack/nack"
