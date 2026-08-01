@@ -31,9 +31,12 @@ follow its discovery order before making any capability or correctness claim.
   protocol to a reported issue.
 - [doc_ecosystem_bridge/README.md](/doc_ecosystem_bridge/README.md): Bridges a checkpoint into a
   human-ai-doc-ecosystem project (logbook entries, open decisions, optional doc drafting).
-- [communication_glossary/README.md](/communication_glossary/README.md): 3-layer pipeline
+- [communication_glossary/README.md](/communication_glossary/README.md): 4-layer pipeline
   (deterministic word graph -> AI-interpretive expert-framework layer -> issue-anchored
-  glossary) for the shared vocabulary two people from different fields need to discuss one issue.
+  glossary -> Human/AI-orchestrator/AI-doer/AI-auditor skill plan) for the shared vocabulary
+  and role/skill plan two people from different fields need to discuss and act on one issue.
+- [run_pipeline.py](/run_pipeline.py): One-command orchestrator over the 4-layer pipeline and
+  doc_ecosystem_bridge/bridge.py — shells out to each script, does not reimplement their logic.
 - [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.8; states which later roadmap
   milestones are not yet complete.
 

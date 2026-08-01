@@ -134,6 +134,37 @@ who decides/acts/checks → how you'll know it worked → what would make you re
 Internal UIA vocabulary (`retained difference`, `agency readout`, `quotient`) stays in the
 technical/audit trail — don't force the user to learn it unless they ask.
 
+## Downstream: turning a checkpoint into shared vocabulary + a project doc trail
+
+Reaching `STOP_AT_HYPOTHESIS` (a `VALID_CHECKPOINT`) is not the end of what this repo can do
+with it. Two downstream tools (full repo only, not in this plugin subtree — clone the repo)
+turn a checkpoint into artifacts the people in step 3's agency map actually need:
+
+- **`communication_glossary/`** — a 4-layer pipeline that turns one checkpoint into a shared
+  vocabulary for anyone discussing the issue, anchored to the issue/domain itself, not to any
+  one stakeholder's prior knowledge. Layer 1 (`kg_extract.py`) is a deterministic word-graph
+  readout; Layer 2 is an AI-interpretive expert-framework reasoning step (Agent + WebSearch,
+  deliberately not a script — see that folder's README for the exact prompt template); Layer 3
+  (`build_glossary.py`) mechanically merges the two into an issue-anchored glossary; Layer 4
+  (`skill_plan.py`) turns the checkpoint into a `Dr`-tier role/skill plan split into Human /
+  AI-orchestrator / AI-doer / AI-auditor — what vocabulary the human needs to command the work,
+  what to verify before trusting AI output, and what skills each AI role needs.
+- **`doc_ecosystem_bridge/bridge.py`** — bridges the checkpoint (and, optionally, the
+  `communication_glossary` output above) into a `human-ai-doc-ecosystem` project: one
+  `hypothesis`-kind logbook entry and one open `DECISIONS.md` row per hypothesis card — never
+  an `ADR`, because a hypothesis isn't settled until phase 16 (`DECIDE`) picks a lane.
+- **`run_pipeline.py`** (repo root) — a thin one-command orchestrator over all of the above. It
+  shells out to each script rather than reimplementing any of their logic:
+  ```
+  python3 run_pipeline.py <checkpoint.json> --out-dir <dir> \
+      --kg-expert-layer <already-authored kg_expert_layer.md> \
+      [--doc-eco-target <dir> [--seed-docs]]
+  ```
+  Layer 2 still can't be scripted (it needs an actual Agent/WebSearch call) — author
+  `kg_expert_layer.md` yourself first and pass it in, or pass `--skip-layer2` to get an
+  honestly-labeled stub (clearly marked as unenriched, never silently treated as real Layer 2
+  output) so you can still exercise Layers 1/3/4 without it.
+
 ## Verify before you claim
 
 The kernel is not part of this plugin subtree — clone the full repo (see above) to run it.

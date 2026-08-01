@@ -20,6 +20,20 @@ hypothesis card as a `hypothesis`-kind logbook entry plus an open question in
 `DECISIONS.md` — never as a settled `ADR`, because a hypothesis isn't settled until UIA's
 own phase 16 (`DECIDE`) picks a lane.
 
+## Status — 2026-08-01, orchestrator + automated test coverage added
+
+Same pass as `communication_glossary/README.md`'s "one-command orchestrator + automated
+test coverage" entry — see that README for the full write-up. What lands in this repo:
+`run_pipeline.py` (repo root) can drive this script's `--seed-docs --attach-communication`
+path as one step of a single command instead of a separate manual invocation, and
+`tests/test_bridge.py` (23 real pytest functions, new — none existed before) locks in
+every `attach_communication()`/`link_communication_in_readme()`/`seed_docs()`/
+`_escape_cell()` fix from the two prior ultracode passes as a regression test, not just a
+one-time manual re-verification. Tests needing the real `human-ai-doc-ecosystem` sibling
+repo are `pytest.mark.skipif`-guarded on `node` + the repo's presence, and ran for real
+(not skipped) in this environment. `pytest tests/ -q` → 56 passed;
+`uia_protocol_kernel.py --self-test` → 14/14.
+
 ## Status — 2026-08-01, communication_glossary <-> doc-eco seam closed (README pointer)
 
 Founder request (verbatim): "เชื่อมเรื่อง word และ skill_plan ให้เข้ากันกับ รอยต่อกับ doc eco"
