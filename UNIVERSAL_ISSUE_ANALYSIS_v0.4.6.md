@@ -108,17 +108,19 @@ UIA ไม่ยืนยันว่าโลกโดยตัวมันเ�
 
 ## 3. Root grammar
 
-Readout Genesis ให้ราก:
+Readout Genesis ให้ราก — quote ตรงจาก `readout_genesis/READOUT_GENESIS_CORE.md`, **พร้อม tier tag ต่อ link ที่เคยถูกตัดออกไปในรุ่นก่อนหน้า (แก้ 2026-08-01):**
 
 \[
 \delta_R=(a\mathrel{\#}b)
-\quad\Longrightarrow\quad
+\;\vdash_{[\mathrm{Th\_coqc}]}\;
 L_R=D_W-W
-\quad\Longrightarrow\quad
-F
-\quad\Longrightarrow\quad
-q_D\circ F=F_D^\#\circ q_D .
+\;\vdash_{[\mathrm{Dr}]}\;
+F\ (\text{MQ.08 stepper})
+\;\equiv\;
+\{\,q_D : q_D\circ F=F_D^\#\circ q_D\,\}
 \]
+
+Tier tag ไม่ใช่ของตกแต่ง — เป็นส่วนที่ทำให้สมการนี้ตรง Axiom A12 (Tier Honesty, §5) ของ UIA เอง: link แรก (`L_R=D_W-W`) เป็น machine-checked axiom-free over ℚ ในต้นทาง (`Th_coqc`) ส่วน link ที่สอง (`F` ในฐานะ MQ.08 stepper) เป็นเพียง **declared bridge** (`Dr`) — คำกล่าวที่อ่อนกว่า ห้าม promote ให้แรงเท่ากันโดยไม่ประกาศ
 
 สำหรับ UIA เราแปลรากนี้เป็น:
 
@@ -139,6 +141,15 @@ q_D\circ F=F_D^\#\circ q_D .
 \]
 
 Issue จึงไม่ถูกใส่เข้าไปใน root รากมีเพียงความแตกต่าง การรักษาไว้ ลำดับ ความสัมพันธ์ และ lineage ส่วนคำว่า “issue”, “risk”, “problem”, “opportunity”, “injustice” หรือ “failure” เกิดภายหลังการแปลผ่าน agency, context, values, rights และ query
+
+**External lineage (2026-08-01 consolidation):** UIA ไม่ได้พัฒนา root grammar นี้อย่างโดดเดี่ยว — มี sibling repo อีก 3 ตัวในสาย Yaoharee Lahtee ที่ใช้รากเดียวกันหรือใกล้เคียงกัน และก่อนหน้านี้ UIA ไม่เคยเชื่อมกับสามตัวนั้นบน disk เลย ครั้งนี้ตรวจสอบและเชื่อมอย่างเป็นทางการครั้งแรก:
+
+- **`readout_genesis`** — ต้นทางจริงของสมการข้างบนตรงๆ (quote ตรง ไม่ใช่ paraphrase) และเป็นเจ้าของระบบ tier 4 ระดับที่ UIA ใช้ทั่วทั้งเอกสาร: `Th_coqc` (machine-checked axiom-free เหนือ ℚ) > `finite_diagnostic` (วัด/รันจริงแบบจำกัด) > `Dr` (declared bridge / narrative ของมนุษย์) > `Open` (ยังไม่ established) นอกจากนี้ยังมี domain-registration standard ที่เป็นทางการกว่า UIA §6.9-6.11 มาก (ดู §6.9.1 ด้านล่าง ซึ่งดึงโครงมาใช้)
+- **`research_universal_solver`** — สาย downstream ของ readout_genesis (ไม่ใช่ root เอง) ที่ประยุกต์รากนี้กับ physics/chemistry/biology จริง เป็นตัวอย่างที่แสดงว่า protocol การขึ้นทะเบียนโดเมนแบบ R0-R5 ใช้งานได้จริงกับโดเมนที่ตรวจสอบได้เข้มงวด (Th_coqc/finite_diagnostic tier)
+- **`readout_universe`** ("Philosophy and Logic of Everything") — control layer คู่ขนาน 13 gates (G1-G13) ที่ผูกกับ `research_universal_solver` เป็นหลัก ไม่เคยเชื่อมกับ UIA มาก่อนเช่นกัน มี Lens Law/Ω_all translation loop ที่โครงสร้างคล้าย domain-mapping ของ UIA เอง (อ้างอิงเสริมที่ §6.9.3)
+- **`information-discrete-math`** — จุดยืนเดียวกับ UIA §2 เป๊ะ (readout-not-ontology, ปฏิเสธ continuum เป็นสิ่งที่ "อ่านได้" ตรงๆ) แต่มี operational toolkit ที่ UIA เองยังไม่มี: contaminated-concept table 12 รายการและ discrete number ladder ที่ machine-checked แล้ว 194 theorem (ใช้เป็น guard ที่ §6.9.2)
+
+**คำเตือนสำคัญที่ต้องพูดตรงๆ ณ จุดนี้ (ตอบคำถาม "ไม่เป็นการเคลมวิทยาศาสตร์"):** `readout_genesis`/`research_universal_solver` ใช้กับโดเมนที่พิสูจน์ทางคณิตศาสตร์/ฟิสิกส์ได้ถึงระดับ `Th_coqc` จริง แต่ UIA เองใช้กับโดเมน organizational/software/policy/everyday decision ที่ **ไม่มีทางพิสูจน์ระดับ `Th_coqc` ได้** — การดึงโครงสร้าง domain-registration มาใช้ (§6.9.1) จึงยกระดับแค่ **ความมีวินัยของกระบวนการ** (explicit quotient, explicit tier ceiling, explicit forbidden-claims) ไม่ใช่การยกระดับ evidence tier ของ UIA เอง ผลลัพธ์จาก domain-mapping method นี้จึงอยู่ที่ `Dr` tier เป็นอย่างสูงเสมอ และจบที่ hypothesis portfolio (phase 12, `STOP_AT_HYPOTHESIS`) เท่านั้น — ไม่ใช่ verdict, ไม่ใช่ field-confirmed truth, ไม่ใช่การเคลมทางวิทยาศาสตร์ในตัวมันเอง (ตรงตาม Invariant #46: `VALID_CHECKPOINT` ไม่ใช่ decision/intervention/field confirmation/success/closure) — แต่ใช้สร้างสมมติฐานที่มีวินัยได้ในทุกศาสตร์ เพราะ "การสร้าง hypothesis ที่มีวินัย" ไม่ต้องการ `Th_coqc` proof แต่ต้องการแค่ explicit tier + explicit falsifier + explicit quotient ซึ่งเป็นของที่ทุกโดเมนประกาศได้โดยไม่ต้องพิสูจน์ทางคณิตศาสตร์
 
 ### 3.1 Normative symbol glossary
 
@@ -820,6 +831,8 @@ adapter_card:
   stop_and_fallback: REQUIRED
   translation_tests: []
   source_links: []
+  not_established: []       # 2026-08-01, §6.9.1 — what this domain mapping does NOT yet answer
+  forbidden_claims: []      # 2026-08-01, §6.9.1 — sentences this mapping must never be allowed to assert
 ```
 
 กฎการดูดความรู้:
@@ -831,6 +844,45 @@ adapter_card:
 - **No promotion:** adapter ห้ามยกระดับ evidence หรือ causal tier ของต้นทาง
 - **No overwrite:** ข้อมูลใหม่เข้ามาเป็น versioned correction ไม่เขียนทับ lineage
 - **Return defects:** หากแปลไม่ได้ต้องคืน `MISTRANSLATION`, `DOMAIN_MISMATCH`, `NO_CLOSURE` หรือ `INSUFFICIENT_INPUT`
+
+### 6.9.1 Domain mapping method — quotient declaration + registration discipline (2026-08-01, Dr-tier only)
+
+Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่แล้ว แต่ไม่เคยประกาศตัวเองอย่างเป็นทางการว่าเป็น **quotient** — คำที่ readout_genesis/research_universal_solver ใช้เจาะจงสำหรับ "การย่อระบบต้นทางให้เหลือ distinction ที่ query ต้องใช้" (สัญลักษณ์ \(q_D\) ใน §3.1 ของ UIA เองอยู่แล้ว) มาตรานี้เชื่อมสองฝั่งให้ตรงกันอย่างชัดเจน โดยดึงวินัยของ **domain-registration standard** จาก `readout_genesis/domains/DOMAIN_REGISTRATION_STANDARD.md` (โครงเดียวกับที่ `research_universal_solver` ใช้ขึ้นทะเบียนโดเมน chem/relativity/quantum/biology จริง) — **ดึงมาแค่โครงวินัยของกระบวนการ ไม่ใช่ authority หรือ tier ของต้นทาง** ตามที่ประกาศไว้ใน external-lineage note ท้าย §3
+
+ขั้นตอน map โดเมนใดๆ (organizational, software, policy, clinical, financial, ฯลฯ) เข้าสู่ root grammar ของ UIA:
+
+1. **ประกาศ quotient \(q_D\)** — Adapter Card's `uia_input_mapping`/`uia_output_mapping` **คือ** \(q_D\) นั่นเอง เพียงแต่ต้องเขียนให้เห็นชัดว่าอะไรถูกทิ้ง (information_lost) ไม่ใช่แค่อะไรถูกเก็บ
+2. **ประกาศ tier ceiling ก่อนเห็นผล** — `claim_tier_ceiling` ต้องเป็น `Dr` เสมอสำหรับโดเมนที่ไม่มี machine-checked proof (คือเกือบทุกโดเมนที่ UIA ใช้งานจริง) ห้ามเผื่อไว้ว่า "อาจจะเป็น Th_coqc ทีหลัง" โดยไม่มีเหตุผล — การประกาศ ceiling ต่ำแต่แรกคือสิ่งที่ทำให้ mapping นี้ "ไม่เป็นการเคลมวิทยาศาสตร์" ตรงตามที่ต้องการ
+3. **ประกาศสิ่งที่ยังไม่ established** — ทุก adapter card ต้องมี field ใหม่ `not_established: []` คู่กับ `information_lost` (ยืมโครงจาก `CLAIM_BOUNDARY_<D>.json`'s `established[]`/`not_established[]`) — ระบุตรงๆ ว่าโดเมนนี้ยังตอบอะไรไม่ได้ ไม่ใช่แค่บอกว่าตอบอะไรได้
+4. **ประกาศ forbidden claims** — ทุก adapter card ต้องมี field ใหม่ `forbidden_claims: []` (ยืมโครงจาก `RULE_REGISTRY_<D>.json`) ระบุประโยคเฉพาะที่ mapping นี้ **ห้าม** ให้ระบบพูด เช่น "พิสูจน์แล้วว่า X" หรือ "เป็นสาเหตุที่แท้จริงของ Y" — เขียนไว้ล่วงหน้า ไม่ใช่แก้ทีหลังตอนมีคนอ้างเกินจริง
+5. **ผลลัพธ์จบที่ hypothesis เท่านั้น** — ทุก domain-mapping run ที่ผ่านขั้นตอนนี้ต้อง route เข้า Phase 9-11/§6.17-6.18 (Hypothesis Evidence Challenge → Three-Lane Candidate) และหยุดที่ `HYPOTHESIS_PORTFOLIO_READY`/`STOP_AT_HYPOTHESIS` เป็นค่าเริ่มต้น — การเดินต่อไป `RUN_FULL` เป็นทางเลือกที่ต้องขอเพิ่ม ไม่ใช่ default
+
+ต่างจาก `research_universal_solver`'s R0-R5 ตรงที่ไม่มีขั้นตอน R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) เพราะ dual-implementation checking ต้องการ formal proof system ที่โดเมนแบบ organizational/policy ไม่มีให้ตรวจ — **ช่องว่างนี้เปิดเผยตรงๆ ที่นี่ ไม่ปิดบัง**: การขึ้นทะเบียนโดเมนใน UIA เข้มงวดน้อยกว่า physics/chemistry domains ใน readout_genesis จริง เพราะธรรมชาติของโดเมนต่างกัน ไม่ใช่เพราะ UIA เข้มงวดน้อยกว่าโดยเจตนา
+
+### 6.9.2 Contaminated-concept guard (from `information-discrete-math` v1.5.1)
+
+เมื่อ hypothesis หรือ candidate แตะแนวคิดที่มาจากคณิตศาสตร์ต่อเนื่อง (continuum) — มุม, ระยะทาง, อนุพันธ์, ศูนย์, อนันต์ — ต้องเช็คตาราง contaminated-concept นี้ก่อน เพื่อไม่ให้ non-readout (สิ่งที่ไม่มีทาง "อ่าน" ได้จริง) หลุดเข้ามาเป็น claim โดยไม่ประกาศ (ตรงกับ UIA §2's "ทุกครั้งมาถึงเราเป็น finite readout" — ตารางนี้คือ checklist ปฏิบัติของหลักการนั้น ไม่ใช่หลักการใหม่):
+
+| แนวคิดที่มีปัญหา (continuum-contaminated) | ตัวแทนที่ discrete-correct |
+|---|---|
+| real number ℝ / completeness | ℝ = readout ของ discrete (Bishop regular Cauchy sequence ของ ℚ); เห็นได้แค่ ℚ-approximant จำกัด |
+| จุด (point, r=0) | node / retained distinction (graph vertex จำกัด มี neighbour) |
+| ศูนย์ในฐานะ state ที่ถูกครอบครอง | non-readout ที่ถูกปฏิเสธ หรือ kernel ของ \(L_R\) = indistinguishability (ไม่ใช่ความว่างเปล่า) |
+| อนันต์ (`+∞`, `N→∞`, limit ที่ "ไปถึง") | ℚ ไม่มี `+∞`; "limit" คือการเข้าใกล้แบบจำกัด ไม่ใช่จุดปลายทาง |
+| การแบ่งได้ไม่จำกัด (`h→0`) | ขั้นจำกัด / floor \(\tau_c\) ที่ machine-checked |
+| มุม/องศา | overlap fraction (rational, ไม่ใช้ trig/π/ℝ) |
+| continuity/"smooth" แบบ ε–δ เหนือ ℝ | discrete Lipschitz/non-expansive map |
+| ระยะทาง = ผลต่างพิกัด | retained resistance สะสมตามเส้นทาง optimal (graph geodesic) |
+| เส้น/continuum ในฐานะ primitive | continuum คือ readout ของ discrete graph |
+| π, e, φ ในฐานะ "ตัวเลข" | readout-invariant; เห็นได้แค่ ℚ-approximant จำกัด |
+| อนุพันธ์/อินทิกรัลแบบ continuum limit | discrete difference Δ + sum Σ |
+| operator เหนือ continuum (เช่น \(\partial^2\)) | graph Laplacian \(L_R\) (symmetric, PSD, axiom-free) |
+
+ตารางเต็ม + การพิสูจน์ 194 theorem อยู่ที่ `information-discrete-math/textbook/INFORMATION_DISCRETE_MATHEMATICS.md` — มาตรานี้แค่ผูก pointer ไม่ได้ copy เนื้อหาทั้งหมดมา (cite-don't-copy ตามที่ workspace นี้ใช้เป็นมาตรฐาน)
+
+### 6.9.3 Alternate translation-loop reference (`readout_universe` Lens Law, informative only)
+
+`readout_universe`'s Lens Law/Ω_all 8-step loop (translate → grammar-gate → locate → bridge-audit → residual-form → identifiability-gate → tagged answer → translate-back-with-falsifier) มีรูปร่างขนานกับ §6.9.1 ข้างบน แต่ผูกกับ `research_universal_solver` เป็นหลัก ไม่ใช่ UIA — ใส่ไว้ที่นี่เป็น **การอ้างอิงเสริมเท่านั้น** (informative, ไม่ใช่ normative) สำหรับใครที่อยากเทียบโครงสร้างสองระบบ ไม่ใช่ requirement ใหม่ของ UIA
 
 ### 6.10 Open adapter registry
 
@@ -3521,6 +3573,17 @@ Minimal human-readable report หลัง `INTAKE_COMPLETE`:
 - จัด stakeholder legitimacy เป็น representation lineage: direct, proxy, inferred และ absent
 - ห้ามตีความ checkpoint เป็น decision, intervention, success, closure หรือ field confirmation
 - เพิ่ม executable checkpoint fixture และ negative tests สำหรับ legal annotation, representation และ hypothesis diversity
+
+### v0.4.7 — External lineage consolidation (Philosophy-Logic-Mapping core, 2026-08-01)
+
+Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, หรือ `protocol_version` (ยังคง `0.4.6` ในไฟล์ที่ executable) เพราะไม่มี validation logic เปลี่ยน มีแค่การรวมและตรวจสอบรากปรัชญา/ตรรกะกับ sibling repo 4 ตัวที่ไม่เคยเชื่อมมาก่อนบน disk:
+
+- แก้ §3 root-grammar equation ให้มี tier tag (`⊢[Th_coqc]`, `⊢[Dr]`) ตรงกับต้นทาง `readout_genesis/READOUT_GENESIS_CORE.md` จริง — รุ่นก่อนหน้าตัด tag ทิ้งเงียบๆ ซึ่งขัดกับ Axiom A12 (Tier Honesty) ของ UIA เอง
+- เพิ่ม external-lineage note ท้าย §3 ประกาศความสัมพันธ์กับ `readout_genesis` (root), `research_universal_solver` (downstream, physics/chem/biology), `readout_universe` (control-layer คู่ขนาน), `information-discrete-math` (จุดยืนเดียวกับ §2, มี operational toolkit)
+- เพิ่ม §6.9.1 Domain mapping method — ยืมโครงวินัยจาก `readout_genesis`'s domain-registration standard (quotient declaration, tier ceiling, `not_established[]`, `forbidden_claims[]`) มาใช้กับ adapter card เดิม (§6.9) **โดยประกาศชัดว่าผลลัพธ์อยู่ที่ `Dr` tier เป็นอย่างสูงเสมอ ไม่ใช่การเคลมวิทยาศาสตร์** — จบที่ hypothesis portfolio (phase 12) เท่านั้น
+- เพิ่ม §6.9.2 Contaminated-concept guard — pointer ไปยัง `information-discrete-math`'s ตาราง 12 รายการ (มุม→overlap fraction, ระยะทาง→graph geodesic ฯลฯ) สำหรับใช้ตอน hypothesis แตะ continuum-math concept
+- เพิ่ม §6.9.3 อ้างอิงเสริม (informative) ถึง `readout_universe`'s Lens Law/Ω_all loop — ไม่ใช่ requirement ใหม่
+- เปิดเผยช่องว่างตรงๆ: UIA ไม่มีขั้นตอนแบบ R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) ของ `research_universal_solver` เพราะโดเมนที่ UIA ใช้งานจริง (organizational/software/policy) ไม่มี formal proof system ให้ตรวจแบบ physics/chemistry — ไม่ใช่ UIA ตั้งใจหย่อนมาตรฐาน แต่เป็นข้อจำกัดของธรรมชาติโดเมน
 
 ### v0.5 — Formal semantics and executable kernel
 
