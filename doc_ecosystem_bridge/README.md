@@ -99,8 +99,14 @@ passing):
 
 1. **`bridge.py`** — "Who decides" in `DECISIONS.md` now prefers the run's
    `agency.decision_owners` (real, checkpoint-validated data) over the previous
-   binary `legal_relevance` switch, which is kept as a fallback when
-   `decision_owners` is absent.
+   binary `legal_relevance` switch. **Correction (independent review, 2026-08-01):**
+   the kernel's own `validate()` already requires `agency.decision_owners` to be a
+   non-empty list for any `VALID_CHECKPOINT` (`AGENCY_ROLE_EMPTY:decision_owners`
+   otherwise) — so through the real CLI path (`main()` refuses anything but
+   `VALID_CHECKPOINT` before `append_decisions_open()` ever runs), the old
+   `legal_relevance` switch is dead code, not a live fallback. It only remains
+   reachable if `append_decisions_open()` is called directly as a library
+   function, bypassing `main()`'s validation gate.
 2. **`bridge.py`** — new `--seed-docs` flag drafts `GOAL.md`/`SPEC.md`/`PLAN.md`
    sections from already-validated checkpoint fields (`registration.query`,
    `issue.requested_readout`, `retained_difference.baseline`, the hypothesis

@@ -118,12 +118,12 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
             f"**Comparison:** {retained_difference.get('comparison', '(not recorded)')}\n"
         ),
         "PLAN.md": (
-            f"**Checkpoint status:** {run.get('hypothesis_portfolio', {}).get('status', '(not recorded)')}\n\n"
+            f"**Checkpoint status:** {(run.get('hypothesis_portfolio') or {}).get('status', '(not recorded)')}\n\n"
             "**Candidate directions to evaluate before UIA phase 13** (from this "
             "checkpoint's hypothesis portfolio, not yet decided):\n\n"
             + "\n".join(
                 f"- `{c.get('hypothesis_id', '?')}` ({c.get('lane', '?')}): {c.get('claim', '?')}"
-                for c in run.get("hypothesis_portfolio", {}).get("hypothesis_cards", [])
+                for c in (run.get("hypothesis_portfolio") or {}).get("hypothesis_cards", [])
             )
             + "\n"
         ),
