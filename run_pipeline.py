@@ -129,6 +129,14 @@ def main() -> None:
         (run.get("hypothesis_portfolio") or {}).get("checkpoint_certificate", "unknown-checkpoint")
     )
 
+    # Fail fast on a missing --kg-expert-layer file too, before Layer 1 even runs —
+    # otherwise a nonexistent path crashes with a raw traceback *after* kg_raw_word.md
+    # has already been written, leaving an undocumented partial-output state (an
+    # independent PR review caught this: the old code only tried the read at Layer 2,
+    # by which point Layer 1's subprocess had already succeeded).
+    if args.kg_expert_layer is not None and not args.kg_expert_layer.is_file():
+        raise SystemExit(f"REFUSED: --kg-expert-layer {args.kg_expert_layer} not found")
+
     args.out_dir.mkdir(parents=True, exist_ok=True)
     kg_raw_word = args.out_dir / "kg_raw_word.md"
     kg_expert_layer = args.out_dir / "kg_expert_layer.md"
