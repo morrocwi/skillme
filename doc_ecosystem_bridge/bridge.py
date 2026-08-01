@@ -254,6 +254,247 @@ def link_communication_in_readme(target: Path, attached: list[str]) -> bool:
     return True
 
 
+SOT_DOCS_MARKER = "<!-- sot-doc:v1 -->"
+
+SOT_DOC_FILES = ("rag.md", "cite.md", "eq.md")
+
+SOT_DOC_TITLES = {
+    "rag.md": "Retrieval / Source Registry",
+    "cite.md": "Citation Ledger",
+    "eq.md": "Quantitative Claims & Mechanisms",
+}
+
+
+def _hyp_evidence_by_id(run: dict) -> dict:
+    challenge = run.get("hypothesis_evidence_challenge") or {}
+    return {h.get("hypothesis_id"): h for h in (challenge.get("hypotheses") or []) if isinstance(h, dict)}
+
+
+def _render_rag_md(run: dict, checkpoint_ref: str) -> str:
+    evidence_by_id = _hyp_evidence_by_id(run)
+    cards = (run.get("hypothesis_portfolio") or {}).get("hypothesis_cards") or []
+    lines = [
+        f"# {SOT_DOC_TITLES['rag.md']} — {checkpoint_ref}",
+        "",
+        SOT_DOCS_MARKER,
+        "",
+        "**Tier: readout** (mechanical extraction of `hypothesis_evidence_challenge` fields "
+        "already validated by the kernel) **+ Dr** (the last section — human/AI must fill it "
+        "in, it is never auto-generated).",
+        "",
+        "## Sources already searched per hypothesis (readout)",
+        "",
+    ]
+    for card in cards:
+        hid = card.get("hypothesis_id", "?")
+        ev = evidence_by_id.get(hid, {})
+        intl = ev.get("international_track") or {}
+        local = ev.get("local_context_track") or {}
+        lines.append(f"- `{_escape_cell(hid)}`")
+        lines.append(f"  - international_track.sources_searched: {intl.get('sources_searched') or '(none recorded)'}")
+        lines.append(f"  - international_track.result_status: {intl.get('result_status', '(not recorded)')}")
+        lines.append(f"  - local_context_track.sources_searched: {local.get('sources_searched') or '(none recorded)'}")
+        lines.append(f"  - local_context_track.result_status: {local.get('result_status', '(not recorded)')}")
+    lines += [
+        "",
+        "## Evidence gaps declared (readout)",
+        "",
+    ]
+    for card in cards:
+        hid = card.get("hypothesis_id", "?")
+        ev = evidence_by_id.get(hid, {})
+        gaps = ev.get("evidence_gaps") or []
+        lines.append(f"- `{_escape_cell(hid)}`: {gaps if gaps else '(none declared)'}")
+    lines += [
+        "",
+        "## Next discriminating test named per hypothesis (readout)",
+        "",
+    ]
+    for card in cards:
+        hid = card.get("hypothesis_id", "?")
+        ev = evidence_by_id.get(hid, {})
+        lines.append(f"- `{_escape_cell(hid)}`: {ev.get('next_discriminating_test', '(none recorded)')}")
+    lines += [
+        "",
+        "## Source classes / RAG corpora to add (human/AI to fill in — NOT auto-generated)",
+        "",
+        "_(e.g. domain-specific databases, internal systems-of-record, named external "
+        "knowledge bases a real search would use for each hypothesis above — same "
+        "WebSearch-verification discipline as `communication_glossary`'s Layer 2. This "
+        "script only reads what the checkpoint already recorded; it does not invent "
+        "domain judgment about what sources SHOULD exist.)_",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _render_cite_md(run: dict, checkpoint_ref: str) -> str:
+    evidence_by_id = _hyp_evidence_by_id(run)
+    cards = (run.get("hypothesis_portfolio") or {}).get("hypothesis_cards") or []
+    lines = [
+        f"# {SOT_DOC_TITLES['cite.md']} — {checkpoint_ref}",
+        "",
+        SOT_DOCS_MARKER,
+        "",
+        "**Tier: readout** (mechanical extraction of `citation_cards` already validated by "
+        "the kernel — `citation_audit == \"PASS\"` means the card is *structurally* complete, "
+        "not that the citation is real evidence; check `metadata_verification`/"
+        "`scope_verification` below for that) **+ Dr** (the last section — human/AI to fill in).",
+        "",
+        "## Citations per hypothesis (readout)",
+        "",
+    ]
+    simulated = []
+    for card in cards:
+        hid = card.get("hypothesis_id", "?")
+        ev = evidence_by_id.get(hid, {})
+        lines.append(f"- `{_escape_cell(hid)}`")
+        for cc in ev.get("citation_cards") or []:
+            if not isinstance(cc, dict):
+                continue
+            title = cc.get("title", "(no title)")
+            lines.append(
+                f"  - **{_escape_cell(title)}** — {_escape_cell(cc.get('authors_or_issuer', '?'))}, "
+                f"{cc.get('year', '?')}, {_escape_cell(cc.get('source_type', '?'))}"
+            )
+            lines.append(
+                f"    - quality: {cc.get('quality', '?')}, directness: {cc.get('directness', '?')}, "
+                f"context_fit: {cc.get('context_fit', '?')}"
+            )
+            lines.append(
+                f"    - metadata_verification: {cc.get('metadata_verification', '?')}, "
+                f"scope_verification: {cc.get('scope_verification', '?')}"
+            )
+            lines.append(f"    - source: {cc.get('persistent_id_or_official_url', '(none)')}")
+            if cc.get("metadata_verification") == "SIMULATED_ONLY" or cc.get("scope_verification") == "SIMULATED_ONLY":
+                simulated.append((hid, title))
+    lines += [
+        "",
+        "## Citation quality warning (readout — automatic flag, not a judgment call)",
+        "",
+    ]
+    if simulated:
+        for hid, title in simulated:
+            lines.append(
+                f"- `{_escape_cell(hid)}` / \"{_escape_cell(title)}\": `SIMULATED_ONLY` — this is a "
+                "synthetic fixture citation, not real evidence. Do not cite it as a real source."
+            )
+    else:
+        lines.append("_(no `SIMULATED_ONLY` citations found in this checkpoint)_")
+    lines += [
+        "",
+        "## Real citations to add (human/AI to fill in — NOT auto-generated)",
+        "",
+        "_(add real, verified sources here per hypothesis — to replace or supplement any "
+        "`SIMULATED_ONLY` fixture citations flagged above. This script only reads what the "
+        "checkpoint already recorded; it does not invent or verify citations itself.)_",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _render_eq_md(run: dict, checkpoint_ref: str) -> str:
+    cards = (run.get("hypothesis_portfolio") or {}).get("hypothesis_cards") or []
+    registration = run.get("registration", {}) or {}
+    lines = [
+        f"# {SOT_DOC_TITLES['eq.md']} — {checkpoint_ref}",
+        "",
+        SOT_DOCS_MARKER,
+        "",
+        "**Tier: readout** (mechanical — the fields below, verbatim, are where a numeric "
+        "threshold or quantitative claim would already be stated if this checkpoint has "
+        "one) **+ Dr** (the last section — human/AI to fill in, and is very often correctly "
+        "left empty: most UIA hypotheses are qualitative causal claims with no citable "
+        "formula, and that is not a gap).",
+        "",
+        "## Readout: claim/mechanism/predicted_readout/falsifier per hypothesis",
+        "",
+        "_(read these yourself for any explicit numeric thresholds — this is a verbatim "
+        "readout, not a verified extraction; no regex/NLP guess is applied)_",
+        "",
+    ]
+    for card in cards:
+        hid = card.get("hypothesis_id", "?")
+        lines.append(f"- `{_escape_cell(hid)}`")
+        lines.append(f"  - claim: {card.get('claim', '?')}")
+        lines.append(f"  - mechanism: {card.get('mechanism', '?')}")
+        lines.append(f"  - predicted_readout: {card.get('predicted_readout', '?')}")
+        lines.append(f"  - falsifier: {card.get('falsifier', '?')}")
+    lines += [
+        "",
+        "## Success/failure thresholds declared for this checkpoint (readout)",
+        "",
+        f"- success_rule: {registration.get('success_rule', '(not recorded)')}",
+        f"- failure_rule: {registration.get('failure_rule', '(not recorded)')}",
+        "",
+        "## Formulas/equations that formalize this issue's mechanism (human/AI to add — NOT auto-generated)",
+        "",
+        "_(most UIA hypotheses are qualitative causal claims — this section correctly stays "
+        "empty unless the domain genuinely has a citable quantitative relationship, e.g. a "
+        "staging threshold, a percentage-of-completion formula, a validated scoring cut-off. "
+        "Verify via WebSearch the same way `communication_glossary`'s Layer 2 does before "
+        "adding anything here — do not fabricate a formula to fill this section.)_",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+_SOT_RENDERERS = {"rag.md": _render_rag_md, "cite.md": _render_cite_md, "eq.md": _render_eq_md}
+
+
+def seed_sot_docs(target: Path, run: dict, checkpoint_ref: str) -> list[str]:
+    """Create target/sot/{rag,cite,eq}.md — a source-of-truth document set for a
+    hypothesis, separate from both doc-eco's own template files (seed_docs()
+    above only ever fills in a file that already exists) and from
+    communication_glossary's pipeline output (attach_communication() above is a
+    different, unrelated artifact set). Every section here is either a direct
+    readout of already-kernel-validated checkpoint fields, or an explicit
+    "human/AI to fill in — NOT auto-generated" placeholder — this script never
+    fabricates a recommended source, citation, or equation itself, matching the
+    same mechanical-vs-interpretive discipline used throughout this repo.
+    Idempotent per file via SOT_DOCS_MARKER — a file that already carries it is
+    left untouched (this is a starting draft, not something to silently
+    overwrite a human's later edits to). Returns the list of filenames actually
+    (re)written this call."""
+    sot_dir = target / "sot"
+    sot_dir.mkdir(parents=True, exist_ok=True)
+    written = []
+    for name in SOT_DOC_FILES:
+        p = sot_dir / name
+        if p.exists() and SOT_DOCS_MARKER in p.read_text(encoding="utf-8"):
+            continue
+        p.write_text(_SOT_RENDERERS[name](run, checkpoint_ref), encoding="utf-8")
+        written.append(name)
+    return written
+
+
+SOT_LINK_MARKER = "## Source-of-truth docs (rag / cite / eq)"
+
+
+def link_sot_docs_in_readme(target: Path, written: list[str]) -> bool:
+    """Same discoverability gap as link_communication_in_readme() above, for
+    target/sot/ instead of target/communication/ — a discoverable, idempotent
+    pointer in README.md so rag.md/cite.md/eq.md aren't only found by someone
+    who already knows to look under sot/."""
+    if not written:
+        return False
+    readme = target / "README.md"
+    if not readme.exists():
+        return False
+    text = readme.read_text(encoding="utf-8")
+    if SOT_LINK_MARKER in text:
+        return False
+    bullets = "\n".join(f"- `sot/{name}` — {SOT_DOC_TITLES[name]}" for name in written)
+    note = (
+        f"\n\n{SOT_LINK_MARKER}\n\n"
+        "This project's checkpoint has a source-of-truth document set drafted (readout + "
+        "Dr-tier placeholders for human/AI to fill in — see each file's own tier banner):\n\n"
+        f"{bullets}\n"
+    )
+    readme.write_text(text + note, encoding="utf-8")
+    return True
+
+
 def _escape_cell(text: str) -> str:
     """Neutralize characters that would break a Markdown table row's column count,
     or corrupt an inline `code`/bold wrapper elsewhere in this file (backtick)."""
@@ -382,6 +623,15 @@ def main() -> None:
         "target/communication/ — does not run those scripts itself, only "
         "attaches already-produced output",
     )
+    p.add_argument(
+        "--seed-sot-docs",
+        action="store_true",
+        help="create target/sot/{rag,cite,eq}.md — a source-of-truth document set "
+        "(sources searched per hypothesis, citation ledger, quantitative-claims "
+        "readout) drafted from already-validated checkpoint fields, with explicit "
+        "human/AI-to-fill-in placeholders — separate from both doc-eco's own "
+        "template and communication_glossary's output",
+    )
     args = p.parse_args()
 
     try:
@@ -421,6 +671,15 @@ def main() -> None:
             print(f"ATTACHED 0 communication artifacts — none of {COMMUNICATION_ARTIFACTS} found in {args.attach_communication}")
         for name, reason in skipped:
             print(f"  SKIPPED {name}: {reason}")
+
+    if args.seed_sot_docs:
+        sot_written = seed_sot_docs(args.target, run, checkpoint_ref)
+        if sot_written:
+            print(f"SEEDED {len(sot_written)} SOT doc(s) in target/sot/: {', '.join(sot_written)}")
+            if link_sot_docs_in_readme(args.target, sot_written):
+                print("  LINKED target/README.md -> sot/ (discoverable pointer added)")
+        else:
+            print("SEEDED 0 SOT docs — target/sot/{rag,cite,eq}.md already exist and are marked (idempotent no-op)")
 
     decision_owners = (run.get("agency", {}) or {}).get("decision_owners") or []
 
