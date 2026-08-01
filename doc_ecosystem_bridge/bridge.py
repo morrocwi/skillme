@@ -11,6 +11,11 @@ integration lives with the protocol it extends, under one name.
 issues — see README "Status" for the full list (Markdown-cell escaping,
 idempotency/dedup, DECISIONS.md row insertion order, write ordering, malformed-
 JSON handling).
+
+2026-08-01 (later): added --attach-communication to link this bridge's target
+doc-ecosystem project to the communication_glossary pipeline's output
+(Layers 1-4: raw word graph, expert-framework layer, issue-anchored glossary,
+skill plan) — a straight file copy, not a new pipeline stage; see README.
 """
 from __future__ import annotations
 
@@ -142,6 +147,34 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
     return n_seeded
 
 
+COMMUNICATION_ARTIFACTS = ("kg_raw_word.md", "kg_expert_layer.md", "glossary.md", "skill_plan.md")
+
+
+def attach_communication(source_dir: Path, target: Path) -> list[str]:
+    """Copy whichever communication_glossary artifacts exist for this checkpoint
+    (kg_raw_word.md / kg_expert_layer.md / glossary.md / skill_plan.md — Layers
+    1-4) into target/communication/. This does NOT run kg_extract.py/
+    build_glossary.py/skill_plan.py itself — those are separate pipeline stages
+    (Layer 2 needs an Agent+WebSearch reasoning step this script has no business
+    doing) — it only attaches already-produced files to the doc-ecosystem
+    project so they live alongside GOAL.md/DECISIONS.md/logbook.jsonl instead of
+    staying in a separate, easy-to-lose location. A straight overwrite-copy, not
+    an append — safe to re-run after any layer is regenerated, and naturally
+    idempotent when nothing changed (same bytes back)."""
+    if not source_dir.is_dir():
+        raise SystemExit(f"REFUSED: --attach-communication source {source_dir} is not a directory")
+    dest_dir = target / "communication"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    attached = []
+    for name in COMMUNICATION_ARTIFACTS:
+        src = source_dir / name
+        if not src.exists():
+            continue
+        (dest_dir / name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+        attached.append(name)
+    return attached
+
+
 def _escape_cell(text: str) -> str:
     """Neutralize characters that would break a Markdown table row's column count."""
     return str(text).replace("|", "\\|").replace("\n", " ").replace("\r", " ")
@@ -259,6 +292,16 @@ def main() -> None:
         "fields (clearly labeled as an AI draft) instead of leaving them at the "
         "scaffold's placeholder text",
     )
+    p.add_argument(
+        "--attach-communication",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help="copy whichever of kg_raw_word.md/kg_expert_layer.md/glossary.md/"
+        "skill_plan.md (communication_glossary's Layers 1-4) exist in DIR into "
+        "target/communication/ — does not run those scripts itself, only "
+        "attaches already-produced output",
+    )
     args = p.parse_args()
 
     try:
@@ -285,6 +328,13 @@ def main() -> None:
         n_seeded = seed_docs(args.target, run, checkpoint_ref)
         if n_seeded:
             print(f"SEEDED {n_seeded} doc(s) with a draft from checkpoint fields (marked AI-drafted)")
+
+    if args.attach_communication:
+        attached = attach_communication(args.attach_communication, args.target)
+        if attached:
+            print(f"ATTACHED {len(attached)} communication artifact(s) to target/communication/: {', '.join(attached)}")
+        else:
+            print(f"ATTACHED 0 communication artifacts — none of {COMMUNICATION_ARTIFACTS} found in {args.attach_communication}")
 
     decision_owners = (run.get("agency", {}) or {}).get("decision_owners") or []
 

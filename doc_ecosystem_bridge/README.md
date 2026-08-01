@@ -147,6 +147,18 @@ passing):
    (including `--seed-docs` and the new "Who decides" lookup) in the same way the
    original demo fixture does.
 
+## Status — 2026-08-01, `--attach-communication` added
+
+Added to connect `communication_glossary`'s full output (all 4 layers, once
+`skill_plan.py` — see that repo's README — exists) into a doc-eco target as one
+step, per the founder's explicit request to wire the two systems together.
+Confirmed via real execution: content-identical copy into
+`communication/`, idempotent re-run (no duplicate/corrupted files),
+clean `REFUSED` message on a missing source directory, graceful 0-file no-op
+on an empty/unrelated source directory. `pytest tests/ -q` (13/13) and
+`uia_protocol_kernel.py --self-test` (14/14) both re-confirmed unaffected,
+since this flag doesn't touch kernel/schema code.
+
 ## What changed on absorption
 
 Moving `bridge.py` from a sibling folder (`ANSE.ASIA/uia-doc-ecosystem-bridge/`) to
@@ -174,6 +186,14 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
 3. Appends one `{"kind":"hypothesis", ...}` line per hypothesis card to `logbook.jsonl`
    (append-only, per doc-eco's own axiom: written while working, not after).
 4. Appends one row per hypothesis card to `DECISIONS.md`'s `## Open` table (append-only).
+5. **Optionally** (`--attach-communication <dir>`), copies an already-built
+   `communication_glossary` output set (`kg_raw_word.md`, `kg_expert_layer.md`,
+   `glossary.md`, `skill_plan.md` — whichever of those 4 exist in the given
+   directory) into the target project's `communication/` folder, unchanged,
+   content-identical. Pure file copy — idempotent (re-running with the same
+   source is a no-op if content is unchanged), refuses cleanly if the given
+   directory doesn't exist, and is a graceful no-op (0 files attached) if none
+   of the 4 known artifact filenames are present.
 
 ## What it deliberately does NOT do
 
@@ -184,6 +204,11 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
   provisional until UIA phase 16 picks a lane. Writing one now would overclaim.
 - Does not run any UIA phase past 12, and does not run doc-eco's checkers automatically
   (`node tools/check_logbook.mjs` etc. — run those yourself after).
+- `--attach-communication` does not invoke `kg_extract.py` / `build_glossary.py` /
+  `skill_plan.py` itself — it only copies files that already exist. Layer 2 of
+  `communication_glossary` requires an `Agent`/WebSearch reasoning step this
+  stdlib-only bridge script has no business performing; run the pipeline first,
+  then attach its output.
 
 ## Usage
 
@@ -192,6 +217,10 @@ cd universal-issue-analysis/doc_ecosystem_bridge
 python3 bridge.py <uia_run.json> <target_project_dir>
 # --uia-repo and --doc-eco-repo default to this repo and the sibling
 # ANSE.ASIA/human-ai-doc-ecosystem respectively; pass them explicitly to override.
+
+# optionally, also attach a built communication_glossary output set:
+python3 bridge.py <uia_run.json> <target_project_dir> \
+  --attach-communication ../communication_glossary/examples/fintech
 ```
 
 ## Test plan (re-run after absorption, before trusting the moved defaults)

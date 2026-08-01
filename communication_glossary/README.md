@@ -1,6 +1,6 @@
 # communication_glossary
 
-A 3-layer pipeline that sits downstream of a UIA `VALID_CHECKPOINT` (this repo's
+A 4-layer pipeline that sits downstream of a UIA `VALID_CHECKPOINT` (this repo's
 own hypothesis-portfolio output) and produces a shared vocabulary for anyone who
 needs to discuss the issue — **anchored to the issue/domain itself, not to any one
 stakeholder role** (founder's explicit correction, 2026-08-01: "ไม่ใช่เอาทางใดทางหนึ่ง
@@ -9,7 +9,7 @@ if an engineer needs to discuss a gut-health issue with a nurse, this pipeline
 should surface the shared vocabulary both of them need — not a vocabulary split by
 "what the engineer already knows" vs "what the nurse already knows."
 
-## The three layers
+## The four layers
 
 ### Layer 1 — `kg_extract.py` (deterministic readout)
 
@@ -116,6 +116,42 @@ not vocabulary an engineer or a nurse needs to discuss the actual issue.
 python3 build_glossary.py <kg_raw_word.md> <kg_expert_layer.md> <out_glossary.md>
 ```
 
+### Layer 4 — `skill_plan.py` (role/skill plan, `Dr` tier)
+
+Answers the founder's follow-up request directly ("มนุษย์ต้องรู้คำศัพท์อะไรบ้างเพื่อ
+สั่งเอไอ ตรวจอะไรบ้าง ต้องมีสกิลอะไรบ้าง ... ai-orchestrator, ai-doer, ai-auditor
+ต้องติดตั้งสกิลอะไรบ้าง"): one markdown doc, per checkpoint, split into 4 roles —
+**Human**, **AI-orchestrator**, **AI-doer**, **AI-auditor**.
+
+- The Human section's "what to check" is **mechanical, not invented** — pulled
+  straight from that checkpoint's own already-kernel-validated hypothesis-card
+  fields (`falsifier`, `discriminating_information`, `uncertainties`,
+  `alternative_explanations`), plus `agency.decision_owners` for who actually
+  holds authority, plus Layer 2's own "Open questions" section for what a human
+  must override (AI cannot answer).
+- The 3 AI-role sections are **curated from real, already-installed workspace
+  skills** (not invented names), mapped to what each role actually does — the
+  orchestrator/doer/auditor split mirrors the maker-checker pattern this session
+  used for every PR (independent reviewer agent, never self-approving). Also
+  emits a `review_mode`-driven note (`TARGETED_SEARCH` / `INTERNAL_DATA_AUDIT` /
+  `FIELD_OBSERVATION_LOG`) telling the doer/auditor what kind of evidence this
+  specific checkpoint actually rests on.
+- Whole document is tagged **`Dr` tier** (declared recommendation, same as
+  Layer 2) with an explicit "Open questions / limitations" section admitting the
+  AI-role skill lists are curated, not auto-detected, and not proven sufficient
+  or optimal — a starting point for the human to confirm or correct, never a
+  science claim.
+
+```bash
+python3 skill_plan.py <uia_checkpoint.json> <kg_raw_word.md> <kg_expert_layer.md> <out_skill_plan.md>
+```
+
+Ran against all 3 existing worked examples (`examples/fintech/`,
+`examples/gut-health-nurse-triage/`, `examples/billing-engineer-accountant/`) —
+each produces a real `skill_plan.md` with exactly the hypothesis cards that
+checkpoint actually has (3 each), confirming Layer 4 reads real checkpoint
+content rather than templating generic advice.
+
 ## Status — 2026-08-01, v0.4, post-ultracode-review fixes
 
 Built and iterated across this session via 3 ultracode Workflow runs (adversarial
@@ -180,6 +216,21 @@ contribution had zero literal overlap with Layer 1's raw extraction (confirmed v
 each example's own "Vocabulary this adds" section): `examples/gut-health-nurse-triage/`
 (engineering ↔ clinical nursing) and `examples/billing-engineer-accountant/`
 (engineering ↔ accounting). See the Layer 3 section above for what each verified.
+
+## Status — 2026-08-01, v0.5 — Layer 4 (`skill_plan.py`) added
+
+Added in direct response to the founder's follow-up request to build the
+"expert declaration" role/skill plan now (registered as a roadmap pointer in
+`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md` §14 the same day, then scoped and built
+same-session). New file `skill_plan.py`; new outputs
+`examples/*/skill_plan.md` (one per existing worked example). One self-caught
+formatting bug fixed before commit: the `review_mode` note was originally
+appended as a plain bullet under the AI-doer skill list, visually indistinguishable
+from a real skill name — moved to its own labeled paragraph under both AI-doer
+and AI-auditor sections. Also wired into `doc_ecosystem_bridge` via its new
+`--attach-communication` flag (see that repo's README) so a full
+`kg_raw_word.md` / `kg_expert_layer.md` / `glossary.md` / `skill_plan.md` set
+can be attached to a `human-ai-doc-ecosystem` project as one step.
 
 ## Prior status — 2026-08-01, v0.1 -> v0.3 (kg_extract.py only, pre-repo)
 
