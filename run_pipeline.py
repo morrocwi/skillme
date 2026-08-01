@@ -14,7 +14,7 @@ layer:
 Usage:
     python3 run_pipeline.py <checkpoint.json> --out-dir <dir> \
         [--kg-expert-layer <existing_kg_expert_layer.md> | --skip-layer2] \
-        [--doc-eco-target <dir> [--seed-docs] [--doc-eco-repo <path>]]
+        [--doc-eco-target <dir> [--seed-docs] [--seed-sot-docs] [--doc-eco-repo <path>]]
 """
 from __future__ import annotations
 
@@ -120,6 +120,7 @@ def main() -> None:
         help="if given, also run doc_ecosystem_bridge/bridge.py against this target dir",
     )
     p.add_argument("--seed-docs", action="store_true", help="passed through to bridge.py")
+    p.add_argument("--seed-sot-docs", action="store_true", help="passed through to bridge.py")
     p.add_argument("--doc-eco-repo", type=Path, default=None, help="passed through to bridge.py")
     args = p.parse_args()
 
@@ -191,6 +192,8 @@ def main() -> None:
         ]
         if args.seed_docs:
             bridge_cmd.append("--seed-docs")
+        if args.seed_sot_docs:
+            bridge_cmd.append("--seed-sot-docs")
         if args.doc_eco_repo is not None:
             bridge_cmd += ["--doc-eco-repo", args.doc_eco_repo]
         bridge_cmd += ["--attach-communication", args.out_dir]

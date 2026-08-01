@@ -20,6 +20,54 @@ hypothesis card as a `hypothesis`-kind logbook entry plus an open question in
 `DECISIONS.md` — never as a settled `ADR`, because a hypothesis isn't settled until UIA's
 own phase 16 (`DECIDE`) picks a lane.
 
+## Status — 2026-08-01, `--seed-sot-docs` added (rag.md / cite.md / eq.md)
+
+Founder request (verbatim): "ให้ rag.md สำหรับ sot ของ hypo ที่ควรมีควรเพิ่ม ควรหา ควรใช้อื่นๆ.
+cite.md. eq.md. หรือควรมีอะไรอีกที่ตัดระเบียบ data และ sot ของ issue" — a source-of-truth
+document set for a hypothesis's data discipline: what sources exist/should be added
+(rag.md), what's actually cited and how solid it is (cite.md), and what quantitative
+claims/thresholds the checkpoint already states (eq.md). Founder confirmed via a
+clarifying question that this is a **separate document set attached to doc-eco only**
+— not a new `communication_glossary` pipeline layer, not a checkpoint schema change.
+
+- `seed_sot_docs()`: creates `target/sot/rag.md`, `cite.md`, `eq.md`. Every section is
+  either a direct readout of already-kernel-validated `hypothesis_evidence_challenge`/
+  `hypothesis_portfolio`/`registration` fields, or an explicit, empty "human/AI to fill
+  in — NOT auto-generated" placeholder — this function never fabricates a recommended
+  source, a real citation, or a formula itself (same discipline as `attach_communication()`
+  and `communication_glossary`'s own Layer 1/3-vs-Layer-2 split). `cite.md` automatically
+  flags any citation with `metadata_verification`/`scope_verification == SIMULATED_ONLY`
+  as a synthetic fixture, not real evidence — tested directly: a real-looking citation
+  next to a `SIMULATED_ONLY` one only flags the latter.
+- Idempotent per file via a `<!-- sot-doc:v1 -->` marker; links itself from
+  `target/README.md` via `link_sot_docs_in_readme()`, same pattern as
+  `link_communication_in_readme()`.
+- Wired into `run_pipeline.py` too (`--seed-sot-docs` passes through to `bridge.py`).
+- 10 new pytest tests (`tests/test_bridge.py`) cover creation, idempotency, per-file
+  readout correctness, the `SIMULATED_ONLY` flagging, graceful degradation when
+  `hypothesis_evidence_challenge` is entirely absent, and — the load-bearing check — that
+  the placeholder sections genuinely never contain fabricated content. Spot-verified not
+  tautological: reverted the `SIMULATED_ONLY` flagging guard in a scratch copy and
+  confirmed the flag disappears without it.
+- Confirmed via real execution against the real `human-ai-doc-ecosystem` sibling repo
+  (fintech and gut-health-nurse-triage examples): `eq.md` correctly surfaces the
+  fintech example's real numeric threshold ("double-counted SETTLED rate ต่ำกว่า 0.01%
+  ต่อวัน") verbatim from `registration.failure_rule`.
+- **Independent review found one real MUST-FIX**, fixed same pass: `_escape_cell()` was
+  applied inconsistently across the 3 new render functions — free-text fields
+  (`claim`/`mechanism`/`predicted_readout`/`falsifier`/`next_discriminating_test`/
+  `success_rule`/`failure_rule` and several citation-card fields) were interpolated raw,
+  so an embedded backtick or newline (realistic for LLM-generated checkpoint content)
+  corrupted the markdown list structure — the exact bug class already fixed twice
+  elsewhere in this file (`skill_plan.py`, `seed_docs()`'s `PLAN.md` section). Fixed by
+  wrapping every checkpoint-derived interpolation with `_escape_cell()`; added a
+  regression test, confirmed to fail against a scratch copy with the fix reverted.
+- `pytest tests/ -q` → 67 passed in this environment (11 new + 56 pre-existing; node +
+  the sibling repo are both present here, so no tests skip — the exact pass/skip split
+  depends on whether the doc-eco sibling repo is reachable from wherever the suite is
+  run from, since a few tests are `skipif`-guarded on that).
+  `uia_protocol_kernel.py --self-test` → 14/14.
+
 ## Status — 2026-08-01, orchestrator + automated test coverage added
 
 Same pass as `communication_glossary/README.md`'s "one-command orchestrator + automated
@@ -285,6 +333,27 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
    word graph and Layer 4's skill plan instead of only finding them by
    already knowing `communication/` exists — closing the gap where the two
    systems were connected by a file copy but not by any actual cross-reference.
+7. **Optionally** (`--seed-sot-docs`), creates `target/sot/{rag,cite,eq}.md` —
+   a source-of-truth document set for the hypothesis portfolio, separate from
+   both doc-eco's own template (step 2, only ever fills in a file that
+   already exists) and from `communication_glossary`'s output (steps 5-6):
+   - `rag.md` — per-hypothesis readout of `sources_searched`/`result_status`
+     (international + local tracks), declared `evidence_gaps`, and the named
+     `next_discriminating_test`.
+   - `cite.md` — per-hypothesis readout of `citation_cards` (title, issuer,
+     year, quality/directness/context_fit, verification status), with an
+     automatic warning section flagging any `SIMULATED_ONLY` citation as a
+     synthetic fixture, not real evidence.
+   - `eq.md` — verbatim readout of `claim`/`mechanism`/`predicted_readout`/
+     `falsifier` per hypothesis plus the checkpoint's declared
+     `success_rule`/`failure_rule`, for spotting explicit numeric thresholds.
+   Every file ends with an explicit "human/AI to fill in — NOT auto-generated"
+   placeholder section for real source/citation/equation recommendations —
+   this script only ever reads what the checkpoint already recorded, the
+   same mechanical-vs-interpretive discipline as `attach_communication()`
+   above and `communication_glossary`'s own Layer 1/3 vs. Layer 2 split.
+   Idempotent per file (a file already carrying its marker is left alone),
+   and links itself from `target/README.md` the same way step 6 does.
 
 ## What it deliberately does NOT do
 
@@ -300,6 +369,11 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
   `communication_glossary` requires an `Agent`/WebSearch reasoning step this
   stdlib-only bridge script has no business performing; run the pipeline first,
   then attach its output.
+- `--seed-sot-docs` never invents a recommended source, a real citation, or a
+  formula — every non-readout section in `rag.md`/`cite.md`/`eq.md` is an
+  explicit, empty "human/AI to fill in" placeholder. A stdlib-only script has
+  no business fabricating domain judgment, same reasoning as `attach_communication()`
+  above and `communication_glossary`'s Layer 1/3-vs-Layer-2 split.
 
 ## Usage
 
@@ -312,6 +386,9 @@ python3 bridge.py <uia_run.json> <target_project_dir>
 # optionally, also attach a built communication_glossary output set:
 python3 bridge.py <uia_run.json> <target_project_dir> \
   --attach-communication ../communication_glossary/examples/fintech
+
+# optionally, also draft a source-of-truth doc set (rag.md/cite.md/eq.md):
+python3 bridge.py <uia_run.json> <target_project_dir> --seed-sot-docs
 ```
 
 ## Test plan (re-run after absorption, before trusting the moved defaults)

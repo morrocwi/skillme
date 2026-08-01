@@ -320,6 +320,291 @@ def test_seed_docs_idempotent_skips_already_marked_file(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# seed_sot_docs() / link_sot_docs_in_readme()
+# ---------------------------------------------------------------------------
+
+
+def _sot_test_run():
+    return {
+        "registration": {
+            "success_rule": "urgency detectable in under 90 seconds per case",
+            "failure_rule": "any red-flag case missed",
+        },
+        "hypothesis_portfolio": {
+            "hypothesis_cards": [
+                {
+                    "hypothesis_id": "H1",
+                    "claim": "claim text for H1",
+                    "mechanism": "mechanism text for H1",
+                    "predicted_readout": "predicted readout for H1",
+                    "falsifier": "falsifier for H1",
+                },
+                {
+                    "hypothesis_id": "H2",
+                    "claim": "claim text for H2",
+                    "mechanism": "mechanism text for H2",
+                    "predicted_readout": "predicted readout for H2",
+                    "falsifier": "falsifier for H2",
+                },
+            ],
+        },
+        "hypothesis_evidence_challenge": {
+            "hypotheses": [
+                {
+                    "hypothesis_id": "H1",
+                    "international_track": {
+                        "sources_searched": ["real international index X"],
+                        "result_status": "EVIDENCE_FOUND",
+                    },
+                    "local_context_track": {
+                        "sources_searched": ["real local archive Y"],
+                        "result_status": "LOCAL_EVIDENCE_FOUND",
+                    },
+                    "evidence_gaps": ["gap A for H1"],
+                    "next_discriminating_test": "test A for H1",
+                    "citation_cards": [
+                        {
+                            "title": "Real Verified Source",
+                            "authors_or_issuer": "Real Org",
+                            "year": 2026,
+                            "source_type": "journal_article",
+                            "quality": "HIGH",
+                            "directness": "DIRECT",
+                            "context_fit": "HIGH",
+                            "metadata_verification": "VERIFIED",
+                            "scope_verification": "VERIFIED",
+                            "persistent_id_or_official_url": "https://example.org/real-source",
+                        },
+                        {
+                            "title": "[SimulatedData] fixture citation",
+                            "authors_or_issuer": "UIA fixture",
+                            "year": 2026,
+                            "source_type": "synthetic_fixture",
+                            "quality": "LOW",
+                            "directness": "PARTIAL",
+                            "context_fit": "LOW",
+                            "metadata_verification": "SIMULATED_ONLY",
+                            "scope_verification": "SIMULATED_ONLY",
+                            "persistent_id_or_official_url": "fixture://H1",
+                        },
+                    ],
+                },
+                {
+                    "hypothesis_id": "H2",
+                    "international_track": {},
+                    "local_context_track": {},
+                    "evidence_gaps": [],
+                    "next_discriminating_test": None,
+                    "citation_cards": [],
+                },
+            ],
+        },
+    }
+
+
+def test_seed_sot_docs_creates_three_files_in_sot_dir(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    written = bridge.seed_sot_docs(target, _sot_test_run(), "cp-sot-1")
+
+    assert sorted(written) == sorted(bridge.SOT_DOC_FILES)
+    for name in bridge.SOT_DOC_FILES:
+        p = target / "sot" / name
+        assert p.exists()
+        assert bridge.SOT_DOCS_MARKER in p.read_text(encoding="utf-8")
+
+
+def test_seed_sot_docs_idempotent(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    run = _sot_test_run()
+
+    written1 = bridge.seed_sot_docs(target, run, "cp-sot-1")
+    assert len(written1) == 3
+    texts_after_first = {
+        name: (target / "sot" / name).read_text(encoding="utf-8") for name in bridge.SOT_DOC_FILES
+    }
+
+    written2 = bridge.seed_sot_docs(target, run, "cp-sot-1")
+    assert written2 == []
+    for name in bridge.SOT_DOC_FILES:
+        assert (target / "sot" / name).read_text(encoding="utf-8") == texts_after_first[name]
+
+
+def test_seed_sot_docs_rag_md_readout_matches_checkpoint_fields(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    bridge.seed_sot_docs(target, _sot_test_run(), "cp-sot-1")
+
+    rag_text = (target / "sot" / "rag.md").read_text(encoding="utf-8")
+    assert "real international index X" in rag_text
+    assert "real local archive Y" in rag_text
+    assert "gap A for H1" in rag_text
+    assert "test A for H1" in rag_text
+    # H2 has no sources/gaps/test declared — must degrade gracefully, not crash
+    # or silently omit H2 from the readout entirely.
+    assert "`H2`" in rag_text
+
+
+def test_seed_sot_docs_escapes_backtick_and_newline_in_free_text_fields(tmp_path):
+    # An independent review of this feature found: _escape_cell() was applied
+    # inconsistently across the 3 render functions — free-text fields like
+    # claim/mechanism/next_discriminating_test/success_rule/failure_rule were
+    # interpolated raw, so an embedded backtick or newline (realistic for
+    # LLM-generated checkpoint content) corrupted the markdown list structure
+    # (a raw newline mid-bullet splits onto an unindented top-level line). This
+    # is a regression test for that exact fix.
+    target = tmp_path / "target"
+    target.mkdir()
+    run = {
+        "registration": {
+            "success_rule": "ok",
+            "failure_rule": "bad `code`\nembedded newline in failure_rule",
+        },
+        "hypothesis_portfolio": {
+            "hypothesis_cards": [
+                {
+                    "hypothesis_id": "H1",
+                    "claim": "claim with a `backtick`\nand an embedded newline",
+                    "mechanism": "mechanism with `backtick`\nand newline too",
+                    "predicted_readout": "p",
+                    "falsifier": "f",
+                }
+            ]
+        },
+        "hypothesis_evidence_challenge": {
+            "hypotheses": [
+                {
+                    "hypothesis_id": "H1",
+                    "next_discriminating_test": "test with `backtick`\nand newline",
+                }
+            ]
+        },
+    }
+
+    bridge.seed_sot_docs(target, run, "cp-escape-1")
+
+    eq_text = (target / "sot" / "eq.md").read_text(encoding="utf-8")
+    rag_text = (target / "sot" / "rag.md").read_text(encoding="utf-8")
+    for text, name in ((eq_text, "eq.md"), (rag_text, "rag.md")):
+        # No line should have an unbalanced (odd) backtick count — a raw,
+        # unescaped backtick from checkpoint content would produce one.
+        for line in text.splitlines():
+            assert line.count("`") % 2 == 0, f"unbalanced backtick in {name}: {line!r}"
+    # A raw embedded newline inside a free-text field's own VALUE must not
+    # survive — it must collapse to a single space, staying on one bullet
+    # line, instead of splitting the value onto an unindented top-level line
+    # that breaks the intended markdown list nesting.
+    assert "claim with a 'backtick' and an embedded newline" in eq_text
+    assert "bad 'code' embedded newline in failure_rule" in eq_text
+    assert "test with 'backtick' and newline" in rag_text
+
+
+def test_seed_sot_docs_cite_md_flags_simulated_only_not_real_citation(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    bridge.seed_sot_docs(target, _sot_test_run(), "cp-sot-1")
+
+    cite_text = (target / "sot" / "cite.md").read_text(encoding="utf-8")
+    assert "Real Verified Source" in cite_text
+    assert "[SimulatedData] fixture citation" in cite_text
+    # only the SIMULATED_ONLY card is flagged in the warning section, not the
+    # real one — split on the warning heading and check placement.
+    warning_section = cite_text.split("## Citation quality warning")[1]
+    assert "[SimulatedData] fixture citation" in warning_section
+    assert "Real Verified Source" not in warning_section
+
+
+def test_seed_sot_docs_eq_md_shows_success_and_failure_rules(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    bridge.seed_sot_docs(target, _sot_test_run(), "cp-sot-1")
+
+    eq_text = (target / "sot" / "eq.md").read_text(encoding="utf-8")
+    assert "urgency detectable in under 90 seconds per case" in eq_text
+    assert "any red-flag case missed" in eq_text
+    assert "claim text for H1" in eq_text
+    assert "mechanism text for H2" in eq_text
+
+
+def test_seed_sot_docs_never_fabricates_content_in_placeholder_sections(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    bridge.seed_sot_docs(target, _sot_test_run(), "cp-sot-1")
+
+    for name in bridge.SOT_DOC_FILES:
+        text = (target / "sot" / name).read_text(encoding="utf-8")
+        assert "NOT auto-generated" in text
+    # eq.md's equations section must stay a placeholder — no fabricated formula.
+    eq_text = (target / "sot" / "eq.md").read_text(encoding="utf-8")
+    formulas_section = eq_text.split("## Formulas/equations")[1]
+    assert "do not fabricate a formula" in formulas_section
+
+
+def test_seed_sot_docs_handles_missing_evidence_challenge_gracefully(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    run = {
+        "registration": {},
+        "hypothesis_portfolio": {
+            "hypothesis_cards": [{"hypothesis_id": "H1", "claim": "c", "mechanism": "m"}]
+        },
+        # hypothesis_evidence_challenge entirely absent
+    }
+
+    written = bridge.seed_sot_docs(target, run, "cp-sot-2")
+
+    assert sorted(written) == sorted(bridge.SOT_DOC_FILES)
+    rag_text = (target / "sot" / "rag.md").read_text(encoding="utf-8")
+    assert "(none recorded)" in rag_text
+
+
+def test_link_sot_docs_in_readme_idempotent(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    original = "# target\n\nSome original README content.\n"
+    (target / "README.md").write_text(original, encoding="utf-8")
+
+    wrote1 = bridge.link_sot_docs_in_readme(target, ["rag.md", "cite.md", "eq.md"])
+    assert wrote1 is True
+    text_after_first = (target / "README.md").read_text(encoding="utf-8")
+    assert text_after_first.count(bridge.SOT_LINK_MARKER) == 1
+
+    wrote2 = bridge.link_sot_docs_in_readme(target, ["rag.md", "cite.md", "eq.md"])
+    assert wrote2 is False
+    text_after_second = (target / "README.md").read_text(encoding="utf-8")
+    assert text_after_second.count(bridge.SOT_LINK_MARKER) == 1
+    assert text_after_second == text_after_first
+
+
+def test_link_sot_docs_no_readme_returns_false_no_crash(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+
+    result = bridge.link_sot_docs_in_readme(target, ["rag.md"])
+
+    assert result is False
+    assert not (target / "README.md").exists()
+
+
+def test_link_sot_docs_empty_written_list_returns_false_no_change(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    original = "# target\n\nOriginal content, byte for byte.\n"
+    (target / "README.md").write_text(original, encoding="utf-8")
+
+    result = bridge.link_sot_docs_in_readme(target, [])
+
+    assert result is False
+    assert (target / "README.md").read_text(encoding="utf-8") == original
+
+
+# ---------------------------------------------------------------------------
 # validate_checkpoint() / load_kernel()
 # ---------------------------------------------------------------------------
 
