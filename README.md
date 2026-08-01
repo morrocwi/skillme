@@ -7,7 +7,8 @@
 [![tier](https://img.shields.io/badge/claim%20tier-Dr%20(design%20rationale)-orange)](#tier-honesty)
 [![kernel](https://img.shields.io/badge/kernel-stdlib--only%2C%20run%20it%20yourself-brightgreen)](uia_protocol_kernel.py)
 [![self--test](https://img.shields.io/badge/self--test-14%2F14%20PASS-brightgreen)](tests/test_kernel_self_test.py)
-[![version](https://img.shields.io/badge/protocol-v0.4.6-blue)](CHANGELOG.md)
+[![pytest](https://img.shields.io/badge/pytest-13%2F13%20PASS-brightgreen)](tests/test_kernel_self_test.py)
+[![version](https://img.shields.io/badge/protocol-v0.4.8-blue)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 </div>
@@ -118,16 +119,45 @@ entry point, not a replacement for it.
 universal-issue-analysis/
 ├── UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md   canonical spec — normative source of truth
 ├── uia_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
-├── tests/test_kernel_self_test.py        pytest wrapper around the kernel's --self-test
+├── docs/FIELD_REFERENCE.md               generated field-by-field reference (tools/generate_field_reference.py)
+├── fixtures/checkpoint_demo_alt_domain.json  a second, non-booking-app checkpoint fixture
+├── tools/generate_field_reference.py     regenerates docs/FIELD_REFERENCE.md from the kernel's own constants
+├── tests/test_kernel_self_test.py        pytest wrapper around the kernel's --self-test + fixtures
+├── doc_ecosystem_bridge/                 bridges a VALID_CHECKPOINT into a human-ai-doc-ecosystem project
+│   └── README.md                          bridge.py usage, design rationale, status history
+├── communication_glossary/               3-layer pipeline: checkpoint -> issue-anchored shared vocabulary
+│   └── README.md                          Layer 1/2/3 design, worked examples in examples/
 ├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
 ├── llms.txt                              machine-readable doc index
-├── CHANGELOG.md                          version history through v0.4.6
+├── CHANGELOG.md                          version history through v0.4.8
 ├── plugins/universal-issue-analysis/     the installable Claude Code plugin (self-contained subtree)
 │   ├── README.md, LICENSE                 plugin-scoped copies (git-subdir installs pull only this dir)
 │   ├── .claude-plugin/plugin.json         plugin manifest
 │   └── skills/universal-issue-analysis/SKILL.md   operational summary the AI loads
 └── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-uia)
 ```
+
+## Downstream tooling built on a checkpoint
+
+Two subsystems consume a `VALID_CHECKPOINT` run record and are not part of the core protocol
+kernel — both are `Dr` tier or lighter, both link back to the spec, and neither is installed by
+the Claude Code plugin above (clone the repo to use them):
+
+- **[`doc_ecosystem_bridge/`](doc_ecosystem_bridge/)** — takes a checkpoint at Phase 12
+  (`STOP_AT_HYPOTHESIS`) and scaffolds/updates a
+  [`human-ai-doc-ecosystem`](https://github.com/morrocwi/human-ai-doc-ecosystem) project: logs
+  each hypothesis card as a `logbook.jsonl` entry, adds an open question per hypothesis to
+  `DECISIONS.md`, and (with `--seed-docs`) drafts `GOAL.md`/`SPEC.md`/`PLAN.md` sections from
+  already-validated checkpoint fields, clearly labeled as an AI draft.
+- **[`communication_glossary/`](communication_glossary/)** — a 3-layer pipeline that turns a
+  checkpoint into a shared vocabulary for anyone discussing the issue, **anchored to the issue
+  itself, not to any one stakeholder's background** (e.g. what does an engineer need to know to
+  discuss a symptom-tracker bug with clinical nursing triage, or a billing bug with an
+  accountant): Layer 1 (`kg_extract.py`) is a deterministic word/phrase graph; Layer 2 is an
+  AI-interpretive, WebSearch-verified "what named expert frameworks apply" step (documented
+  procedure, not a script); Layer 3 (`build_glossary.py`) mechanically merges both, keeping only
+  high-confidence Layer 2 claims. See its README for the full tier discipline and 3 worked
+  examples (fintech, healthcare↔nursing, billing↔accounting).
 
 ## What the kernel actually checks (and doesn't)
 
@@ -143,7 +173,18 @@ against the schema and enums defined in the spec. It checks, among other things:
   masquerading as "diverse" options;
 - a run cannot close while its stakeholder map is still `OPEN`/`UNRESOLVED` or its translation
   lost information (`loss_audit != PASS`);
-- old/renamed enum aliases (e.g. `HYBRID_BLIND`) are rejected, not silently accepted.
+- old/renamed enum aliases (e.g. `HYBRID_BLIND`) are rejected, not silently accepted;
+- citation cards adapt to 3 evidence vocabularies via `review_mode` — literature
+  (`TARGETED_SEARCH`, the default), internal system-of-record data
+  (`INTERNAL_DATA_AUDIT`, e.g. logs/tickets/sensor exports), or fresh field/sensory observation
+  (`FIELD_OBSERVATION_LOG`, e.g. a baker's dough, a tagged tree at a census date) — same rigor
+  (falsifier, source classes, `citation_audit`) in all three, only the citable-source vocabulary
+  changes. See [`docs/FIELD_REFERENCE.md`](docs/FIELD_REFERENCE.md) for the exact field sets.
+- only 5 of `agency`'s 13 list-type fields are actually required non-empty
+  (`affected`/`observers`/`decision_owners`/`intervention_owners`/`accountable_parties`) — the
+  other 8 (voice/veto/oversight/represented/resource/knowledge/future/power-gap roles) may stay
+  `[]` for a small, direct-actor issue with no distinct party in that role. This was already true
+  before it was documented — see `docs/FIELD_REFERENCE.md`'s agency section.
 
 It does **not** check whether the reported issue is real, whether a cited source actually says
 what it's claimed to say (only that a `scope_verification` flag was declared), whether a

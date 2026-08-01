@@ -3605,6 +3605,16 @@ Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, ห�
 - เพิ่มคำเตือน false-precision ท้าย §2 สำหรับกรณี reader เป็นประสาทสัมผัสมนุษย์ (ไม่ใช่ sensor) — คำว่า "retained difference" ต้องไม่ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือเกินจริง
 - `pytest` 13/13 (เพิ่ม 4 test จาก 9 เดิม), kernel `--self-test` ไม่กระทบ (ไม่แตะ demo/checkpoint-demo fixture)
 
+### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
+
+ลงทะเบียนไว้ตรงนี้ตามหลัก "เขียนก่อนเริ่ม ไม่ใช่แก้ทีหลังตอนมีคนถามว่าทำไมไม่บอกไว้ก่อน" — founder ระบุทิศทางถัดไปคร่าวๆ ว่าจะเป็น:
+
+- **ระบบประกาศผู้เชี่ยวชาญ (expert-declaration system)** — น่าจะต่อยอดจาก `communication_glossary`'s Layer 2 (AI-interpretive expert-framework reasoning ที่มีอยู่แล้ว, WebSearch-verified, tier `Dr`) ให้เป็นระบบที่ **ประกาศ**ชัดว่า checkpoint หนึ่งๆ ต้องการความเชี่ยวชาญด้านไหนบ้างถึงจะแก้ได้จริง ไม่ใช่แค่รายงาน framework ที่เกี่ยวข้องเฉยๆ
+- **ระบบลงทะเบียนสกิล (skill-registration system)** — น่าจะเกี่ยวกับการขึ้นทะเบียนว่า agent/AI/มนุษย์ตัวไหนมีสกิลอะไรบ้าง เพื่อ route งานหรือ verify ว่าใครควรเป็นคนตรวจ candidate/hypothesis ไหน (คล้าย maker-checker discipline ที่ workspace นี้ใช้อยู่แล้วในบริบทอื่น)
+- **อื่นๆ** — founder ระบุว่ายังมีองค์ประกอบเพิ่มเติมที่ยังไม่เจาะจง
+
+**สถานะตรงๆ ณ จุดที่บันทึก**: นี่คือทิศทางที่ founder บอกไว้ ยังไม่มี scope, ยังไม่มี artifact, ยังไม่มี tier — บันทึกไว้เป็น pointer สำหรับ session ถัดไป ไม่ใช่ commitment ว่าจะสร้างแบบไหน ต้อง clarify scope กับ founder ก่อนเริ่มออกแบบจริง (ตาม pattern ที่ session นี้ใช้มาตลอด: AskUserQuestion ก่อนแตะไฟล์เมื่อ scope ยังไม่ชัด)
+
 ### v0.5 — Formal semantics and executable kernel
 
 - ทำ typed definitions ของ `Issue`, `Agency`, `Stakeholder`, `Context`, `TranslationRecord` และ `ReadoutStatus`

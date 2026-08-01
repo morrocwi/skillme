@@ -16,15 +16,25 @@ follow its discovery order before making any capability or correctness claim.
 - [AI_START_HERE.md](/AI_START_HERE.md): Start here — what this project is, the discovery
   order, and how to verify the kernel's self-test yourself.
 - [README.md](/README.md): Full framing, tier-honesty statement, quickstart (Claude Code plugin
-  install and standalone kernel usage), repository map.
+  install and standalone kernel usage), repository map, downstream tooling overview.
 - [UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md](/UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md): The canonical,
-  normative spec — thesis, root grammar, entities, axioms, the full 20-phase protocol, the
-  two-question intake gate, the hypothesis evidence challenge protocol, the three-lane
-  candidate generator, 48 protocol invariants, and the development roadmap.
+  normative spec — thesis, root grammar (with verified external lineage to `readout_genesis`),
+  entities, axioms, the full 20-phase protocol, the two-question intake gate, the domain-mapping
+  method (§6.9.1-6.9.4), the hypothesis evidence challenge protocol, the three-lane candidate
+  generator, 48 protocol invariants, and the development roadmap.
+- [docs/FIELD_REFERENCE.md](/docs/FIELD_REFERENCE.md): Generated field-by-field reference for
+  constructing a new checkpoint — which fields are actually kernel-enforced (not all of them),
+  the 3 `review_mode` evidence vocabularies. Regenerate via `tools/generate_field_reference.py`
+  after any kernel schema change; never hand-edit it.
 - [plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md](/plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md):
   The operational summary an AI assistant loads and follows when actually applying the
   protocol to a reported issue.
-- [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.6; states which later roadmap
+- [doc_ecosystem_bridge/README.md](/doc_ecosystem_bridge/README.md): Bridges a checkpoint into a
+  human-ai-doc-ecosystem project (logbook entries, open decisions, optional doc drafting).
+- [communication_glossary/README.md](/communication_glossary/README.md): 3-layer pipeline
+  (deterministic word graph -> AI-interpretive expert-framework layer -> issue-anchored
+  glossary) for the shared vocabulary two people from different fields need to discuss one issue.
+- [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.8; states which later roadmap
   milestones are not yet complete.
 
 ## Verification (run this yourself — do not take claims on trust)
