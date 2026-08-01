@@ -53,7 +53,19 @@ clarifying question that this is a **separate document set attached to doc-eco o
   (fintech and gut-health-nurse-triage examples): `eq.md` correctly surfaces the
   fintech example's real numeric threshold ("double-counted SETTLED rate ต่ำกว่า 0.01%
   ต่อวัน") verbatim from `registration.failure_rule`.
-- `pytest tests/ -q` → 66 passed (10 new + 56 pre-existing);
+- **Independent review found one real MUST-FIX**, fixed same pass: `_escape_cell()` was
+  applied inconsistently across the 3 new render functions — free-text fields
+  (`claim`/`mechanism`/`predicted_readout`/`falsifier`/`next_discriminating_test`/
+  `success_rule`/`failure_rule` and several citation-card fields) were interpolated raw,
+  so an embedded backtick or newline (realistic for LLM-generated checkpoint content)
+  corrupted the markdown list structure — the exact bug class already fixed twice
+  elsewhere in this file (`skill_plan.py`, `seed_docs()`'s `PLAN.md` section). Fixed by
+  wrapping every checkpoint-derived interpolation with `_escape_cell()`; added a
+  regression test, confirmed to fail against a scratch copy with the fix reverted.
+- `pytest tests/ -q` → 67 passed in this environment (11 new + 56 pre-existing; node +
+  the sibling repo are both present here, so no tests skip — the exact pass/skip split
+  depends on whether the doc-eco sibling repo is reachable from wherever the suite is
+  run from, since a few tests are `skipif`-guarded on that).
   `uia_protocol_kernel.py --self-test` → 14/14.
 
 ## Status — 2026-08-01, orchestrator + automated test coverage added

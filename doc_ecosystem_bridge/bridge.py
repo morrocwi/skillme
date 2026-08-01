@@ -291,10 +291,10 @@ def _render_rag_md(run: dict, checkpoint_ref: str) -> str:
         intl = ev.get("international_track") or {}
         local = ev.get("local_context_track") or {}
         lines.append(f"- `{_escape_cell(hid)}`")
-        lines.append(f"  - international_track.sources_searched: {intl.get('sources_searched') or '(none recorded)'}")
-        lines.append(f"  - international_track.result_status: {intl.get('result_status', '(not recorded)')}")
-        lines.append(f"  - local_context_track.sources_searched: {local.get('sources_searched') or '(none recorded)'}")
-        lines.append(f"  - local_context_track.result_status: {local.get('result_status', '(not recorded)')}")
+        lines.append(f"  - international_track.sources_searched: {_escape_cell(intl.get('sources_searched') or '(none recorded)')}")
+        lines.append(f"  - international_track.result_status: {_escape_cell(intl.get('result_status', '(not recorded)'))}")
+        lines.append(f"  - local_context_track.sources_searched: {_escape_cell(local.get('sources_searched') or '(none recorded)')}")
+        lines.append(f"  - local_context_track.result_status: {_escape_cell(local.get('result_status', '(not recorded)'))}")
     lines += [
         "",
         "## Evidence gaps declared (readout)",
@@ -304,7 +304,7 @@ def _render_rag_md(run: dict, checkpoint_ref: str) -> str:
         hid = card.get("hypothesis_id", "?")
         ev = evidence_by_id.get(hid, {})
         gaps = ev.get("evidence_gaps") or []
-        lines.append(f"- `{_escape_cell(hid)}`: {gaps if gaps else '(none declared)'}")
+        lines.append(f"- `{_escape_cell(hid)}`: {_escape_cell(gaps if gaps else '(none declared)')}")
     lines += [
         "",
         "## Next discriminating test named per hypothesis (readout)",
@@ -313,7 +313,7 @@ def _render_rag_md(run: dict, checkpoint_ref: str) -> str:
     for card in cards:
         hid = card.get("hypothesis_id", "?")
         ev = evidence_by_id.get(hid, {})
-        lines.append(f"- `{_escape_cell(hid)}`: {ev.get('next_discriminating_test', '(none recorded)')}")
+        lines.append(f"- `{_escape_cell(hid)}`: {_escape_cell(ev.get('next_discriminating_test', '(none recorded)'))}")
     lines += [
         "",
         "## Source classes / RAG corpora to add (human/AI to fill in — NOT auto-generated)",
@@ -355,17 +355,18 @@ def _render_cite_md(run: dict, checkpoint_ref: str) -> str:
             title = cc.get("title", "(no title)")
             lines.append(
                 f"  - **{_escape_cell(title)}** — {_escape_cell(cc.get('authors_or_issuer', '?'))}, "
-                f"{cc.get('year', '?')}, {_escape_cell(cc.get('source_type', '?'))}"
+                f"{_escape_cell(cc.get('year', '?'))}, {_escape_cell(cc.get('source_type', '?'))}"
             )
             lines.append(
-                f"    - quality: {cc.get('quality', '?')}, directness: {cc.get('directness', '?')}, "
-                f"context_fit: {cc.get('context_fit', '?')}"
+                f"    - quality: {_escape_cell(cc.get('quality', '?'))}, "
+                f"directness: {_escape_cell(cc.get('directness', '?'))}, "
+                f"context_fit: {_escape_cell(cc.get('context_fit', '?'))}"
             )
             lines.append(
-                f"    - metadata_verification: {cc.get('metadata_verification', '?')}, "
-                f"scope_verification: {cc.get('scope_verification', '?')}"
+                f"    - metadata_verification: {_escape_cell(cc.get('metadata_verification', '?'))}, "
+                f"scope_verification: {_escape_cell(cc.get('scope_verification', '?'))}"
             )
-            lines.append(f"    - source: {cc.get('persistent_id_or_official_url', '(none)')}")
+            lines.append(f"    - source: {_escape_cell(cc.get('persistent_id_or_official_url', '(none)'))}")
             if cc.get("metadata_verification") == "SIMULATED_ONLY" or cc.get("scope_verification") == "SIMULATED_ONLY":
                 simulated.append((hid, title))
     lines += [
@@ -416,16 +417,16 @@ def _render_eq_md(run: dict, checkpoint_ref: str) -> str:
     for card in cards:
         hid = card.get("hypothesis_id", "?")
         lines.append(f"- `{_escape_cell(hid)}`")
-        lines.append(f"  - claim: {card.get('claim', '?')}")
-        lines.append(f"  - mechanism: {card.get('mechanism', '?')}")
-        lines.append(f"  - predicted_readout: {card.get('predicted_readout', '?')}")
-        lines.append(f"  - falsifier: {card.get('falsifier', '?')}")
+        lines.append(f"  - claim: {_escape_cell(card.get('claim', '?'))}")
+        lines.append(f"  - mechanism: {_escape_cell(card.get('mechanism', '?'))}")
+        lines.append(f"  - predicted_readout: {_escape_cell(card.get('predicted_readout', '?'))}")
+        lines.append(f"  - falsifier: {_escape_cell(card.get('falsifier', '?'))}")
     lines += [
         "",
         "## Success/failure thresholds declared for this checkpoint (readout)",
         "",
-        f"- success_rule: {registration.get('success_rule', '(not recorded)')}",
-        f"- failure_rule: {registration.get('failure_rule', '(not recorded)')}",
+        f"- success_rule: {_escape_cell(registration.get('success_rule', '(not recorded)'))}",
+        f"- failure_rule: {_escape_cell(registration.get('failure_rule', '(not recorded)'))}",
         "",
         "## Formulas/equations that formalize this issue's mechanism (human/AI to add — NOT auto-generated)",
         "",

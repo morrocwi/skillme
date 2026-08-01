@@ -448,6 +448,60 @@ def test_seed_sot_docs_rag_md_readout_matches_checkpoint_fields(tmp_path):
     assert "`H2`" in rag_text
 
 
+def test_seed_sot_docs_escapes_backtick_and_newline_in_free_text_fields(tmp_path):
+    # An independent review of this feature found: _escape_cell() was applied
+    # inconsistently across the 3 render functions — free-text fields like
+    # claim/mechanism/next_discriminating_test/success_rule/failure_rule were
+    # interpolated raw, so an embedded backtick or newline (realistic for
+    # LLM-generated checkpoint content) corrupted the markdown list structure
+    # (a raw newline mid-bullet splits onto an unindented top-level line). This
+    # is a regression test for that exact fix.
+    target = tmp_path / "target"
+    target.mkdir()
+    run = {
+        "registration": {
+            "success_rule": "ok",
+            "failure_rule": "bad `code`\nembedded newline in failure_rule",
+        },
+        "hypothesis_portfolio": {
+            "hypothesis_cards": [
+                {
+                    "hypothesis_id": "H1",
+                    "claim": "claim with a `backtick`\nand an embedded newline",
+                    "mechanism": "mechanism with `backtick`\nand newline too",
+                    "predicted_readout": "p",
+                    "falsifier": "f",
+                }
+            ]
+        },
+        "hypothesis_evidence_challenge": {
+            "hypotheses": [
+                {
+                    "hypothesis_id": "H1",
+                    "next_discriminating_test": "test with `backtick`\nand newline",
+                }
+            ]
+        },
+    }
+
+    bridge.seed_sot_docs(target, run, "cp-escape-1")
+
+    eq_text = (target / "sot" / "eq.md").read_text(encoding="utf-8")
+    rag_text = (target / "sot" / "rag.md").read_text(encoding="utf-8")
+    for text, name in ((eq_text, "eq.md"), (rag_text, "rag.md")):
+        # No line should have an unbalanced (odd) backtick count — a raw,
+        # unescaped backtick from checkpoint content would produce one.
+        for line in text.splitlines():
+            assert line.count("`") % 2 == 0, f"unbalanced backtick in {name}: {line!r}"
+    # A raw embedded newline inside a free-text field's own VALUE must not
+    # survive — it must collapse to a single space, staying on one bullet
+    # line, instead of splitting the value onto an unindented top-level line
+    # that breaks the intended markdown list nesting.
+    assert "claim with a 'backtick' and an embedded newline" in eq_text
+    assert "bad 'code' embedded newline in failure_rule" in eq_text
+    assert "test with 'backtick' and newline" in rag_text
+
+
 def test_seed_sot_docs_cite_md_flags_simulated_only_not_real_citation(tmp_path):
     target = tmp_path / "target"
     target.mkdir()
