@@ -4,7 +4,7 @@
 
 ## 1. Human
 
-**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `HYP-UIA-046-DEMO-001`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
+**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `unknown-checkpoint`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
 
 **ผู้มีอำนาจตัดสินใจตาม checkpoint นี้:** Payments Risk & Controls (PRC) — on-call
 
@@ -79,7 +79,7 @@
 - `rigorous-diagnosis` — วินัยการวินิจฉัย/debug ก่อนสรุป root cause หรือบอกว่า "แก้แล้ว"
 - `doc-ecosystem` — ถ้างานนี้ต้องส่งต่อเข้า doc-ecosystem project (bridge.py's target)
 
-**หมายเหตุเฉพาะ checkpoint นี้ (จาก `review_mode` จริง):** review_mode = TARGETED_SEARCH — evidence for this checkpoint is literature/published sources; the doer needs real WebSearch discipline (verify claims, don't assert from training knowledge alone), the auditor needs to spot-check source links actually support the claim, not just exist.
+**หมายเหตุเฉพาะ checkpoint นี้ (จาก `review_mode` จริง):** review_mode = 'TARGETED_SEARCH "Phase-2 (draft)"' is not one of the 3 recognized values (TARGETED_SEARCH / INTERNAL_DATA_AUDIT / FIELD_OBSERVATION_LOG) — do NOT assume TARGETED_SEARCH's evidence discipline applies; the doer/auditor must read the raw hypothesis_evidence_challenge field themselves and confirm what kind of evidence this checkpoint actually rests on.
 
 ## 4. AI-auditor
 
@@ -93,7 +93,7 @@
 - `security-review` / `web-secure-fast-audit` — ถ้า checkpoint นี้แตะ web/security surface
 - `grr-epistemic-foundation` — เพื่อตรวจว่า Claim/Evidence/Warrant ของงานที่ตรวจ ครบและไม่ overclaim
 
-**หมายเหตุเฉพาะ checkpoint นี้ (จาก `review_mode` จริง):** review_mode = TARGETED_SEARCH — evidence for this checkpoint is literature/published sources; the doer needs real WebSearch discipline (verify claims, don't assert from training knowledge alone), the auditor needs to spot-check source links actually support the claim, not just exist.
+**หมายเหตุเฉพาะ checkpoint นี้ (จาก `review_mode` จริง):** review_mode = 'TARGETED_SEARCH "Phase-2 (draft)"' is not one of the 3 recognized values (TARGETED_SEARCH / INTERNAL_DATA_AUDIT / FIELD_OBSERVATION_LOG) — do NOT assume TARGETED_SEARCH's evidence discipline applies; the doer/auditor must read the raw hypothesis_evidence_challenge field themselves and confirm what kind of evidence this checkpoint actually rests on.
 
 ## Open questions / limitations of this skill plan itself
 

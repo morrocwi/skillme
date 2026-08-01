@@ -4,7 +4,7 @@
 
 ## 1. Human
 
-**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `HYP-UIA-GUT-NURSE-DEMO-001`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
+**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `unknown-checkpoint`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
 
 **ผู้มีอำนาจตัดสินใจตาม checkpoint นี้:** patient safety officer
 

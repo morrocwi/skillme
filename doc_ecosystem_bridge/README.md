@@ -153,7 +153,7 @@ Added to connect `communication_glossary`'s full output (all 4 layers, once
 `skill_plan.py` — see that repo's README — exists) into a doc-eco target as one
 step, per the founder's explicit request to wire the two systems together.
 Confirmed via real execution: content-identical copy into
-`docs/communication/`, idempotent re-run (no duplicate/corrupted files),
+`communication/`, idempotent re-run (no duplicate/corrupted files),
 clean `REFUSED` message on a missing source directory, graceful 0-file no-op
 on an empty/unrelated source directory. `pytest tests/ -q` (13/13) and
 `uia_protocol_kernel.py --self-test` (14/14) both re-confirmed unaffected,
@@ -189,7 +189,7 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
 5. **Optionally** (`--attach-communication <dir>`), copies an already-built
    `communication_glossary` output set (`kg_raw_word.md`, `kg_expert_layer.md`,
    `glossary.md`, `skill_plan.md` — whichever of those 4 exist in the given
-   directory) into the target project's `docs/communication/` folder, unchanged,
+   directory) into the target project's `communication/` folder, unchanged,
    content-identical. Pure file copy — idempotent (re-running with the same
    source is a no-op if content is unchanged), refuses cleanly if the given
    directory doesn't exist, and is a graceful no-op (0 files attached) if none

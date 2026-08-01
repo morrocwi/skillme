@@ -109,7 +109,15 @@ def build(run: dict, glossary_md: str, expert_md: str) -> str:
     open_questions = extract_open_questions(expert_md)
     decision_owners = (run.get("agency", {}) or {}).get("decision_owners") or []
     review_mode = (run.get("hypothesis_evidence_challenge") or {}).get("review_mode", "TARGETED_SEARCH")
-    review_note = REVIEW_MODE_NOTE.get(review_mode, REVIEW_MODE_NOTE["TARGETED_SEARCH"])
+    review_note = REVIEW_MODE_NOTE.get(review_mode)
+    if review_note is None:
+        review_note = (
+            f"review_mode = {review_mode!r} is not one of the 3 recognized values "
+            "(TARGETED_SEARCH / INTERNAL_DATA_AUDIT / FIELD_OBSERVATION_LOG) — do NOT assume "
+            "TARGETED_SEARCH's evidence discipline applies; the doer/auditor must read the raw "
+            "hypothesis_evidence_challenge field themselves and confirm what kind of evidence "
+            "this checkpoint actually rests on."
+        )
 
     lines: list[str] = []
     lines.append(f"# Skill Plan — {checkpoint_ref}")
