@@ -30,6 +30,29 @@
 - `[SimulatedData]` ใช้เฉพาะ fixture หรือ benchmark สังเคราะห์ ห้ามรายงานเป็น field evidence
 - หากเอกสารกับ runtime ไม่ตรงกัน ให้หยุดที่ `SPEC_RUNTIME_DRIFT` และเปิด correction record
 
+**2026-08-01 known drift (documented, not yet reconciled inline in this narrative
+spec):** `uia_protocol_kernel.py`'s `validate()` gained two runtime-only extensions
+that this document's inline schema fragments (e.g. §ที่มี `authority_assumptions:
+[REQUIRED_NONEMPTY]` และ `review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED`) do not
+yet reflect — per the drift rule above, the **runtime is authoritative**:
+1. `hypothesis_evidence_challenge.review_mode` accepts a new value
+   `"INTERNAL_DATA_AUDIT"` (alongside the existing `TARGETED_SEARCH`/etc.), which
+   swaps each `citation_cards[*]` entry's required fields from the
+   literature-citation vocabulary to an internal-system-of-record vocabulary
+   (`source_system`, `query_or_filter`, `record_id_or_url`) — all other rigor is
+   unchanged.
+2. `hypothesis_portfolio.hypothesis_cards[*].authority_assumptions` may be an
+   empty list, but only when that same card has `legal_relevance: "NONE"` AND
+   `legal_status: "NOT_REQUIRED"` — otherwise `REQUIRED_NONEMPTY` still applies
+   exactly as written throughout this document.
+
+**For the current, generated (never hand-edited, always in sync with the
+kernel's actual `ENUMS`/`LANES`/`*_REQUIRED` constants) field list, see
+`docs/FIELD_REFERENCE.md`** (regenerate via `tools/generate_field_reference.py`
+after any kernel schema change). Treat this narrative document's inline schema
+fragments as an architectural walkthrough, not the field-by-field source of
+truth for validator behavior.
+
 ### 0.1 Claim-preserving continuation contract
 
 UIA v0.4.6 **ไม่ลด** canonical workflow, claim boundary หรือความสามารถของ phases 13–19 แต่เพิ่มจุดหยุดที่ตรวจด้วยเครื่องได้หลัง Phase 12:
