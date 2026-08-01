@@ -212,6 +212,48 @@ def attach_communication(source_dir: Path, target: Path) -> dict:
     return {"attached": attached, "skipped": skipped}
 
 
+COMMUNICATION_LINK_MARKER = "## communication_glossary output"
+
+ARTIFACT_LABELS = {
+    "kg_raw_word.md": "Layer 1 — deterministic word/phrase graph, zero interpretation",
+    "kg_expert_layer.md": "Layer 2 — expert-framework vocabulary (AI-interpretive, Open tier)",
+    "glossary.md": "Layer 3 — issue-anchored communication glossary (mechanical merge)",
+    "skill_plan.md": "Layer 4 — Human / AI-orchestrator / AI-doer / AI-auditor role & skill plan",
+}
+
+
+def link_communication_in_readme(target: Path, attached: list[str]) -> bool:
+    """attach_communication() puts files in target/communication/, but nothing
+    in the scaffold's own docs points there — a human/AI reading README.md has
+    no way to discover it exists short of already knowing to look (the seam
+    was a file copy, not a real connection). This adds one discoverable,
+    idempotent pointer to README.md so Layer 1's word graph and Layer 4's
+    skill plan are actually surfaced where a reader would look first, not
+    just physically present on disk. Returns True iff it wrote anything."""
+    if not attached:
+        return False
+    readme = target / "README.md"
+    if not readme.exists():
+        return False
+    text = readme.read_text(encoding="utf-8")
+    if COMMUNICATION_LINK_MARKER in text:
+        return False
+    bullets = "\n".join(
+        f"- `communication/{name}` — {ARTIFACT_LABELS.get(name, name)}" for name in attached
+    )
+    note = (
+        f"\n\n{COMMUNICATION_LINK_MARKER}\n\n"
+        "This project's checkpoint has a `communication_glossary` pipeline output "
+        "attached (see `universal-issue-analysis/communication_glossary/`):\n\n"
+        f"{bullets}\n\n"
+        "Start with `skill_plan.md` if you're deciding who needs to know/do what; "
+        "start with `kg_raw_word.md` if you need the literal vocabulary this "
+        "checkpoint actually used, not an interpretation of it.\n"
+    )
+    readme.write_text(text + note, encoding="utf-8")
+    return True
+
+
 def _escape_cell(text: str) -> str:
     """Neutralize characters that would break a Markdown table row's column count,
     or corrupt an inline `code`/bold wrapper elsewhere in this file (backtick)."""
@@ -373,6 +415,8 @@ def main() -> None:
         skipped = attach_result["skipped"]
         if attached:
             print(f"ATTACHED {len(attached)} communication artifact(s) to target/communication/: {', '.join(attached)}")
+            if link_communication_in_readme(args.target, attached):
+                print("  LINKED target/README.md -> communication/ (discoverable pointer added)")
         else:
             print(f"ATTACHED 0 communication artifacts — none of {COMMUNICATION_ARTIFACTS} found in {args.attach_communication}")
         for name, reason in skipped:
