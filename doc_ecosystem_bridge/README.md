@@ -20,6 +20,38 @@ hypothesis card as a `hypothesis`-kind logbook entry plus an open question in
 `DECISIONS.md` — never as a settled `ADR`, because a hypothesis isn't settled until UIA's
 own phase 16 (`DECIDE`) picks a lane.
 
+## Status — 2026-08-01, communication_glossary <-> doc-eco seam closed (README pointer)
+
+Founder request (verbatim): "เชื่อมเรื่อง word และ skill_plan ให้เข้ากันกับ รอยต่อกับ doc eco"
+— connect Layer 1's word graph and Layer 4's skill plan so they're actually
+joined at the seam with doc-eco, not just physically present. Until now,
+`--attach-communication` copied the 4 files into `target/communication/` but
+nothing in the scaffold's own docs pointed there — a human/AI opening
+`README.md` (the doc-eco scaffold's own stated front door) had no way to
+discover `communication/` existed short of already knowing to look. Added
+`link_communication_in_readme()`: whenever `--attach-communication` actually
+attaches at least one file, it appends one idempotent `## communication_glossary
+output` section to `target/README.md` naming each attached file with what it
+is, ending with an explicit "start with `skill_plan.md` ... / start with
+`kg_raw_word.md` ..." pointer.
+
+Confirmed via real execution against the **real** `human-ai-doc-ecosystem` repo
+(not a scratch fixture) — `bridge.py <fintech checkpoint> <scratch target>
+--seed-docs --attach-communication communication_glossary/examples/fintech`
+against the actual `ANSE.ASIA/human-ai-doc-ecosystem` `init.mjs`:
+- `target/README.md` gained the new section with all 4 real filenames.
+- Re-running the identical command a second time: `grep -c` for the section
+  marker stays at 1 (idempotent, no duplicate section), and no `LINKED`
+  message prints on the second run (nothing to add).
+- `node tools/check_logbook.mjs` on the resulting real scaffold: `OK — every
+  entry is well formed`.
+- Edge cases tested directly (not just reasoned about): a target missing
+  `README.md` and an empty `attached` list both return `False` / no-op rather
+  than crashing.
+
+`pytest tests/ -q` (13/13) and `uia_protocol_kernel.py --self-test` (14/14)
+both re-confirmed unaffected.
+
 ## Status — 2026-08-01, SMOKE-TESTED (steps 1-4 of the test plan below)
 
 Written and reviewed against the real source of both repos (kernel schema, `init.mjs`,
@@ -232,6 +264,13 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
    source is a no-op if content is unchanged), refuses cleanly if the given
    directory doesn't exist, and is a graceful no-op (0 files attached) if none
    of the 4 known artifact filenames are present.
+6. Whenever step 5 actually attaches at least one file, also appends one
+   discoverable, idempotent pointer section (`## communication_glossary
+   output`) to the target's `README.md` naming each attached file with what
+   it is, so a human/AI opening the scaffold's own front door finds Layer 1's
+   word graph and Layer 4's skill plan instead of only finding them by
+   already knowing `communication/` exists — closing the gap where the two
+   systems were connected by a file copy but not by any actual cross-reference.
 
 ## What it deliberately does NOT do
 
