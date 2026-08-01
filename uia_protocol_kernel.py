@@ -610,24 +610,51 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
     ledger_ids: set[str] = set()
     hypothesis_ids: set[str] = set()
     simulated = bool(get_path(run, "metadata.simulation", False))
-    citation_required = {
-        "citation_id",
-        "title",
-        "authors_or_issuer",
-        "year",
-        "source_type",
-        "journal_or_repository",
-        "persistent_id_or_official_url",
-        "context_country_or_region",
-        "claim_supported_or_challenged",
-        "direction",
-        "quality",
-        "directness",
-        "context_fit",
-        "metadata_verification",
-        "scope_verification",
-        "retrieved_at",
-    }
+    # review_mode INTERNAL_DATA_AUDIT: same rigor (falsifier, source classes,
+    # result_status, citation_audit, the certainty/applicability enums below all
+    # still apply unconditionally) but the per-citation fields swap the
+    # literature-index vocabulary (authors_or_issuer, journal_or_repository,
+    # persistent_id_or_official_url) for an internal-system-of-record vocabulary,
+    # since the realistic evidence base for many operational issues is EHR/
+    # payment-ledger/sensor/ticketing logs, not published sources. Any other
+    # review_mode value (including the pre-existing TARGETED_SEARCH) keeps the
+    # original literature schema unchanged — fully backward compatible.
+    if evidence.get("review_mode") == "INTERNAL_DATA_AUDIT":
+        citation_required = {
+            "citation_id",
+            "title",
+            "source_system",
+            "query_or_filter",
+            "record_id_or_url",
+            "context_country_or_region",
+            "claim_supported_or_challenged",
+            "direction",
+            "quality",
+            "directness",
+            "context_fit",
+            "metadata_verification",
+            "scope_verification",
+            "retrieved_at",
+        }
+    else:
+        citation_required = {
+            "citation_id",
+            "title",
+            "authors_or_issuer",
+            "year",
+            "source_type",
+            "journal_or_repository",
+            "persistent_id_or_official_url",
+            "context_country_or_region",
+            "claim_supported_or_challenged",
+            "direction",
+            "quality",
+            "directness",
+            "context_fit",
+            "metadata_verification",
+            "scope_verification",
+            "retrieved_at",
+        }
     for index, ledger in enumerate(hypothesis_ledgers):
         if not isinstance(ledger, dict):
             errors.append(f"HYPOTHESIS_EVIDENCE_NOT_OBJECT:{index}")
@@ -781,9 +808,26 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(card, dict):
             errors.append(f"HYPOTHESIS_CARD_NOT_OBJECT:{index}")
             continue
+        # authority_assumptions is checked separately below: it may be genuinely
+        # empty when a hypothesis has no legal/authority dimension at all
+        # (legal_relevance=NONE, legal_status=NOT_REQUIRED) — forcing filler
+        # content there for e.g. a purely mechanical/signal-processing hypothesis
+        # would just add noise, not a real authority consideration.
         missing = sorted(
-            field for field in HYPOTHESIS_REQUIRED if not card.get(field)
+            field
+            for field in HYPOTHESIS_REQUIRED - {"authority_assumptions"}
+            if not card.get(field)
         )
+        authority_assumptions = card.get("authority_assumptions")
+        no_authority_dimension = (
+            card.get("legal_relevance") == "NONE"
+            and card.get("legal_status") == "NOT_REQUIRED"
+        )
+        if not isinstance(authority_assumptions, list):
+            missing.append("authority_assumptions")
+        elif not authority_assumptions and not no_authority_dimension:
+            missing.append("authority_assumptions")
+        missing = sorted(missing)
         if missing:
             errors.append(
                 f"HYPOTHESIS_CARD_MISSING:{index}:" + ",".join(missing)
@@ -815,6 +859,10 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
         )
         if mechanism:
             hypothesis_mechanisms.append(mechanism)
+        no_authority_dimension = (
+            card.get("legal_relevance") == "NONE"
+            and card.get("legal_status") == "NOT_REQUIRED"
+        )
         for list_field in {
             "conditions",
             "affected_agencies",
@@ -824,7 +872,13 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
             "uncertainties",
         }:
             value = card.get(list_field)
-            if not isinstance(value, list) or not value:
+            if not isinstance(value, list):
+                errors.append(
+                    f"HYPOTHESIS_CARD_LIST_EMPTY:{hypothesis_id}:{list_field}"
+                )
+            elif not value and not (
+                list_field == "authority_assumptions" and no_authority_dimension
+            ):
                 errors.append(
                     f"HYPOTHESIS_CARD_LIST_EMPTY:{hypothesis_id}:{list_field}"
                 )
@@ -1737,6 +1791,19 @@ def checkpoint_demo_run() -> dict[str, Any]:
     return run
 
 
+def checkpoint_demo_run_alt_domain() -> dict[str, Any]:
+    """A second, deliberately non-booking-app checkpoint fixture (industrial
+    vibration-sensor false-alarm rate), added 2026-08-01 after a 5-domain
+    real-usage simulation found `--print-checkpoint-demo` was the only reference
+    shape available and raised ambiguity about which of its content was a
+    structural requirement (e.g. Thai-language fields) versus example-locale
+    color. Genuinely validated end-to-end, not hand-waved — see
+    fixtures/checkpoint_demo_alt_domain.json (the actual source of truth this
+    loads) and docs/FIELD_REFERENCE.md's "A note on 'local'" section."""
+    path = Path(__file__).resolve().parent / "fixtures" / "checkpoint_demo_alt_domain.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def schema_summary() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2056,6 +2123,13 @@ def main(argv: list[str] | None = None) -> int:
     group.add_argument("--print-demo", action="store_true")
     group.add_argument("--checkpoint-demo", action="store_true")
     group.add_argument("--print-checkpoint-demo", action="store_true")
+    group.add_argument(
+        "--print-checkpoint-demo-2",
+        action="store_true",
+        help="a second, non-booking-app checkpoint fixture (industrial vibration-"
+        "sensor false-alarm rate) — a starting template for a different domain, "
+        "see docs/FIELD_REFERENCE.md",
+    )
     group.add_argument("--self-test", action="store_true")
     group.add_argument("--schema", action="store_true")
     group.add_argument("json_file", nargs="?")
@@ -2070,6 +2144,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.print_checkpoint_demo:
         emit(checkpoint_demo_run())
+        return 0
+    if args.print_checkpoint_demo_2:
+        emit(checkpoint_demo_run_alt_domain())
         return 0
     if args.demo:
         report = validate(demo_run())
