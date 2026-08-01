@@ -40,6 +40,51 @@ clean).
 
 **Not yet done:** step 5 (a real, non-demo UIA run).
 
+## Status — 2026-08-01, ultracode scenario-testing + 5 fixes
+
+An 11-agent ultracode Workflow ran 10 scenarios against `bridge.py` for real (crafted
+mutations of the demo fixture, actual execution, not reasoning-only). Found and this
+repo then fixed 5 issues, each re-verified by actually re-running the scenario that
+found it:
+
+1. **[MAJOR, fixed]** `append_decisions_open()` wrote hypothesis-card `mechanism`/`lane`
+   text into a Markdown table cell without escaping `|` — a schema-valid card
+   containing `|` corrupted the `DECISIONS.md` table's column count. Fixed with a
+   `_escape_cell()` helper (`\|` and newline neutralization). Re-verified: an injected
+   `|`/backtick mechanism string now produces a row with exactly 6 unescaped pipes
+   (5 columns), matching the header, in every row.
+2. **[MAJOR, fixed]** No idempotency/dedup guard — re-running the same UIA checkpoint
+   against a target that already ingested it silently duplicated every logbook entry
+   and DECISIONS.md row. Fixed by tracking `(checkpoint_ref, hypothesis_id)` pairs
+   already present in `logbook.jsonl` (`already_ingested()`) and skipping cards already
+   seen, with a `SKIPPED n hypothesis card(s) already ingested ...` message. Re-verified:
+   running the same checkpoint twice against the same target now stays at 4 logbook
+   lines / 3 DECISIONS.md rows (was 7/6 before the fix).
+3. **[MAJOR, fixed]** `append_decisions_open()` inserted new rows immediately after the
+   table header instead of after the last existing row, so a second batch's higher row
+   numbers ended up listed above the first batch's — non-ascending order. Fixed by
+   inserting after the last `|`-prefixed line in the table body instead of right after
+   the header marker. Re-verified: two distinct 5-card checkpoints run sequentially
+   against the same target now produce rows numbered 1-10 in strict ascending file
+   order (was 6-10 above 1-5 before the fix, confirmed non-ascending at 60+60-card
+   scale during the original scenario run).
+4. **[MINOR, fixed]** `append_logbook()` ran before `append_decisions_open()` with no
+   transaction, so a `DECISIONS.md` header-drift failure left `logbook.jsonl` already
+   written — an inconsistent partial-failure state. Fixed by swapping the order
+   (`DECISIONS.md` written first). Re-verified: against a target with a deliberately
+   corrupted `DECISIONS.md` header, a failed run now leaves both `logbook.jsonl`
+   (line count) and `DECISIONS.md` (md5) byte-for-byte unchanged.
+5. **[MINOR, fixed]** `json.loads()` on the run-record file had no error handling, so
+   malformed JSON surfaced as a raw 5-frame Python traceback. Fixed with a
+   `try/except json.JSONDecodeError`/`FileNotFoundError` around the load, producing a
+   `REFUSED: <path> is not valid JSON: <reason>` message instead. Re-verified: a
+   non-JSON input file now produces that one-line message, exit code 1, no traceback,
+   no target directory created.
+
+All 5 fixes re-verified together against the unmodified baseline scenario too (still
+22-file scaffold, 3 hypothesis entries, 3 DECISIONS.md rows, `check_logbook.mjs` clean)
+— no regression from the fixes.
+
 ## What changed on absorption
 
 Moving `bridge.py` from a sibling folder (`ANSE.ASIA/uia-doc-ecosystem-bridge/`) to
