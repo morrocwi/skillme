@@ -28,6 +28,18 @@ Only required if `run_control.continuation_policy == "RUN_FULL"` (past phase 12)
 - `checker` — generated only if continuation_policy=RUN_FULL
 - `final` — generated only if continuation_policy=RUN_FULL
 
+## `agency` — which subfields are actually kernel-enforced (2026-08-01)
+
+§4.3 of the narrative spec describes 12 conceptual agency roles (affected, observing, knowledge, voice, decision, intervention, resource, veto, accountable, oversight, represented, future/latent) and the demo fixture populates all of them — but a 10-domain fit test found agents assuming every one of those 12 was kernel-required and manufacturing filler content for domains with only 2-3 real actors talking directly (a single farmer, a coach and one athlete, a small ensemble). It was not required. The kernel (`validate()`, `AGENCY_ROLE_EMPTY`) only ever enforces these 5 as non-empty lists:
+
+- `accountable_parties`
+- `affected`
+- `decision_owners`
+- `intervention_owners`
+- `observers`
+
+The other 8 list-type fields in the demo fixture (`voice_holders`, `veto_or_consent_holders`, `oversight_parties`, `represented_or_absent_parties`, `resource_holders`, `knowledge_holders`, `future_or_indirect_parties`, `power_exposure_voice_gaps` — the last of which is a derived gap-analysis field, not one of §4.3's 12 named conceptual roles, so "5 enforced + 8 not" totals 13 fields against 12 roles, not a mismatch) are **not** checked for non-emptiness and may be left as `[]` when a domain genuinely has no distinct party in that role — e.g. a single-farmer decision has no separate "represented but absent" party to name. Leave them empty rather than inventing a party to satisfy an assumed requirement that isn't there. (`stakeholder_map_status` is checked separately, against `ENUMS["stakeholder_map_status"]`, and is always required regardless of agency size.)
+
 ## `run_control.continuation_policy`
 
 - `RUN_FULL`
@@ -75,12 +87,13 @@ A `VALID_CHECKPOINT` needs at least 3 hypothesis cards spanning **all three** of
 
 ## `hypothesis_evidence_challenge.review_mode`
 
-Free-text (not enum-constrained) with one recognized special value:
+Free-text (not enum-constrained) with two recognized special values:
 
-- `"TARGETED_SEARCH"` (or any other value) — each hypothesis's `citation_cards[*]` must carry the full literature-citation field set: `authors_or_issuer`, `year`, `source_type`, `journal_or_repository`, `persistent_id_or_official_url`, plus the fields shared with `INTERNAL_DATA_AUDIT` below. This is the original schema shape.
-- `"INTERNAL_DATA_AUDIT"` (2026-08-01) — for issues whose real evidence base is internal operational data (logs, tickets, sensor exports) rather than published literature. `citation_cards[*]` instead carry `source_system`, `query_or_filter`, `record_id_or_url` in place of the literature fields — everything else (falsifier, `source_classes_searched` length >= 2, `result_status`, `citation_audit == "PASS"`, the `global_certainty`/`local_applicability`/`evidence_balance`/`transfer_status` enums) is unchanged; this mode does not relax rigor, only the vocabulary of what counts as a citable source.
+- `"TARGETED_SEARCH"` (or any other value) — each hypothesis's `citation_cards[*]` must carry the full literature-citation field set: `authors_or_issuer`, `year`, `source_type`, `journal_or_repository`, `persistent_id_or_official_url`, `retrieved_at`, plus the fields shared across all modes below. This is the original schema shape.
+- `"INTERNAL_DATA_AUDIT"` (2026-08-01) — for issues whose real evidence base is internal operational data (logs, tickets, sensor exports) rather than published literature. `citation_cards[*]` instead carry `source_system`, `query_or_filter`, `record_id_or_url`, `retrieved_at` in place of the literature fields — everything else (falsifier, `source_classes_searched` length >= 2, `result_status`, `citation_audit == "PASS"`, the `global_certainty`/`local_applicability`/`evidence_balance`/`transfer_status` enums) is unchanged; this mode does not relax rigor, only the vocabulary of what counts as a citable source.
+- `"FIELD_OBSERVATION_LOG"` (2026-08-01) — for issues whose real evidence is a fresh sensory/field observation at the moment it was made (a baker's dough, a tagged tree at a census date, a coach's session notes), not a citable document or system log. `citation_cards[*]` instead carry `observer`, `observation_method`, `observed_at`, `location_or_context` — no `retrieved_at` (there is no separate "retrieval" step from a "publication" here). Same rigor otherwise as the other two modes.
 
-`citation_cards[*]` fields shared by both modes:
+`citation_cards[*]` fields shared across all three modes:
 
 - `citation_id`
 - `claim_supported_or_challenged`
@@ -90,7 +103,6 @@ Free-text (not enum-constrained) with one recognized special value:
 - `directness`
 - `metadata_verification`
 - `quality`
-- `retrieved_at`
 - `scope_verification`
 - `title`
 

@@ -636,6 +636,33 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
             "scope_verification",
             "retrieved_at",
         }
+    elif evidence.get("review_mode") == "FIELD_OBSERVATION_LOG":
+        # Same rigor as the other two modes (falsifier, source classes,
+        # result_status, citation_audit, the certainty/applicability enums
+        # below all still apply unconditionally) but the per-citation fields
+        # swap literature/internal-system vocabulary for a fresh-field-
+        # observation vocabulary — a 10-domain fit test found citation_cards'
+        # literature framing was dead weight in domains whose real evidence is
+        # a sensory/field readout at the moment of observation (a baker's
+        # dough, a tagged tree at a census date, a coach's session notes), not
+        # a citable document. `observed_at` replaces `retrieved_at` since
+        # there is no separate "retrieval" step from a "publication."
+        citation_required = {
+            "citation_id",
+            "title",
+            "observer",
+            "observation_method",
+            "observed_at",
+            "location_or_context",
+            "context_country_or_region",
+            "claim_supported_or_challenged",
+            "direction",
+            "quality",
+            "directness",
+            "context_fit",
+            "metadata_verification",
+            "scope_verification",
+        }
     else:
         citation_required = {
             "citation_id",

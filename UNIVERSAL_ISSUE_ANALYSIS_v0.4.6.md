@@ -104,6 +104,8 @@ UIA เป็นปรัชญาแบบ:
 
 UIA ไม่ยืนยันว่าโลกโดยตัวมันเองเป็น discrete ทั้งหมด และไม่ยืนยันว่า continuum ไม่มีอยู่ ข้อผูกพันขั้นต่ำมีเพียงว่า การวัด การคำนวณ การสื่อสาร และการตัดสินใจจริงทุกครั้งมาถึงเราเป็น finite readout
 
+**คำเตือนเรื่อง false precision เมื่อ reader คือประสาทสัมผัสมนุษย์ (เพิ่ม 2026-08-01, พบจาก 10-domain fit test):** คำว่า "retained difference" (\(\delta_R\)) ฟังดูเหมือนสัญญาว่าเป็นปริมาณที่วัดได้แม่นยำ ซึ่งจริงเมื่อ reader \(R\) คือเซนเซอร์หรือ log — แต่เมื่อ \(R\) คือประสาทสัมผัส/สุนทรียะของมนุษย์ (หูของ conductor ที่ฟัง ensemble, ลิ้นของพ่อครัวที่ชิม, สายตาของโค้ชที่ดู form) ตัว \(\delta_R\) เองก็ยังเป็น readout ที่ถูกต้องตามนิยาม (มีขอบเขต จำกัด ประกาศได้) แต่ **reproducibility ของมันต่ำกว่าที่คำว่า "retained difference" อาจชวนให้เข้าใจ** — หูของ conductor คนเดียวกันอาจได้ readout ต่างกันข้ามคืน ผู้ใช้ (มนุษย์หรือ AI) ต้องระบุ reader/instrument ที่ใช้จริงเสมอ (ตรงตาม §3.1's \(R\) = "เครื่องอ่าน เกณฑ์ หรือกระบวนการที่แยกสถานะ") และห้ามให้คำศัพท์ทางการของ UIA ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือกว่าที่เป็นจริง — นี่คือกฎการเขียนที่ใช้ได้ทุกครั้งที่ reader เป็นประสาทสัมผัสมนุษย์ ไม่ใช่แค่คำเตือนเฉพาะกรณีดนตรี
+
 ---
 
 ## 3. Root grammar
@@ -883,6 +885,15 @@ Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่
 ### 6.9.3 Alternate translation-loop reference (`readout_universe` Lens Law, informative only)
 
 `readout_universe`'s Lens Law/Ω_all 8-step loop (translate → grammar-gate → locate → bridge-audit → residual-form → identifiability-gate → tagged answer → translate-back-with-falsifier) มีรูปร่างขนานกับ §6.9.1 ข้างบน แต่ผูกกับ `research_universal_solver` เป็นหลัก ไม่ใช่ UIA — ใส่ไว้ที่นี่เป็น **การอ้างอิงเสริมเท่านั้น** (informative, ไม่ใช่ normative) สำหรับใครที่อยากเทียบโครงสร้างสองระบบ ไม่ใช่ requirement ใหม่ของ UIA
+
+### 6.9.4 Two refinements from a 10-domain fit test (2026-08-01)
+
+หลัง §6.9.1-6.9.3 ถูก merge เข้าโครงสร้างหลัก ultracode Workflow รัน issue→hypothesis จริงข้าม 10 โดเมนใหม่ (ดาราศาสตร์, เกษตรกรรม, ดนตรี, กฎหมาย, กีฬา, ผังเมือง, นิเวศวิทยา, วิทยาศาสตร์การอาหาร, ภาษาศาสตร์, military logistics) เพื่อเช็คว่าเชื่อมกับ root grammar ได้จริงไหม (ไม่ใช่แค่โครงสร้าง) ผล: `VALID_CHECKPOINT` 10/10, `GENUINE_FIT` 9/10 — แกนกลาง (\(\delta_R\), 3-lane hypothesis, `Dr`-tier discipline) ไม่มีจุดบกพร่องเลยแม้แต่โดเมนเดียว แต่พบ pattern friction ซ้ำ 2 จุดที่ไม่ใช่ที่แกน แต่ที่ schema รอบข้าง — แก้แล้วทั้งคู่:
+
+1. **Agency-taxonomy fields ไม่ได้บังคับทั้งหมดจริง — เอกสารแค่ไม่เคยพูดชัด** ตรวจสอบแล้วว่า kernel (`AGENCY_ROLE_EMPTY`) บังคับแค่ 5 field (`affected`, `observers`, `decision_owners`, `intervention_owners`, `accountable_parties`) ส่วนอีก 8 list-type field (`voice_holders`, `veto_or_consent_holders`, `oversight_parties`, `represented_or_absent_parties`, `resource_holders`, `knowledge_holders`, `future_or_indirect_parties`, `power_exposure_voice_gaps` — field สุดท้ายเป็น derived gap-analysis field ไม่ใช่หนึ่งใน 12 role ที่ §4.3 ตั้งชื่อไว้ ดังนั้น "5 บังคับ + 8 ไม่บังคับ" รวมเป็น 13 field เทียบกับ 12 role ไม่ใช่ตัวเลขขัดกันเอง) **ไม่เคยถูกบังคับเลย** — โดเมนที่มีผู้เกี่ยวข้องจริงแค่ 2-3 คนคุยกันตรงๆ (เกษตรกรคนเดียว, โค้ชกับนักกีฬา 1 คน, ensemble ดนตรีขนาดเล็ก) ปล่อยให้ 8 field นี้เป็น `[]` ได้เลยโดยไม่ต้อง manufacture เนื้อหา — รายละเอียดเต็มดูที่ `docs/FIELD_REFERENCE.md`'s agency section (auto-generated, ไม่ต้องแก้ตรงนี้อีกถ้า kernel เปลี่ยน)
+2. **เพิ่ม `review_mode` ที่สาม: `"FIELD_OBSERVATION_LOG"`** — ต่อจาก `TARGETED_SEARCH` (literature) และ `INTERNAL_DATA_AUDIT` (internal system log) ใน §6.17/kernel's `citation_cards[*]` schema สำหรับโดเมนที่หลักฐานจริงคือ sensory/field observation ณ จุดที่สังเกต (แป้งขนมปังใต้มือพ่อครัว, ต้นไม้ที่ tag ไว้ ณ วัน census, บันทึกเซสชันของโค้ช) ไม่ใช่เอกสารอ้างอิงหรือ log ระบบ — ใช้ `observer`/`observation_method`/`observed_at`/`location_or_context` แทน field แบบวรรณกรรม/ระบบ ความเข้มงวดอื่นเหมือนเดิมทั้งหมด (falsifier, `source_classes_searched`, `citation_audit == "PASS"` ฯลฯ) รายละเอียดเต็มที่ `docs/FIELD_REFERENCE.md`
+
+**ไม่แก้**: `Dr`-tier ceiling ของ §6.9.1 — เป็นส่วนที่ทำงานแม่นที่สุดในทั้ง 10 โดเมน แม้แต่โดเมนที่มี substrate เข้มงวดกว่าปกติ (ดาราศาสตร์: orbital mechanics ที่พิสูจน์ทางคณิตศาสตร์ได้) ก็ยังสรุปว่า claim ระดับ per-target disposition ควรอยู่ที่ `Dr` ไม่ใช่ `Th_coqc` อยู่ดี — ดูรายละเอียดที่ agent astronomy's fit_reasoning ในบันทึก session นี้
 
 ### 6.10 Open adapter registry
 
@@ -3584,6 +3595,15 @@ Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, ห�
 - เพิ่ม §6.9.2 Contaminated-concept guard — pointer ไปยัง `information-discrete-math`'s ตาราง 12 รายการ (มุม→overlap fraction, ระยะทาง→graph geodesic ฯลฯ) สำหรับใช้ตอน hypothesis แตะ continuum-math concept
 - เพิ่ม §6.9.3 อ้างอิงเสริม (informative) ถึง `readout_universe`'s Lens Law/Ω_all loop — ไม่ใช่ requirement ใหม่
 - เปิดเผยช่องว่างตรงๆ: UIA ไม่มีขั้นตอนแบบ R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) ของ `research_universal_solver` เพราะโดเมนที่ UIA ใช้งานจริง (organizational/software/policy) ไม่มี formal proof system ให้ตรวจแบบ physics/chemistry — ไม่ใช่ UIA ตั้งใจหย่อนมาตรฐาน แต่เป็นข้อจำกัดของธรรมชาติโดเมน
+
+### v0.4.8 — 10-domain fit-test refinements (2026-08-01)
+
+ต่อจาก v0.4.7 — รัน issue→hypothesis จริงข้าม 10 โดเมนใหม่ (ดาราศาสตร์, เกษตรกรรม, ดนตรี, กฎหมาย, กีฬา, ผังเมือง, นิเวศวิทยา, วิทยาศาสตร์การอาหาร, ภาษาศาสตร์, military logistics) เพื่อเช็คว่า §6.9.1's domain-mapping method เชื่อมกับ root grammar ได้จริงไหม ไม่ใช่แค่ผ่าน schema — ผล `VALID_CHECKPOINT` 10/10, `GENUINE_FIT` 9/10, `Dr`-tier ceiling ไม่มีจุดบกพร่องแม้แต่โดเมนเดียว **แตะ `uia_protocol_kernel.py` จริง** (ต่างจาก v0.4.7 ที่เป็น docs-only):
+
+- เพิ่ม `review_mode` ที่สาม `"FIELD_OBSERVATION_LOG"` — สำหรับโดเมนที่หลักฐานคือ sensory/field observation สด (แป้งขนมปัง, ต้นไม้ที่ tag ไว้, บันทึกเซสชันโค้ช) ไม่ใช่วรรณกรรมหรือ system log; ใช้ `observer`/`observation_method`/`observed_at`/`location_or_context` แทน field เดิม ความเข้มงวดอื่นไม่เปลี่ยน ทดสอบ backward-compat แล้วว่าไม่ปนกับอีกสอง mode (§6.9.4)
+- ยืนยันด้วยการทดสอบจริง (ไม่ใช่แค่อ่านโค้ด) ว่า agency's 8 field ที่ไม่ใช่ 5 field หลัก ไม่เคยถูก kernel บังคับเลย — เพิ่ม permanent regression test + เอกสารใน `docs/FIELD_REFERENCE.md` (§6.9.4)
+- เพิ่มคำเตือน false-precision ท้าย §2 สำหรับกรณี reader เป็นประสาทสัมผัสมนุษย์ (ไม่ใช่ sensor) — คำว่า "retained difference" ต้องไม่ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือเกินจริง
+- `pytest` 13/13 (เพิ่ม 4 test จาก 9 เดิม), kernel `--self-test` ไม่กระทบ (ไม่แตะ demo/checkpoint-demo fixture)
 
 ### v0.5 — Formal semantics and executable kernel
 

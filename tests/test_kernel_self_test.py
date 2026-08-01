@@ -155,3 +155,64 @@ def test_targeted_search_review_mode_still_requires_literature_citations():
     report = k.validate(run)
     assert report["protocol_status"] != "VALID_CHECKPOINT"
     assert any("CITATION_CARD_MISSING" in e for e in report["errors"])
+
+
+def _to_field_observation_card(citation: dict) -> dict:
+    citation = dict(citation)
+    for field in ("authors_or_issuer", "year", "source_type", "journal_or_repository", "persistent_id_or_official_url", "retrieved_at"):
+        citation.pop(field, None)
+    citation["observer"] = "test observer"
+    citation["observation_method"] = "direct visual inspection"
+    citation["observed_at"] = "2026-08-01T09:00:00+07:00"
+    citation["location_or_context"] = "test site"
+    return citation
+
+
+def test_field_observation_log_review_mode_accepts_field_observation_citations():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_evidence_challenge"]["review_mode"] = "FIELD_OBSERVATION_LOG"
+    for h in run["hypothesis_evidence_challenge"]["hypotheses"]:
+        h["citation_cards"] = [_to_field_observation_card(c) for c in h["citation_cards"]]
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_targeted_search_review_mode_rejects_field_observation_citations():
+    run = copy.deepcopy(_demo_checkpoint())
+    for h in run["hypothesis_evidence_challenge"]["hypotheses"]:
+        h["citation_cards"] = [_to_field_observation_card(c) for c in h["citation_cards"]]
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CITATION_CARD_MISSING" in e for e in report["errors"])
+
+
+def test_internal_data_audit_review_mode_rejects_field_observation_citations():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_evidence_challenge"]["review_mode"] = "INTERNAL_DATA_AUDIT"
+    for h in run["hypothesis_evidence_challenge"]["hypotheses"]:
+        h["citation_cards"] = [_to_field_observation_card(c) for c in h["citation_cards"]]
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CITATION_CARD_MISSING" in e for e in report["errors"])
+
+
+def test_small_direct_agency_may_leave_non_enforced_roles_empty():
+    # 10-domain fit test (2026-08-01) found agents manufacturing filler content
+    # for voice_holders/veto_or_consent_holders/represented_or_absent_parties/
+    # power_exposure_voice_gaps/oversight_parties/resource_holders/
+    # knowledge_holders/future_or_indirect_parties, assuming they were kernel-
+    # required — the kernel only ever enforced 5 agency fields
+    # (AGENCY_ROLE_EMPTY: affected, observers, decision_owners,
+    # intervention_owners, accountable_parties). This test locks in that this
+    # was already true, so it doesn't silently regress, and so the doc
+    # clarification (FIELD_REFERENCE.md) stays accurate.
+    run = copy.deepcopy(_demo_checkpoint())
+    for field in (
+        "voice_holders", "veto_or_consent_holders", "represented_or_absent_parties",
+        "power_exposure_voice_gaps", "oversight_parties", "resource_holders",
+        "knowledge_holders", "future_or_indirect_parties",
+    ):
+        if field in run["agency"]:
+            run["agency"][field] = []
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
