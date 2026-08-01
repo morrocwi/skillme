@@ -107,10 +107,13 @@ def main() -> None:
     )
     lines.append("")
     lines.append(
-        "The other 7 fields in the demo fixture "
+        "The other 8 list-type fields in the demo fixture "
         "(`voice_holders`, `veto_or_consent_holders`, `oversight_parties`, "
         "`represented_or_absent_parties`, `resource_holders`, `knowledge_holders`, "
-        "`future_or_indirect_parties`, `power_exposure_voice_gaps`) are **not** "
+        "`future_or_indirect_parties`, `power_exposure_voice_gaps` — the last of "
+        "which is a derived gap-analysis field, not one of §4.3's 12 named "
+        "conceptual roles, so \"5 enforced + 8 not\" totals 13 fields against 12 "
+        "roles, not a mismatch) are **not** "
         "checked for non-emptiness and may be left as `[]` when a domain "
         "genuinely has no distinct party in that role — e.g. a single-farmer "
         "decision has no separate \"represented but absent\" party to name. Leave "
