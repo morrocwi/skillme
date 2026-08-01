@@ -122,11 +122,12 @@ universal-issue-analysis/
 ├── docs/FIELD_REFERENCE.md               generated field-by-field reference (tools/generate_field_reference.py)
 ├── fixtures/checkpoint_demo_alt_domain.json  a second, non-booking-app checkpoint fixture
 ├── tools/generate_field_reference.py     regenerates docs/FIELD_REFERENCE.md from the kernel's own constants
-├── tests/test_kernel_self_test.py        pytest wrapper around the kernel's --self-test + fixtures
+├── tests/                                 pytest: kernel self-test + skill_plan.py/bridge.py coverage
+├── run_pipeline.py                       one-command orchestrator over the 4-layer pipeline below
 ├── doc_ecosystem_bridge/                 bridges a VALID_CHECKPOINT into a human-ai-doc-ecosystem project
 │   └── README.md                          bridge.py usage, design rationale, status history
-├── communication_glossary/               3-layer pipeline: checkpoint -> issue-anchored shared vocabulary
-│   └── README.md                          Layer 1/2/3 design, worked examples in examples/
+├── communication_glossary/               4-layer pipeline: checkpoint -> issue-anchored shared vocabulary + skill plan
+│   └── README.md                          Layer 1-4 design, worked examples in examples/
 ├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
 ├── llms.txt                              machine-readable doc index
 ├── CHANGELOG.md                          version history through v0.4.8
@@ -149,15 +150,21 @@ the Claude Code plugin above (clone the repo to use them):
   each hypothesis card as a `logbook.jsonl` entry, adds an open question per hypothesis to
   `DECISIONS.md`, and (with `--seed-docs`) drafts `GOAL.md`/`SPEC.md`/`PLAN.md` sections from
   already-validated checkpoint fields, clearly labeled as an AI draft.
-- **[`communication_glossary/`](communication_glossary/)** — a 3-layer pipeline that turns a
+- **[`communication_glossary/`](communication_glossary/)** — a 4-layer pipeline that turns a
   checkpoint into a shared vocabulary for anyone discussing the issue, **anchored to the issue
   itself, not to any one stakeholder's background** (e.g. what does an engineer need to know to
   discuss a symptom-tracker bug with clinical nursing triage, or a billing bug with an
   accountant): Layer 1 (`kg_extract.py`) is a deterministic word/phrase graph; Layer 2 is an
   AI-interpretive, WebSearch-verified "what named expert frameworks apply" step (documented
   procedure, not a script); Layer 3 (`build_glossary.py`) mechanically merges both, keeping only
-  high-confidence Layer 2 claims. See its README for the full tier discipline and 3 worked
-  examples (fintech, healthcare↔nursing, billing↔accounting).
+  high-confidence Layer 2 claims; Layer 4 (`skill_plan.py`) turns the checkpoint into a `Dr`-tier
+  role/skill plan (Human / AI-orchestrator / AI-doer / AI-auditor). See its README for the full
+  tier discipline and 3 worked examples (fintech, healthcare↔nursing, billing↔accounting).
+- **[`run_pipeline.py`](run_pipeline.py)** — a one-command orchestrator over both subsystems
+  above (it shells out to each script, reimplementing none of their logic): `python3
+  run_pipeline.py <checkpoint.json> --out-dir <dir> --kg-expert-layer <file>
+  [--doc-eco-target <dir>]`. Layer 2 still requires a real Agent/WebSearch call first (or pass
+  `--skip-layer2` for an honestly-labeled stub) — this script cannot and does not fake it.
 
 ## What the kernel actually checks (and doesn't)
 

@@ -152,6 +152,61 @@ each produces a real `skill_plan.md` with exactly the hypothesis cards that
 checkpoint actually has (3 each), confirming Layer 4 reads real checkpoint
 content rather than templating generic advice.
 
+## Status — 2026-08-01, v0.7 — one-command orchestrator + automated test coverage
+
+Founder request: "เชื่อมเลยให้พร้อมเป็นสถาปัตสกิลระดับโลก ultracode" — close the two
+readiness gaps named in an honest self-assessment given the same session: no single
+command to run the pipeline, and zero automated test coverage for `skill_plan.py`
+(two independent reviewer agents, PR #11 and PR #12, had each separately flagged
+the missing-tests gap as a real risk).
+
+- **`run_pipeline.py`** (repo root) — a thin one-command orchestrator. Shells out to
+  `kg_extract.py` / `build_glossary.py` / `skill_plan.py` / `doc_ecosystem_bridge/bridge.py`
+  as subprocesses; reimplements none of their logic (each script stays the single source
+  of truth for its own layer). Layer 2 still cannot be scripted (Agent+WebSearch
+  reasoning) — `--kg-expert-layer <file>` accepts an already-authored one, `--skip-layer2`
+  writes an honestly-labeled stub (never silently treated as real enrichment), and giving
+  neither refuses with a pointer to this README's Layer 2 prompt template. Validates the
+  checkpoint itself first, before spawning any subprocess. Confirmed via real execution
+  against 3 of the 4 worked examples plus an end-to-end run with `--doc-eco-target`
+  against the real `human-ai-doc-ecosystem` sibling repo (README pointer, logbook, and
+  DECISIONS.md rows all produced correctly in one command).
+- **`tests/test_skill_plan.py`** — 20 real pytest functions, added because none existed.
+  Covers every bug a prior ultracode scan + 2 independent reviews found and fixed (PR
+  #11/#12) as a regression test, not just the happy path: the `extract_open_questions()`
+  decoy-heading precedence fix, `_md_escape()`'s backtick neutralization, all 3
+  `review_mode` values plus "unrecognized" vs. "entirely missing" (two textually distinct
+  messages, asserted not to collapse), `hypothesis_cards`-as-dict / non-dict-element
+  guards, the zero-hypothesis-cards fallback line, and the kernel-validation refusal path
+  (both library-level and real CLI subprocess). An independent ultracode verify pass
+  confirmed these aren't tautological by reverting 2 of the real fixes in a scratch copy
+  and confirming the corresponding tests actually fail against the reverted code.
+- **`tests/test_bridge.py`** — 23 real pytest functions covering `attach_communication()`
+  (directory-at-filename skip, symlink-skip without following it, no stray temp files,
+  target/dest_dir-symlink refusal, missing/empty source dir, overwrite-on-change),
+  `link_communication_in_readme()` (idempotency, no-README no-op, empty-attached no-op,
+  no corruption of existing content), `_escape_cell()`, `seed_docs()`'s backtick
+  escaping, and `validate_checkpoint()`. Tests needing the real doc-eco sibling repo are
+  `pytest.mark.skipif`-guarded on `node` + the repo actually being present, and ran for
+  real (not skipped) in this environment. One MINOR gap the independent verify pass found
+  — the directory-skip test didn't isolate the dedicated guard it was meant to
+  regression-test, since a surrounding exception handler coincidentally produced a
+  similar-looking message — was fixed (exact-string assertion instead of a loose
+  substring match) and re-confirmed to actually fail against a reverted scratch copy.
+- Full regression: `pytest tests/ -q` → 56 passed (43 new + 13 pre-existing);
+  `uia_protocol_kernel.py --self-test` → 14/14. `README.md`/`llms.txt` updated (the "3-layer"
+  wording left over from before Layer 4 existed is now fixed to "4-layer" everywhere it
+  was found), and the plugin's `SKILL.md` gained a short section pointing an AI assistant
+  at this downstream pipeline + `run_pipeline.py` after reaching `STOP_AT_HYPOTHESIS`.
+
+Not fixed / explicitly out of scope for this pass (named honestly, not silently deferred):
+Thai/CJK tokenizer under-segmentation in `kg_extract.py` (would need a new `pythainlp`
+dependency — a real design decision for the founder, not something to add silently);
+cross-process locking for concurrent `bridge.py` invocations (already an accepted,
+documented limit from the v0.5 pass); every worked example so far, including this pass's
+own test fixtures, is still AI-constructed — no real human-entered issue has run through
+this system end-to-end yet.
+
 ## Status — 2026-08-01, v0.4, post-ultracode-review fixes
 
 Built and iterated across this session via 3 ultracode Workflow runs (adversarial
