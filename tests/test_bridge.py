@@ -377,7 +377,7 @@ def _sot_test_run():
                         },
                         {
                             "title": "[SimulatedData] fixture citation",
-                            "authors_or_issuer": "UIA fixture",
+                            "authors_or_issuer": "SkillMe fixture",
                             "year": 2026,
                             "source_type": "synthetic_fixture",
                             "quality": "LOW",
@@ -623,7 +623,7 @@ def test_validate_checkpoint_refuses_invalid_run_with_systemexit():
 def test_validate_checkpoint_accepts_real_demo_checkpoint():
     kernel = bridge.load_kernel(REPO_ROOT)
     result = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "uia_protocol_kernel.py"), "--print-checkpoint-demo"],
+        [sys.executable, str(REPO_ROOT / "skillme_protocol_kernel.py"), "--print-checkpoint-demo"],
         capture_output=True,
         text=True,
         check=True,

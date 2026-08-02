@@ -4,7 +4,7 @@ description: >
   Load before analyzing any reported issue, incident, complaint, conflict, risk, anomaly,
   policy question, or "what should we do about X" decision — software bugs, customer
   complaints, organizational conflicts, research anomalies, social/policy issues, and
-  everyday decisions all qualify. Gives the UIA (Universal Issue Analysis) protocol: a
+  everyday decisions all qualify. Gives the SkillMe protocol: a
   mandatory two-question intake gate before any analysis starts, retained-difference issue
   framing (an issue is not a name, it is a difference that survives under a declared
   agency/context/query), a stakeholder-agency map that separates who is affected from who
@@ -15,22 +15,22 @@ description: >
   stakeholder opinions into one verdict.
 ---
 
-# Universal Issue Analysis (UIA) — readout-first issue analysis protocol
+# SkillMe — readout-first issue analysis protocol
 
-**Developed by Yaoharee Lahtee.** UIA is a philosophy-first protocol for turning a reported
+**Developed by Yaoharee Lahtee.** SkillMe is a philosophy-first protocol for turning a reported
 issue into a finite, auditable analysis instead of a guessed answer. It is built on the same
 readout-first foundation as `information-discrete-math` and `readout_genesis`: everything you
 can act on is a **finite retained difference**, not the world itself.
 
 **Tier: `Dr` (design rationale)** — this is an architectural synthesis of established methods
 (RCA, FMEA, stakeholder mapping, GRADE, PRISMA, systems thinking, decision analysis), not a
-proven theorem. The bundled kernel (`uia_protocol_kernel.py`) only verifies **protocol
+proven theorem. The bundled kernel (`skillme_protocol_kernel.py`) only verifies **protocol
 structure** (required fields, enum validity, cross-references, gate order) — it does **not**
 verify that any domain claim, cause, or fix is actually true. Say so when you report results.
 
 This file is a self-contained operational summary shipped with the plugin. The canonical spec
-(`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`) and the standalone protocol kernel
-(`uia_protocol_kernel.py`) live in the full repo root — they are **not** installed with this
+(`SKILLME.md`) and the standalone protocol kernel
+(`skillme_protocol_kernel.py`) live in the full repo root — they are **not** installed with this
 plugin (a plugin install only pulls this `plugins/skillme/` subtree). Clone
 the whole repo if you need the full spec text or want to run the kernel yourself:
 `https://github.com/morrocwi/skillme`. Read the full spec before disputing an
@@ -47,7 +47,7 @@ unresolved are different things: **`0` = no relevant difference found under this
 
 ## Before you start analyzing anything: the Two-Question Intake Gate
 
-Every UIA run opens with exactly two questions, asked together, before any translation,
+Every SkillMe run opens with exactly two questions, asked together, before any translation,
 stakeholder mapping, causal analysis, or candidate generation happens:
 
 1. **Q1 — Issue:** "Issue คืออะไร? กรุณาอธิบายสิ่งที่เกิดขึ้นหรือประเด็นที่ต้องการให้วิเคราะห์" /
@@ -131,7 +131,7 @@ evidence for/against each hypothesis (global + local) → the user's proposal an
 to it → three-lane candidates with trade-offs → recommended first (smallest reversible) test →
 who decides/acts/checks → how you'll know it worked → what would make you revise this.
 
-Internal UIA vocabulary (`retained difference`, `agency readout`, `quotient`) stays in the
+Internal SkillMe vocabulary (`retained difference`, `agency readout`, `quotient`) stays in the
 technical/audit trail — don't force the user to learn it unless they ask.
 
 ## Downstream: turning a checkpoint into shared vocabulary + a project doc trail
@@ -168,11 +168,11 @@ turn a checkpoint into artifacts the people in step 3's agency map actually need
 ## Verify before you claim
 
 The kernel is not part of this plugin subtree — clone the full repo (see above) to run it.
-`python3 uia_protocol_kernel.py --self-test` runs 14 structural test cases (happy path +
+`python3 skillme_protocol_kernel.py --self-test` runs 14 structural test cases (happy path +
 violation cases) against the bundled reference implementation — stdlib-only, no network. Run
 it yourself before repeating any pass/fail claim about the kernel; do not take this file's
 prose on trust.
 ```
-$ python3 uia_protocol_kernel.py --self-test
+$ python3 skillme_protocol_kernel.py --self-test
 {"status": "PASS", "passed": 14, "test_count": 14, ...}
 ```

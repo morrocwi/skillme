@@ -98,7 +98,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H1",
             "claim_supported_or_challenged": "H1 boundary",
             "context_country_or_region": "synthetic/plant-floor",
@@ -174,7 +174,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H2",
             "claim_supported_or_challenged": "H2 boundary",
             "context_country_or_region": "synthetic/plant-floor",
@@ -250,7 +250,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H3",
             "claim_supported_or_challenged": "H3 boundary",
             "context_country_or_region": "synthetic/plant-floor",
@@ -321,7 +321,7 @@
       }
     ],
     "review_mode": "TARGETED_SEARCH",
-    "search_protocol_id": "SEARCH-UIA-ALT-DEMO",
+    "search_protocol_id": "SEARCH-SKILLME-ALT-DEMO",
     "status": "EVIDENCE_CHALLENGE_COMPLETE",
     "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
     "target_context": {
@@ -333,7 +333,7 @@
     }
   },
   "hypothesis_portfolio": {
-    "checkpoint_certificate": "HYP-UIA-ALT-DEMO-001",
+    "checkpoint_certificate": "HYP-SKILLME-ALT-DEMO-001",
     "diversity_test": "PASS",
     "evidence_linkage_test": "PASS",
     "hypothesis_cards": [
@@ -484,7 +484,7 @@
     "zero_semantics": "no alert under frozen readout that lacks an eventual confirmed-fault determination"
   },
   "metadata": {
-    "fixture_id": "UIA-alt-domain-manufacturing-sensor-fatigue-001",
+    "fixture_id": "SKILLME-alt-domain-manufacturing-sensor-fatigue-001",
     "label": "[SimulatedData]",
     "simulation": true
   },
@@ -527,7 +527,7 @@
   },
   "run_control": {
     "continuation_policy": "STOP_AT_HYPOTHESIS",
-    "continuation_record": "CONT-UIA-ALT-HYP-DEMO-001",
+    "continuation_record": "CONT-SKILLME-ALT-HYP-DEMO-001",
     "requested_by": "built-in alt-domain checkpoint demo"
   },
   "system_graph": {
@@ -561,7 +561,7 @@
       "maintenance-log linkage",
       "technician-response audit"
     ],
-    "canonical_uia_mapping": "retained difference between sensor-triggered alert rate and confirmed-fault rate",
+    "canonical_skillme_mapping": "retained difference between sensor-triggered alert rate and confirmed-fault rate",
     "loss_audit": "PASS",
     "raw_user_expression": "sensors keep crying wolf and my techs are starting to ignore them",
     "selected_domain_projection": "alert precision / technician trust in industrial monitoring",
@@ -569,7 +569,7 @@
     "user_facing_issue_statement": "Vibration sensors on Line 4 raise far more maintenance alerts than there are real faults, and technicians have begun delaying response."
   },
   "two_question_intake": {
-    "certificate": "J2-UIA-ALT-001",
+    "certificate": "J2-SKILLME-ALT-001",
     "entry_status": "INTAKE_COMPLETE",
     "q1_answer_verbatim": "Line 4 vibration sensors trigger maintenance alerts several times per shift, but technicians confirm an actual fault in only a small fraction of those alerts, and they have started delaying response to new alerts.",
     "q1_prompt": "What is the issue?",

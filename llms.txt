@@ -1,4 +1,4 @@
-# Universal Issue Analysis (UIA)
+# SkillMe
 
 > A philosophy-first protocol for analyzing any reported issue — software incident, complaint,
 > conflict, policy question, research anomaly, everyday decision — as a finite, auditable
@@ -17,7 +17,7 @@ follow its discovery order before making any capability or correctness claim.
   order, and how to verify the kernel's self-test yourself.
 - [README.md](/README.md): Full framing, tier-honesty statement, quickstart (Claude Code plugin
   install and standalone kernel usage), repository map, downstream tooling overview.
-- [UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md](/UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md): The canonical,
+- [SKILLME.md](/SKILLME.md): The canonical,
   normative spec — thesis, root grammar (with verified external lineage to `readout_genesis`),
   entities, axioms, the full 20-phase protocol, the two-question intake gate, the domain-mapping
   method (§6.9.1-6.9.4), the hypothesis evidence challenge protocol, the three-lane candidate
@@ -42,11 +42,11 @@ follow its discovery order before making any capability or correctness claim.
 
 ## Verification (run this yourself — do not take claims on trust)
 
-- `python3 uia_protocol_kernel.py --self-test`: 14 structural test cases (happy path +
+- `python3 skillme_protocol_kernel.py --self-test`: 14 structural test cases (happy path +
   deliberate violation cases) against the reference kernel — stdlib only, no network.
 - `python3 -m pytest tests/ -q`: pytest wrapper around the self-test plus demo/checkpoint-demo
   fixtures.
-- `python3 uia_protocol_kernel.py --print-demo` / `--print-checkpoint-demo`: prints the full
+- `python3 skillme_protocol_kernel.py --print-demo` / `--print-checkpoint-demo`: prints the full
   `[SimulatedData]`-labeled example run records referenced throughout the spec and README.
 
 ## Install as a Claude Code skill

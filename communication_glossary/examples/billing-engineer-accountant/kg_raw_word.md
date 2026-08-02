@@ -1,4 +1,4 @@
-# kg_raw_word — HYP-UIA-BILLING-ACCT-DEMO-001
+# kg_raw_word — HYP-SKILLME-BILLING-ACCT-DEMO-001
 
 **PROTOTYPE output.** Raw, typed, fully-traceable word extraction — not a semantic KG yet. No relation was invented; every edge below reflects only "this word literally appeared in this schema field of this source." See the script docstring for the stated tokenization limitation (unspaced formal Thai/CJK under-tokenizes).
 
@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart TD
-  CKPT["HYP-UIA-BILLING-ACCT-DEMO-001"]
+  CKPT["HYP-SKILLME-BILLING-ACCT-DEMO-001"]
   CKPT --> CARD_H1_106530dc["H1"]
   CARD_H1_106530dc --> CARD_H1_106530dc_BKT_ROLE_612f9988["ROLE"]
   CARD_H1_106530dc_BKT_ROLE_612f9988 --> W_ROLE_engineering_5d554bc5(["engineering"])

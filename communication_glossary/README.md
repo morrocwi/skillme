@@ -1,6 +1,6 @@
 # communication_glossary
 
-A 4-layer pipeline that sits downstream of a UIA `VALID_CHECKPOINT` (this repo's
+A 4-layer pipeline that sits downstream of a SkillMe `VALID_CHECKPOINT` (this repo's
 own hypothesis-portfolio output) and produces a shared vocabulary for anyone who
 needs to discuss the issue — **anchored to the issue/domain itself, not to any one
 stakeholder role** (founder's explicit correction, 2026-08-01: "ไม่ใช่เอาทางใดทางหนึ่ง
@@ -13,7 +13,7 @@ should surface the shared vocabulary both of them need — not a vocabulary spli
 
 ### Layer 1 — `kg_extract.py` (deterministic readout)
 
-Takes a UIA checkpoint JSON and extracts a typed word/phrase graph
+Takes a SkillMe checkpoint JSON and extracts a typed word/phrase graph
 (`kg_raw_word.md`: a Mermaid DAG + word table) with **zero interpretation**. Every
 node is a literal fact: "this word/phrase appeared in this exact schema field of
 this exact hypothesis card." No LLM, no invented relations, no invented content —
@@ -107,9 +107,9 @@ Purely mechanical — no new LLM calls, no new WebSearch. Merges Layer 1 + Layer
 output per issue into one glossary, filtering Layer 2 down to only `HIGH` /
 `VERIFIED-VIA-SEARCH` confidence items (MEDIUM/uncertain items are deliberately
 excluded from the glossary itself — a communication glossary should lead with
-what's actually solid). Separately isolates UIA-protocol-internal vocabulary (lane
+what's actually solid). Separately isolates SkillMe-protocol-internal vocabulary (lane
 names like `KNOWN_DIRECT`, causal_tier names like `MECHANISM_HYPOTHESIS`,
-`review_mode` values) into an appendix — that's machinery of the UIA method itself,
+`review_mode` values) into an appendix — that's machinery of the SkillMe method itself,
 not vocabulary an engineer or a nurse needs to discuss the actual issue.
 
 ```bash
@@ -247,7 +247,7 @@ tracked here for the next iteration, not silently deferred):
   substring matching, with no structured format enforcing it — a phrasing
   deviation (e.g. `confidence: high` lowercase, or a missing colon) could silently
   drop a framework from the glossary with no error raised. Not yet stress-tested.
-- The UIA checkpoint validator (`uia_protocol_kernel.py`) checks structural
+- The SkillMe checkpoint validator (`skillme_protocol_kernel.py`) checks structural
   completeness only, not factual accuracy — a `VALID_CHECKPOINT` can contain a
   wrong citation author/DOI (confirmed: happened for real during the
   full-pipeline test, caught only by the separate Layer-2 WebSearch step, not by
@@ -260,7 +260,7 @@ tracked here for the next iteration, not silently deferred):
 - No single orchestrating command runs all 3 layers — a user needs to know each
   script's CLI signature. `docs/FIELD_REFERENCE.md` (repo root) also doesn't yet
   document the `international_track`/`local_context_track.result_status` contract;
-  a first-time user has to read `uia_protocol_kernel.py` source directly for that.
+  a first-time user has to read `skillme_protocol_kernel.py` source directly for that.
 
 **Cross-discipline confirmation (2026-08-01):** two more worked examples were run
 end-to-end specifically to test the founder's original framing directly — "if an

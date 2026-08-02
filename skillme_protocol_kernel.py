@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UIA v0.4.8 standalone protocol kernel.
+"""SkillMe v0.4.8 standalone protocol kernel.
 
 This standard-library-only reference implementation validates protocol
 structure and state transitions. It does not establish the truth, causal
@@ -1225,12 +1225,12 @@ def demo_run() -> dict[str, Any]:
         "run_control": {
             "continuation_policy": "RUN_FULL",
             "requested_by": "built-in demo",
-            "continuation_record": "CONT-UIA-046-DEMO-001",
+            "continuation_record": "CONT-SKILLME-046-DEMO-001",
         },
         "metadata": {
             "label": "[SimulatedData]",
             "simulation": True,
-            "fixture_id": "UIA-046-E2E-WEB-BOOKING-001",
+            "fixture_id": "SKILLME-046-E2E-WEB-BOOKING-001",
         },
         "two_question_intake": {
             "q1_prompt": "Issue คืออะไร?",
@@ -1244,7 +1244,7 @@ def demo_run() -> dict[str, Any]:
             ),
             "q2_presence": "PROPOSAL_PRESENT",
             "entry_status": "INTAKE_COMPLETE",
-            "certificate": "J2-UIA-046-DEMO",
+            "certificate": "J2-SKILLME-046-DEMO",
         },
         "emergency_containment": {"status": "NOT_TRIGGERED"},
         "registration": {
@@ -1304,7 +1304,7 @@ def demo_run() -> dict[str, Any]:
                 "กดยืนยันแล้วค้าง ไม่รู้ว่าจองสำเร็จหรือไม่"
             ),
             "selected_domain_projection": "booking state/readout mismatch",
-            "canonical_uia_mapping": (
+            "canonical_skillme_mapping": (
                 "retained difference between customer readout and booking state"
             ),
             "topology": "NETWORK",
@@ -1364,7 +1364,7 @@ def demo_run() -> dict[str, Any]:
             "causal_tier": "MECHANISM_CANDIDATE",
         },
         "hypothesis_evidence_challenge": {
-            "search_protocol_id": "SEARCH-UIA-046-DEMO",
+            "search_protocol_id": "SEARCH-SKILLME-046-DEMO",
             "frozen_at": "2026-07-31T00:00:00+07:00",
             "target_context": {
                 "country": "Thailand",
@@ -1419,7 +1419,7 @@ def demo_run() -> dict[str, Any]:
                         {
                             "citation_id": "SIM-CIT-H1",
                             "title": "[SimulatedData] H1 evidence record",
-                            "authors_or_issuer": "UIA fixture",
+                            "authors_or_issuer": "SkillMe fixture",
                             "year": 2026,
                             "source_type": "synthetic_fixture",
                             "journal_or_repository": "built-in fixture",
@@ -1481,7 +1481,7 @@ def demo_run() -> dict[str, Any]:
                         {
                             "citation_id": "SIM-CIT-H2",
                             "title": "[SimulatedData] H2 evidence record",
-                            "authors_or_issuer": "UIA fixture",
+                            "authors_or_issuer": "SkillMe fixture",
                             "year": 2026,
                             "source_type": "synthetic_fixture",
                             "journal_or_repository": "built-in fixture",
@@ -1543,7 +1543,7 @@ def demo_run() -> dict[str, Any]:
                         {
                             "citation_id": "SIM-CIT-H3",
                             "title": "[SimulatedData] H3 evidence record",
-                            "authors_or_issuer": "UIA fixture",
+                            "authors_or_issuer": "SkillMe fixture",
                             "year": 2026,
                             "source_type": "synthetic_fixture",
                             "journal_or_repository": "built-in fixture",
@@ -1705,7 +1705,7 @@ def demo_run() -> dict[str, Any]:
             "diversity_test": "PASS",
             "evidence_linkage_test": "PASS",
             "proposal_comparison_status": "COMPLETE",
-            "checkpoint_certificate": "HYP-UIA-046-DEMO-001",
+            "checkpoint_certificate": "HYP-SKILLME-046-DEMO-001",
             "status": "HYPOTHESIS_PORTFOLIO_READY",
         },
         "candidate_portfolio": {
@@ -1745,7 +1745,7 @@ def demo_run() -> dict[str, Any]:
                 {
                     "candidate_id": "C-GT",
                     "lane": "GENERATIVE_TRANSFORMATIVE",
-                    "knowledge_basis": "UIA finite readout design",
+                    "knowledge_basis": "SkillMe finite readout design",
                     "mechanism_id": "recovery_state",
                     "hypothesis": "binary success/fail UI collapses recoverable states",
                     "intervention": "finite customer-visible recovery state machine",
@@ -1806,7 +1806,7 @@ def checkpoint_demo_run() -> dict[str, Any]:
     run["run_control"]["continuation_policy"] = "STOP_AT_HYPOTHESIS"
     run["run_control"]["requested_by"] = "built-in checkpoint demo"
     run["run_control"]["continuation_record"] = (
-        "CONT-UIA-046-HYP-DEMO-001"
+        "CONT-SKILLME-046-HYP-DEMO-001"
     )
     for field in {
         "candidate_portfolio",
@@ -1834,8 +1834,8 @@ def checkpoint_demo_run_alt_domain() -> dict[str, Any]:
 def schema_summary() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/uia/0.4.8/run.schema.json",
-        "title": "UIA v0.4.8 finite issue protocol with resumable checkpoint",
+        "$id": "https://example.invalid/skillme/0.4.8/run.schema.json",
+        "title": "SkillMe v0.4.8 finite issue protocol with resumable checkpoint",
         "type": "object",
         "required": [
             "protocol_version",
@@ -1865,7 +1865,7 @@ def schema_summary() -> dict[str, Any]:
             "checker": {"type": "object"},
             "final": {"type": "object"},
         },
-        "x-uia-note": (
+        "x-skillme-note": (
             "Use this script's validate() for cross-field semantic invariants."
         ),
     }
@@ -2143,7 +2143,7 @@ def emit(data: Any) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate UIA v0.4.8 resumable protocol records."
+        description="Validate SkillMe v0.4.8 resumable protocol records."
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--demo", action="store_true")

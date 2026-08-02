@@ -1,10 +1,10 @@
-# Universal Issue Analysis
+# SkillMe
 ## ปรัชญาการวิเคราะห์ประเด็นสากลบนฐาน Readout Genesis และ Information Discrete Mathematics
 
-**Document ID:** `UIA-CORE`  
+**Document ID:** `SKILLME-CORE`  
 **Version:** `0.4.8`  
 **Status:** `STANDALONE_REFERENCE_SPECIFICATION_WITH_EXECUTABLE_PROTOCOL_KERNEL`  
-**Authorial lineage:** Yaoharee Lahtee — Readout Genesis → Information Discrete Mathematics → Universal Issue Analysis  
+**Authorial lineage:** Yaoharee Lahtee — Readout Genesis → Information Discrete Mathematics → SkillMe  
 **Intended use:** human reasoning, AI reasoning, organizational analysis, policy analysis, research, software incidents, social issues, and everyday decisions  
 **Claim boundary:** เอกสารนี้เป็นการสังเคราะห์เชิงปรัชญาและสถาปัตยกรรมระดับ `Dr` จนกว่านิยามใหม่แต่ละส่วนจะมีตัวพิสูจน์ โปรแกรมทดสอบ หลักฐานภาคสนาม และการตรวจสอบอิสระของตนเอง คำว่า `Universal` หมายถึงภาษากลางและ protocol ที่เปิดรับ domain adapters ไม่ได้หมายความว่าระบบบรรจุความรู้ทั้งหมดของโลกหรือรับประกันคำตอบถูกต้องในทุกกรณี
 
@@ -12,7 +12,7 @@
 
 ## 0. Standalone use and normative authority
 
-เอกสารนี้เป็น specification ที่อ่านและใช้งานได้โดยไม่ต้องอ่านรุ่นก่อนหรือบทสนทนาที่สร้างมันขึ้นมา ส่วน executable companion คือ `uia_protocol_kernel_v0_4_6.py` ซึ่งใช้ Python standard library เท่านั้น มี schema checks, state transitions, emergency-containment bypass, hypothesis-evidence challenge, resumable hypothesis checkpoint, protocol verdicts และ end-to-end fixtures อยู่ในไฟล์เดียว
+เอกสารนี้เป็น specification ที่อ่านและใช้งานได้โดยไม่ต้องอ่านรุ่นก่อนหรือบทสนทนาที่สร้างมันขึ้นมา ส่วน executable companion คือ `skillme_protocol_kernel.py` ซึ่งใช้ Python standard library เท่านั้น มี schema checks, state transitions, emergency-containment bypass, hypothesis-evidence challenge, resumable hypothesis checkpoint, protocol verdicts และ end-to-end fixtures อยู่ในไฟล์เดียว
 
 ลำดับอำนาจเมื่อข้อความหลายส่วนดูเหมือนขัดกัน:
 
@@ -31,7 +31,7 @@
 - หากเอกสารกับ runtime ไม่ตรงกัน ให้หยุดที่ `SPEC_RUNTIME_DRIFT` และเปิด correction record
 
 **2026-08-01 known drift (documented, not yet reconciled inline in this narrative
-spec):** `uia_protocol_kernel.py`'s `validate()` gained two runtime-only extensions
+spec):** `skillme_protocol_kernel.py`'s `validate()` gained two runtime-only extensions
 that this document's inline schema fragments (e.g. §ที่มี `authority_assumptions:
 [REQUIRED_NONEMPTY]` และ `review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED`) do not
 yet reflect — per the drift rule above, the **runtime is authoritative**:
@@ -55,7 +55,7 @@ truth for validator behavior.
 
 ### 0.1 Claim-preserving continuation contract
 
-UIA v0.4.6 **ไม่ลด** canonical workflow, claim boundary หรือความสามารถของ phases 13–19 แต่เพิ่มจุดหยุดที่ตรวจด้วยเครื่องได้หลัง Phase 12:
+SkillMe v0.4.6 **ไม่ลด** canonical workflow, claim boundary หรือความสามารถของ phases 13–19 แต่เพิ่มจุดหยุดที่ตรวจด้วยเครื่องได้หลัง Phase 12:
 
 ```yaml
 run_control:
@@ -84,7 +84,7 @@ run_control:
 4. มีคำถาม เกณฑ์ คุณค่า เป้าหมาย หรือสิทธิที่ทำให้ความแตกต่างนั้นเกี่ยวข้อง
 5. มี readout ที่แยกได้ว่า issue ถูกยืนยัน ไม่พบภายใต้เกณฑ์ ยังตัดสินไม่ได้ หรือ protocol ใช้ไม่ได้
 
-ดังนั้น Universal Issue Analysis ไม่เริ่มจากคำว่า “ปัญหาคืออะไร” แต่เริ่มจากคำถามว่า:
+ดังนั้น SkillMe ไม่เริ่มจากคำว่า “ปัญหาคืออะไร” แต่เริ่มจากคำถามว่า:
 
 > **ความแตกต่างใดถูกเก็บไว้ ใครหรืออะไรสามารถอ่านหรือได้รับผลจากมัน ภายใต้บริบทใด และเรามีสิทธิ์กล่าวอ้างได้ไกลเพียงใด**
 
@@ -92,7 +92,7 @@ run_control:
 
 ## 2. Philosophical position
 
-UIA เป็นปรัชญาแบบ:
+SkillMe เป็นปรัชญาแบบ:
 
 - **discrete-first:** เริ่มจากเหตุการณ์ บันทึก ขั้นตอน และความแตกต่างที่มีขอบเขต
 - **readout-first:** สิ่งที่รายงานได้ต้องผ่าน operator และเกณฑ์การอ่านที่ประกาศ
@@ -102,9 +102,9 @@ UIA เป็นปรัชญาแบบ:
 - **rights-aware:** สิทธิ คุณค่า และอำนาจต้องประกาศ ไม่ซ่อนเป็นข้อเท็จจริง
 - **intervention-accountable:** การวิเคราะห์ไม่จบที่คำอธิบาย แต่ต้องติดตามผลและผลข้างเคียงของการกระทำ
 
-UIA ไม่ยืนยันว่าโลกโดยตัวมันเองเป็น discrete ทั้งหมด และไม่ยืนยันว่า continuum ไม่มีอยู่ ข้อผูกพันขั้นต่ำมีเพียงว่า การวัด การคำนวณ การสื่อสาร และการตัดสินใจจริงทุกครั้งมาถึงเราเป็น finite readout
+SkillMe ไม่ยืนยันว่าโลกโดยตัวมันเองเป็น discrete ทั้งหมด และไม่ยืนยันว่า continuum ไม่มีอยู่ ข้อผูกพันขั้นต่ำมีเพียงว่า การวัด การคำนวณ การสื่อสาร และการตัดสินใจจริงทุกครั้งมาถึงเราเป็น finite readout
 
-**คำเตือนเรื่อง false precision เมื่อ reader คือประสาทสัมผัสมนุษย์ (เพิ่ม 2026-08-01, พบจาก 10-domain fit test):** คำว่า "retained difference" (\(\delta_R\)) ฟังดูเหมือนสัญญาว่าเป็นปริมาณที่วัดได้แม่นยำ ซึ่งจริงเมื่อ reader \(R\) คือเซนเซอร์หรือ log — แต่เมื่อ \(R\) คือประสาทสัมผัส/สุนทรียะของมนุษย์ (หูของ conductor ที่ฟัง ensemble, ลิ้นของพ่อครัวที่ชิม, สายตาของโค้ชที่ดู form) ตัว \(\delta_R\) เองก็ยังเป็น readout ที่ถูกต้องตามนิยาม (มีขอบเขต จำกัด ประกาศได้) แต่ **reproducibility ของมันต่ำกว่าที่คำว่า "retained difference" อาจชวนให้เข้าใจ** — หูของ conductor คนเดียวกันอาจได้ readout ต่างกันข้ามคืน ผู้ใช้ (มนุษย์หรือ AI) ต้องระบุ reader/instrument ที่ใช้จริงเสมอ (ตรงตาม §3.1's \(R\) = "เครื่องอ่าน เกณฑ์ หรือกระบวนการที่แยกสถานะ") และห้ามให้คำศัพท์ทางการของ UIA ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือกว่าที่เป็นจริง — นี่คือกฎการเขียนที่ใช้ได้ทุกครั้งที่ reader เป็นประสาทสัมผัสมนุษย์ ไม่ใช่แค่คำเตือนเฉพาะกรณีดนตรี
+**คำเตือนเรื่อง false precision เมื่อ reader คือประสาทสัมผัสมนุษย์ (เพิ่ม 2026-08-01, พบจาก 10-domain fit test):** คำว่า "retained difference" (\(\delta_R\)) ฟังดูเหมือนสัญญาว่าเป็นปริมาณที่วัดได้แม่นยำ ซึ่งจริงเมื่อ reader \(R\) คือเซนเซอร์หรือ log — แต่เมื่อ \(R\) คือประสาทสัมผัส/สุนทรียะของมนุษย์ (หูของ conductor ที่ฟัง ensemble, ลิ้นของพ่อครัวที่ชิม, สายตาของโค้ชที่ดู form) ตัว \(\delta_R\) เองก็ยังเป็น readout ที่ถูกต้องตามนิยาม (มีขอบเขต จำกัด ประกาศได้) แต่ **reproducibility ของมันต่ำกว่าที่คำว่า "retained difference" อาจชวนให้เข้าใจ** — หูของ conductor คนเดียวกันอาจได้ readout ต่างกันข้ามคืน ผู้ใช้ (มนุษย์หรือ AI) ต้องระบุ reader/instrument ที่ใช้จริงเสมอ (ตรงตาม §3.1's \(R\) = "เครื่องอ่าน เกณฑ์ หรือกระบวนการที่แยกสถานะ") และห้ามให้คำศัพท์ทางการของ SkillMe ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือกว่าที่เป็นจริง — นี่คือกฎการเขียนที่ใช้ได้ทุกครั้งที่ reader เป็นประสาทสัมผัสมนุษย์ ไม่ใช่แค่คำเตือนเฉพาะกรณีดนตรี
 
 ---
 
@@ -122,9 +122,9 @@ F\ (\text{MQ.08 stepper})
 \{\,q_D : q_D\circ F=F_D^\#\circ q_D\,\}
 \]
 
-Tier tag ไม่ใช่ของตกแต่ง — เป็นส่วนที่ทำให้สมการนี้ตรง Axiom A12 (Tier Honesty, §5) ของ UIA เอง: link แรก (`L_R=D_W-W`) เป็น machine-checked axiom-free over ℚ ในต้นทาง (`Th_coqc`) ส่วน link ที่สอง (`F` ในฐานะ MQ.08 stepper) เป็นเพียง **declared bridge** (`Dr`) — คำกล่าวที่อ่อนกว่า ห้าม promote ให้แรงเท่ากันโดยไม่ประกาศ
+Tier tag ไม่ใช่ของตกแต่ง — เป็นส่วนที่ทำให้สมการนี้ตรง Axiom A12 (Tier Honesty, §5) ของ SkillMe เอง: link แรก (`L_R=D_W-W`) เป็น machine-checked axiom-free over ℚ ในต้นทาง (`Th_coqc`) ส่วน link ที่สอง (`F` ในฐานะ MQ.08 stepper) เป็นเพียง **declared bridge** (`Dr`) — คำกล่าวที่อ่อนกว่า ห้าม promote ให้แรงเท่ากันโดยไม่ประกาศ
 
-สำหรับ UIA เราแปลรากนี้เป็น:
+สำหรับ SkillMe เราแปลรากนี้เป็น:
 
 \[
 \text{Retained Difference}
@@ -144,14 +144,14 @@ Tier tag ไม่ใช่ของตกแต่ง — เป็นส่ว
 
 Issue จึงไม่ถูกใส่เข้าไปใน root รากมีเพียงความแตกต่าง การรักษาไว้ ลำดับ ความสัมพันธ์ และ lineage ส่วนคำว่า “issue”, “risk”, “problem”, “opportunity”, “injustice” หรือ “failure” เกิดภายหลังการแปลผ่าน agency, context, values, rights และ query
 
-**External lineage (2026-08-01 consolidation):** UIA ไม่ได้พัฒนา root grammar นี้อย่างโดดเดี่ยว — มี sibling repo อีก 3 ตัวในสาย Yaoharee Lahtee ที่ใช้รากเดียวกันหรือใกล้เคียงกัน และก่อนหน้านี้ UIA ไม่เคยเชื่อมกับสามตัวนั้นบน disk เลย ครั้งนี้ตรวจสอบและเชื่อมอย่างเป็นทางการครั้งแรก:
+**External lineage (2026-08-01 consolidation):** SkillMe ไม่ได้พัฒนา root grammar นี้อย่างโดดเดี่ยว — มี sibling repo อีก 3 ตัวในสาย Yaoharee Lahtee ที่ใช้รากเดียวกันหรือใกล้เคียงกัน และก่อนหน้านี้ SkillMe ไม่เคยเชื่อมกับสามตัวนั้นบน disk เลย ครั้งนี้ตรวจสอบและเชื่อมอย่างเป็นทางการครั้งแรก:
 
-- **`readout_genesis`** — ต้นทางจริงของสมการข้างบนตรงๆ (quote ตรง ไม่ใช่ paraphrase) และเป็นเจ้าของระบบ tier 4 ระดับที่ UIA ใช้ทั่วทั้งเอกสาร: `Th_coqc` (machine-checked axiom-free เหนือ ℚ) > `finite_diagnostic` (วัด/รันจริงแบบจำกัด) > `Dr` (declared bridge / narrative ของมนุษย์) > `Open` (ยังไม่ established) นอกจากนี้ยังมี domain-registration standard ที่เป็นทางการกว่า UIA §6.9-6.11 มาก (ดู §6.9.1 ด้านล่าง ซึ่งดึงโครงมาใช้)
+- **`readout_genesis`** — ต้นทางจริงของสมการข้างบนตรงๆ (quote ตรง ไม่ใช่ paraphrase) และเป็นเจ้าของระบบ tier 4 ระดับที่ SkillMe ใช้ทั่วทั้งเอกสาร: `Th_coqc` (machine-checked axiom-free เหนือ ℚ) > `finite_diagnostic` (วัด/รันจริงแบบจำกัด) > `Dr` (declared bridge / narrative ของมนุษย์) > `Open` (ยังไม่ established) นอกจากนี้ยังมี domain-registration standard ที่เป็นทางการกว่า SkillMe §6.9-6.11 มาก (ดู §6.9.1 ด้านล่าง ซึ่งดึงโครงมาใช้)
 - **`research_universal_solver`** — สาย downstream ของ readout_genesis (ไม่ใช่ root เอง) ที่ประยุกต์รากนี้กับ physics/chemistry/biology จริง เป็นตัวอย่างที่แสดงว่า protocol การขึ้นทะเบียนโดเมนแบบ R0-R5 ใช้งานได้จริงกับโดเมนที่ตรวจสอบได้เข้มงวด (Th_coqc/finite_diagnostic tier)
-- **`readout_universe`** ("Philosophy and Logic of Everything") — control layer คู่ขนาน 13 gates (G1-G13) ที่ผูกกับ `research_universal_solver` เป็นหลัก ไม่เคยเชื่อมกับ UIA มาก่อนเช่นกัน มี Lens Law/Ω_all translation loop ที่โครงสร้างคล้าย domain-mapping ของ UIA เอง (อ้างอิงเสริมที่ §6.9.3)
-- **`information-discrete-math`** — จุดยืนเดียวกับ UIA §2 เป๊ะ (readout-not-ontology, ปฏิเสธ continuum เป็นสิ่งที่ "อ่านได้" ตรงๆ) แต่มี operational toolkit ที่ UIA เองยังไม่มี: contaminated-concept table 12 รายการและ discrete number ladder ที่ machine-checked แล้ว 194 theorem (ใช้เป็น guard ที่ §6.9.2)
+- **`readout_universe`** ("Philosophy and Logic of Everything") — control layer คู่ขนาน 13 gates (G1-G13) ที่ผูกกับ `research_universal_solver` เป็นหลัก ไม่เคยเชื่อมกับ SkillMe มาก่อนเช่นกัน มี Lens Law/Ω_all translation loop ที่โครงสร้างคล้าย domain-mapping ของ SkillMe เอง (อ้างอิงเสริมที่ §6.9.3)
+- **`information-discrete-math`** — จุดยืนเดียวกับ SkillMe §2 เป๊ะ (readout-not-ontology, ปฏิเสธ continuum เป็นสิ่งที่ "อ่านได้" ตรงๆ) แต่มี operational toolkit ที่ SkillMe เองยังไม่มี: contaminated-concept table 12 รายการและ discrete number ladder ที่ machine-checked แล้ว 194 theorem (ใช้เป็น guard ที่ §6.9.2)
 
-**คำเตือนสำคัญที่ต้องพูดตรงๆ ณ จุดนี้ (ตอบคำถาม "ไม่เป็นการเคลมวิทยาศาสตร์"):** `readout_genesis`/`research_universal_solver` ใช้กับโดเมนที่พิสูจน์ทางคณิตศาสตร์/ฟิสิกส์ได้ถึงระดับ `Th_coqc` จริง แต่ UIA เองใช้กับโดเมน organizational/software/policy/everyday decision ที่ **ไม่มีทางพิสูจน์ระดับ `Th_coqc` ได้** — การดึงโครงสร้าง domain-registration มาใช้ (§6.9.1) จึงยกระดับแค่ **ความมีวินัยของกระบวนการ** (explicit quotient, explicit tier ceiling, explicit forbidden-claims) ไม่ใช่การยกระดับ evidence tier ของ UIA เอง ผลลัพธ์จาก domain-mapping method นี้จึงอยู่ที่ `Dr` tier เป็นอย่างสูงเสมอ และจบที่ hypothesis portfolio (phase 12, `STOP_AT_HYPOTHESIS`) เท่านั้น — ไม่ใช่ verdict, ไม่ใช่ field-confirmed truth, ไม่ใช่การเคลมทางวิทยาศาสตร์ในตัวมันเอง (ตรงตาม Invariant #46: `VALID_CHECKPOINT` ไม่ใช่ decision/intervention/field confirmation/success/closure) — แต่ใช้สร้างสมมติฐานที่มีวินัยได้ในทุกศาสตร์ เพราะ "การสร้าง hypothesis ที่มีวินัย" ไม่ต้องการ `Th_coqc` proof แต่ต้องการแค่ explicit tier + explicit falsifier + explicit quotient ซึ่งเป็นของที่ทุกโดเมนประกาศได้โดยไม่ต้องพิสูจน์ทางคณิตศาสตร์
+**คำเตือนสำคัญที่ต้องพูดตรงๆ ณ จุดนี้ (ตอบคำถาม "ไม่เป็นการเคลมวิทยาศาสตร์"):** `readout_genesis`/`research_universal_solver` ใช้กับโดเมนที่พิสูจน์ทางคณิตศาสตร์/ฟิสิกส์ได้ถึงระดับ `Th_coqc` จริง แต่ SkillMe เองใช้กับโดเมน organizational/software/policy/everyday decision ที่ **ไม่มีทางพิสูจน์ระดับ `Th_coqc` ได้** — การดึงโครงสร้าง domain-registration มาใช้ (§6.9.1) จึงยกระดับแค่ **ความมีวินัยของกระบวนการ** (explicit quotient, explicit tier ceiling, explicit forbidden-claims) ไม่ใช่การยกระดับ evidence tier ของ SkillMe เอง ผลลัพธ์จาก domain-mapping method นี้จึงอยู่ที่ `Dr` tier เป็นอย่างสูงเสมอ และจบที่ hypothesis portfolio (phase 12, `STOP_AT_HYPOTHESIS`) เท่านั้น — ไม่ใช่ verdict, ไม่ใช่ field-confirmed truth, ไม่ใช่การเคลมทางวิทยาศาสตร์ในตัวมันเอง (ตรงตาม Invariant #46: `VALID_CHECKPOINT` ไม่ใช่ decision/intervention/field confirmation/success/closure) — แต่ใช้สร้างสมมติฐานที่มีวินัยได้ในทุกศาสตร์ เพราะ "การสร้าง hypothesis ที่มีวินัย" ไม่ต้องการ `Th_coqc` proof แต่ต้องการแค่ explicit tier + explicit falsifier + explicit quotient ซึ่งเป็นของที่ทุกโดเมนประกาศได้โดยไม่ต้องพิสูจน์ทางคณิตศาสตร์
 
 ### 3.1 Normative symbol glossary
 
@@ -445,7 +445,7 @@ Issue ไม่เท่ากับ problem
 
 Cause ไม่ใช่สิ่งเดียวกับสิ่งที่เกิดก่อน และไม่ใช่ชื่อที่สะดวกที่สุด
 
-ใน UIA causal claim ต้องประกาศชนิด:
+ใน SkillMe causal claim ต้องประกาศชนิด:
 
 - `SEQUENCE_ONLY`
 - `ASSOCIATION`
@@ -460,19 +460,19 @@ Cause ไม่ใช่สิ่งเดียวกับสิ่งที�
 
 ## 5. Axioms and guards
 
-### UIA-A0 — Finite Answerability
+### SKILLME-A0 — Finite Answerability
 
 ทุกข้อสรุปที่นำไปใช้ต้องจบลงใน finite record พร้อมขอบเขต แหล่งที่มา และสถานะ
 
-### UIA-A1 — Retained-Difference Primacy
+### SKILLME-A1 — Retained-Difference Primacy
 
 ห้ามใส่ชื่อ issue, domain หรือ cause เข้า root ก่อนมี retained difference และ lineage รองรับ
 
-### UIA-A2 — Reader Relativity without Relativism
+### SKILLME-A2 — Reader Relativity without Relativism
 
 readout ขึ้นกับ reader แต่ไม่เป็นไปตามใจ reader เพราะต้องตอบต่อข้อมูล controls ผลของ intervention และแรงต้านของระบบ
 
-### UIA-A3 — Context Indexing
+### SKILLME-A3 — Context Indexing
 
 \[
 I=I(A,C,Q,\rho,H)
@@ -480,7 +480,7 @@ I=I(A,C,Q,\rho,H)
 
 ข้อสรุปที่ใช้ได้ในบริบท \(C\) ไม่ถูกย้ายไป \(C'\) โดยอัตโนมัติ
 
-### UIA-A4 — Non-Identity
+### SKILLME-A4 — Non-Identity
 
 - record \(\neq\) world
 - symptom \(\neq\) cause
@@ -491,7 +491,7 @@ I=I(A,C,Q,\rho,H)
 - power \(\neq\) responsibility
 - absence of readout \(\neq\) absence of state
 
-### UIA-A5 — Minimal Sufficient Quotient
+### SKILLME-A5 — Minimal Sufficient Quotient
 
 วิเคราะห์เฉพาะโครงสร้างที่จำเป็นต่อ query แต่ห้ามยุบความแตกต่างที่จำเป็นต่อ readout, rights, invariants หรือ intervention
 
@@ -501,7 +501,7 @@ q_I\circ F=F_I^\#\circ q_I
 
 หาก square นี้ไม่ commute ต้องรายงาน `LOST_INFORMATION`, `CONTEXT_MISMATCH`, `INSUFFICIENT_RESOLUTION`, `TARGET_LACKS_VARIABLES`, `MISTRANSLATION` หรือ `NO_CLOSURE`
 
-### UIA-A6 — Zero/Bottom Separation
+### SKILLME-A6 — Zero/Bottom Separation
 
 \[
 0\neq\bot
@@ -512,15 +512,15 @@ q_I\circ F=F_I^\#\circ q_I
 
 ดังนั้น “ไม่พบปัญหา” ห้ามใช้แทน “ยังตรวจไม่พบ” และ zero readout ห้ามถูกขยายเป็นคำกล่าวว่าไม่มีความแตกต่างอยู่จริงทั้งหมด
 
-### UIA-A7 — Agency Separation
+### SKILLME-A7 — Agency Separation
 
 ผู้ได้รับผล ผู้สังเกต ผู้ตัดสินใจ ผู้ลงมือ และผู้รับผิดชอบต้องไม่ถูกสมมติว่าเป็นคนเดียวกัน
 
-### UIA-A8 — Rights and Values Declaration
+### SKILLME-A8 — Rights and Values Declaration
 
 ข้อห้าม สิทธิ คุณค่า และเป้าหมายเป็น inputs เชิง normative ที่ต้องประกาศ ห้ามปลอมเป็น empirical fact
 
-### UIA-A9 — Decision-Boundary Exactness
+### SKILLME-A9 — Decision-Boundary Exactness
 
 เมื่อผลอยู่ใกล้เกณฑ์ตัดสิน มี cancellation, near-singularity หรือ exact predicate ให้ใช้ exact rational, interval หรือ certified fallback
 
@@ -530,15 +530,15 @@ q_I\circ F=F_I^\#\circ q_I
 
 เป็นเขตที่ float อาจปลอดภัยต่อ decision; เมื่อเงื่อนไขนี้ไม่ผ่าน ห้ามให้ความเร็วแทนความถูกต้องของ verdict
 
-### UIA-A10 — Maker–Checker Firewall
+### SKILLME-A10 — Maker–Checker Firewall
 
 ผู้สร้างแบบจำลองต้อง freeze คำถาม เกณฑ์ แบบจำลอง และ prediction ก่อน checker เปิดผล holdout หรือ outcome ที่ใช้ตัดสิน
 
-### UIA-A11 — Correction Is Reliability
+### SKILLME-A11 — Correction Is Reliability
 
 ระบบที่ถอน ลดระดับ หรือแก้ claim พร้อมรักษา lineage ได้ มีความน่าเชื่อถือมากกว่าระบบที่รักษาคำตอบเดิมด้วยการซ่อนข้อผิดพลาด
 
-### UIA-A12 — Tier Honesty
+### SKILLME-A12 — Tier Honesty
 
 ทุก claim ต้องอยู่ที่ tier ของ weakest load-bearing link:
 
@@ -554,13 +554,13 @@ q_I\circ F=F_I^\#\circ q_I
 
 ### 6.1 หลักสถาปัตยกรรม
 
-UIA ต้องทำงานแบบสองภาษาโดยผู้ใช้ไม่จำเป็นต้องรู้ศัพท์ภายใน:
+SkillMe ต้องทำงานแบบสองภาษาโดยผู้ใช้ไม่จำเป็นต้องรู้ศัพท์ภายใน:
 
 \[
 \boxed{
 \text{ภาษาผู้ใช้}
 \xrightarrow{\tau_{\mathrm{in}}}
-\text{UIA canonical issue}
+\text{SkillMe canonical issue}
 \xrightarrow{\mathcal A_D}
 \text{domain analysis}
 \xrightarrow{\tau_{\mathrm{out}}}
@@ -572,12 +572,12 @@ UIA ต้องทำงานแบบสองภาษาโดยผู้�
 - \(\mathcal A_D\): ชุด adapter ของ domain ที่ระบบเลือกตาม topology และงานตัดสินใจ
 - \(\tau_{\mathrm{out}}\): แปลผลกลับเป็นภาษาวิชาชีพหรือภาษาธรรมดาที่ผู้ใช้ใช้จริง
 
-ระบบต้อง **คิดผ่านปรัชญา UIA ก่อน** แต่ไม่ควรบังคับให้ผู้ใช้พูดว่า `retained difference`, `agency readout`, `quotient` หรือ `warrant` เว้นแต่ผู้ใช้ร้องขอระดับเทคนิค
+ระบบต้อง **คิดผ่านปรัชญา SkillMe ก่อน** แต่ไม่ควรบังคับให้ผู้ใช้พูดว่า `retained difference`, `agency readout`, `quotient` หรือ `warrant` เว้นแต่ผู้ใช้ร้องขอระดับเทคนิค
 
 กฎสำคัญ:
 
 1. เก็บถ้อยคำต้นฉบับของผู้ใช้เป็น immutable raw record
-2. การแปลเข้า UIA เป็น hypothesis ที่แก้ไขได้ ไม่ใช่ความหมายแท้เพียงหนึ่งเดียว
+2. การแปลเข้า SkillMe เป็น hypothesis ที่แก้ไขได้ ไม่ใช่ความหมายแท้เพียงหนึ่งเดียว
 3. ตรวจการสูญเสียความหมายทั้งขาเข้าและขาออก
 4. domain adapter เพิ่มความรู้เฉพาะทางได้ แต่เปลี่ยน root philosophy, rights หรือ evidence tier ไม่ได้
 5. ผลที่แปลกลับต้องรักษา `zero`, `unresolved`, uncertainty, dissent และข้อจำกัดเดิม
@@ -770,7 +770,7 @@ p(D_k\mid R,C,Q)
 translation_record:
   raw_user_expression: REQUIRED_IMMUTABLE
   inferred_domain_candidates: []
-  canonical_uia_mapping:
+  canonical_skillme_mapping:
     retained_difference: REQUIRED
     context: REQUIRED
     query: REQUIRED
@@ -817,10 +817,10 @@ adapter_card:
   accepted_topologies: []
   rejected_topologies: []
   required_inputs: []
-  uia_input_mapping: {}
+  skillme_input_mapping: {}
   native_operations: []
   native_outputs: []
-  uia_output_mapping: {}
+  skillme_output_mapping: {}
   stakeholder_requirements: []
   rights_constraints: []
   assumptions: []
@@ -840,7 +840,7 @@ adapter_card:
 กฎการดูดความรู้:
 
 - **Preserve:** รักษาความหมาย วิธีใช้ สมมติฐาน และชื่อของต้นทาง
-- **Translate:** แปลง input/output เป็น canonical UIA โดยเปิดเผย mapping
+- **Translate:** แปลง input/output เป็น canonical SkillMe โดยเปิดเผย mapping
 - **Constrain:** adapter ใช้ได้เฉพาะ topology และ domain ที่ระบุ
 - **Test:** ต้องมี positive/negative control หรือข้อกำหนดตรวจสอบที่เหมาะกับวิธี
 - **No promotion:** adapter ห้ามยกระดับ evidence หรือ causal tier ของต้นทาง
@@ -849,21 +849,21 @@ adapter_card:
 
 ### 6.9.1 Domain mapping method — quotient declaration + registration discipline (2026-08-01, Dr-tier only)
 
-Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่แล้ว แต่ไม่เคยประกาศตัวเองอย่างเป็นทางการว่าเป็น **quotient** — คำที่ readout_genesis/research_universal_solver ใช้เจาะจงสำหรับ "การย่อระบบต้นทางให้เหลือ distinction ที่ query ต้องใช้" (สัญลักษณ์ \(q_D\) ใน §3.1 ของ UIA เองอยู่แล้ว) มาตรานี้เชื่อมสองฝั่งให้ตรงกันอย่างชัดเจน โดยดึงวินัยของ **domain-registration standard** จาก `readout_genesis/domains/DOMAIN_REGISTRATION_STANDARD.md` (โครงเดียวกับที่ `research_universal_solver` ใช้ขึ้นทะเบียนโดเมน chem/relativity/quantum/biology จริง) — **ดึงมาแค่โครงวินัยของกระบวนการ ไม่ใช่ authority หรือ tier ของต้นทาง** ตามที่ประกาศไว้ใน external-lineage note ท้าย §3
+Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่แล้ว แต่ไม่เคยประกาศตัวเองอย่างเป็นทางการว่าเป็น **quotient** — คำที่ readout_genesis/research_universal_solver ใช้เจาะจงสำหรับ "การย่อระบบต้นทางให้เหลือ distinction ที่ query ต้องใช้" (สัญลักษณ์ \(q_D\) ใน §3.1 ของ SkillMe เองอยู่แล้ว) มาตรานี้เชื่อมสองฝั่งให้ตรงกันอย่างชัดเจน โดยดึงวินัยของ **domain-registration standard** จาก `readout_genesis/domains/DOMAIN_REGISTRATION_STANDARD.md` (โครงเดียวกับที่ `research_universal_solver` ใช้ขึ้นทะเบียนโดเมน chem/relativity/quantum/biology จริง) — **ดึงมาแค่โครงวินัยของกระบวนการ ไม่ใช่ authority หรือ tier ของต้นทาง** ตามที่ประกาศไว้ใน external-lineage note ท้าย §3
 
-ขั้นตอน map โดเมนใดๆ (organizational, software, policy, clinical, financial, ฯลฯ) เข้าสู่ root grammar ของ UIA:
+ขั้นตอน map โดเมนใดๆ (organizational, software, policy, clinical, financial, ฯลฯ) เข้าสู่ root grammar ของ SkillMe:
 
-1. **ประกาศ quotient \(q_D\)** — Adapter Card's `uia_input_mapping`/`uia_output_mapping` **คือ** \(q_D\) นั่นเอง เพียงแต่ต้องเขียนให้เห็นชัดว่าอะไรถูกทิ้ง (information_lost) ไม่ใช่แค่อะไรถูกเก็บ
-2. **ประกาศ tier ceiling ก่อนเห็นผล** — `claim_tier_ceiling` ต้องเป็น `Dr` เสมอสำหรับโดเมนที่ไม่มี machine-checked proof (คือเกือบทุกโดเมนที่ UIA ใช้งานจริง) ห้ามเผื่อไว้ว่า "อาจจะเป็น Th_coqc ทีหลัง" โดยไม่มีเหตุผล — การประกาศ ceiling ต่ำแต่แรกคือสิ่งที่ทำให้ mapping นี้ "ไม่เป็นการเคลมวิทยาศาสตร์" ตรงตามที่ต้องการ
+1. **ประกาศ quotient \(q_D\)** — Adapter Card's `skillme_input_mapping`/`skillme_output_mapping` **คือ** \(q_D\) นั่นเอง เพียงแต่ต้องเขียนให้เห็นชัดว่าอะไรถูกทิ้ง (information_lost) ไม่ใช่แค่อะไรถูกเก็บ
+2. **ประกาศ tier ceiling ก่อนเห็นผล** — `claim_tier_ceiling` ต้องเป็น `Dr` เสมอสำหรับโดเมนที่ไม่มี machine-checked proof (คือเกือบทุกโดเมนที่ SkillMe ใช้งานจริง) ห้ามเผื่อไว้ว่า "อาจจะเป็น Th_coqc ทีหลัง" โดยไม่มีเหตุผล — การประกาศ ceiling ต่ำแต่แรกคือสิ่งที่ทำให้ mapping นี้ "ไม่เป็นการเคลมวิทยาศาสตร์" ตรงตามที่ต้องการ
 3. **ประกาศสิ่งที่ยังไม่ established** — ทุก adapter card ต้องมี field ใหม่ `not_established: []` คู่กับ `information_lost` (ยืมโครงจาก `CLAIM_BOUNDARY_<D>.json`'s `established[]`/`not_established[]`) — ระบุตรงๆ ว่าโดเมนนี้ยังตอบอะไรไม่ได้ ไม่ใช่แค่บอกว่าตอบอะไรได้
 4. **ประกาศ forbidden claims** — ทุก adapter card ต้องมี field ใหม่ `forbidden_claims: []` (ยืมโครงจาก `RULE_REGISTRY_<D>.json`) ระบุประโยคเฉพาะที่ mapping นี้ **ห้าม** ให้ระบบพูด เช่น "พิสูจน์แล้วว่า X" หรือ "เป็นสาเหตุที่แท้จริงของ Y" — เขียนไว้ล่วงหน้า ไม่ใช่แก้ทีหลังตอนมีคนอ้างเกินจริง
 5. **ผลลัพธ์จบที่ hypothesis เท่านั้น** — ทุก domain-mapping run ที่ผ่านขั้นตอนนี้ต้อง route เข้า Phase 9-11/§6.17-6.18 (Hypothesis Evidence Challenge → Three-Lane Candidate) และหยุดที่ `HYPOTHESIS_PORTFOLIO_READY`/`STOP_AT_HYPOTHESIS` เป็นค่าเริ่มต้น — การเดินต่อไป `RUN_FULL` เป็นทางเลือกที่ต้องขอเพิ่ม ไม่ใช่ default
 
-ต่างจาก `research_universal_solver`'s R0-R5 ตรงที่ไม่มีขั้นตอน R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) เพราะ dual-implementation checking ต้องการ formal proof system ที่โดเมนแบบ organizational/policy ไม่มีให้ตรวจ — **ช่องว่างนี้เปิดเผยตรงๆ ที่นี่ ไม่ปิดบัง**: การขึ้นทะเบียนโดเมนใน UIA เข้มงวดน้อยกว่า physics/chemistry domains ใน readout_genesis จริง เพราะธรรมชาติของโดเมนต่างกัน ไม่ใช่เพราะ UIA เข้มงวดน้อยกว่าโดยเจตนา
+ต่างจาก `research_universal_solver`'s R0-R5 ตรงที่ไม่มีขั้นตอน R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) เพราะ dual-implementation checking ต้องการ formal proof system ที่โดเมนแบบ organizational/policy ไม่มีให้ตรวจ — **ช่องว่างนี้เปิดเผยตรงๆ ที่นี่ ไม่ปิดบัง**: การขึ้นทะเบียนโดเมนใน SkillMe เข้มงวดน้อยกว่า physics/chemistry domains ใน readout_genesis จริง เพราะธรรมชาติของโดเมนต่างกัน ไม่ใช่เพราะ SkillMe เข้มงวดน้อยกว่าโดยเจตนา
 
 ### 6.9.2 Contaminated-concept guard (from `information-discrete-math` v1.5.1)
 
-เมื่อ hypothesis หรือ candidate แตะแนวคิดที่มาจากคณิตศาสตร์ต่อเนื่อง (continuum) — มุม, ระยะทาง, อนุพันธ์, ศูนย์, อนันต์ — ต้องเช็คตาราง contaminated-concept นี้ก่อน เพื่อไม่ให้ non-readout (สิ่งที่ไม่มีทาง "อ่าน" ได้จริง) หลุดเข้ามาเป็น claim โดยไม่ประกาศ (ตรงกับ UIA §2's "ทุกครั้งมาถึงเราเป็น finite readout" — ตารางนี้คือ checklist ปฏิบัติของหลักการนั้น ไม่ใช่หลักการใหม่):
+เมื่อ hypothesis หรือ candidate แตะแนวคิดที่มาจากคณิตศาสตร์ต่อเนื่อง (continuum) — มุม, ระยะทาง, อนุพันธ์, ศูนย์, อนันต์ — ต้องเช็คตาราง contaminated-concept นี้ก่อน เพื่อไม่ให้ non-readout (สิ่งที่ไม่มีทาง "อ่าน" ได้จริง) หลุดเข้ามาเป็น claim โดยไม่ประกาศ (ตรงกับ SkillMe §2's "ทุกครั้งมาถึงเราเป็น finite readout" — ตารางนี้คือ checklist ปฏิบัติของหลักการนั้น ไม่ใช่หลักการใหม่):
 
 | แนวคิดที่มีปัญหา (continuum-contaminated) | ตัวแทนที่ discrete-correct |
 |---|---|
@@ -884,7 +884,7 @@ Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่
 
 ### 6.9.3 Alternate translation-loop reference (`readout_universe` Lens Law, informative only)
 
-`readout_universe`'s Lens Law/Ω_all 8-step loop (translate → grammar-gate → locate → bridge-audit → residual-form → identifiability-gate → tagged answer → translate-back-with-falsifier) มีรูปร่างขนานกับ §6.9.1 ข้างบน แต่ผูกกับ `research_universal_solver` เป็นหลัก ไม่ใช่ UIA — ใส่ไว้ที่นี่เป็น **การอ้างอิงเสริมเท่านั้น** (informative, ไม่ใช่ normative) สำหรับใครที่อยากเทียบโครงสร้างสองระบบ ไม่ใช่ requirement ใหม่ของ UIA
+`readout_universe`'s Lens Law/Ω_all 8-step loop (translate → grammar-gate → locate → bridge-audit → residual-form → identifiability-gate → tagged answer → translate-back-with-falsifier) มีรูปร่างขนานกับ §6.9.1 ข้างบน แต่ผูกกับ `research_universal_solver` เป็นหลัก ไม่ใช่ SkillMe — ใส่ไว้ที่นี่เป็น **การอ้างอิงเสริมเท่านั้น** (informative, ไม่ใช่ normative) สำหรับใครที่อยากเทียบโครงสร้างสองระบบ ไม่ใช่ requirement ใหม่ของ SkillMe
 
 ### 6.9.4 Two refinements from a 10-domain fit test (2026-08-01)
 
@@ -899,7 +899,7 @@ Adapter Card ข้างบน (§6.9) คือ compiler contract อยู่
 
 คำว่า “สกัดความรู้ทั้งโลก” ใช้งานได้จริงในฐานะ **registry ที่ขยายได้** ไม่ใช่การอ้างว่ารวบรวมทุกทฤษฎีแล้ว:
 
-| Adapter family | ตัวอย่างเครื่องมือ | สิ่งที่ UIA รับเข้า |
+| Adapter family | ตัวอย่างเครื่องมือ | สิ่งที่ SkillMe รับเข้า |
 |---|---|---|
 | Rapid triage | Incident command, OODA-style loop | urgency, containment, owner, communication |
 | Linear causal | 5 Whys, Fishbone, RCA | candidate chain, categories, counterevidence |
@@ -1012,11 +1012,11 @@ router พิจารณาอย่างน้อย:
 10. **วิธีรู้ว่าได้ผล:** post-readout, stop rule และ rollback
 11. **สิ่งที่ยังไม่รู้:** missing evidence, excluded agencies และ correction trigger
 
-ศัพท์ภายใน UIA แสดงในภาคเทคนิคหรือ audit trail เท่านั้น
+ศัพท์ภายใน SkillMe แสดงในภาคเทคนิคหรือ audit trail เท่านั้น
 
 ### 6.14 End-to-end philosophy-first protocol
 
-ส่วนนี้คือ **canonical source of truth** ของลำดับการทำงาน ทุก phase มีหมายเลข 0–19 และ artifact ที่สร้างขึ้น ตารางปฏิบัติใน §7.3, Full Protocol ใน §7.9 และ UIA-RGM execution protocol ใน §9.7 เป็น views/crosswalk ของลำดับนี้ ห้ามนำมาเรียงต่อกันเป็นหลาย workflow
+ส่วนนี้คือ **canonical source of truth** ของลำดับการทำงาน ทุก phase มีหมายเลข 0–19 และ artifact ที่สร้างขึ้น ตารางปฏิบัติใน §7.3, Full Protocol ใน §7.9 และ SKILLME-RGM execution protocol ใน §9.7 เป็น views/crosswalk ของลำดับนี้ ห้ามนำมาเรียงต่อกันเป็นหลาย workflow
 
 | Phase | การทำงานภายใน | สิ่งที่ผู้ใช้เห็น |
 |---|---|---|
@@ -1061,7 +1061,7 @@ stateDiagram-v2
 
 ### 6.15 Two-Question Intake Gate
 
-UIA ทุก run ใหม่ต้องเริ่มด้วย **คำถามอัตโนมัติสองข้อในข้อความเดียวกัน**:
+SkillMe ทุก run ใหม่ต้องเริ่มด้วย **คำถามอัตโนมัติสองข้อในข้อความเดียวกัน**:
 
 1. **Q1 — Issue:** `Issue คืออะไร? กรุณาอธิบายสิ่งที่เกิดขึ้นหรือประเด็นที่ต้องการให้วิเคราะห์`
 2. **Q2 — User proposal:** `คุณมีข้อเสนอหรือแนวคิดเกี่ยวกับประเด็นนี้ไหม? หากไม่มี ตอบว่า “ไม่มี” ได้`
@@ -1081,7 +1081,7 @@ stateDiagram-v2
     WAITING_FOR_ISSUE --> WAIT_Q1_Q2: รับคำตอบ Q1
     WAITING_FOR_PROPOSAL_RESPONSE --> WAIT_Q1_Q2: รับคำตอบ Q2
     WAIT_Q1_Q2 --> INTAKE_COMPLETE: Q1 และ Q2 สมบูรณ์
-    INTAKE_COMPLETE --> UIA_ANALYSIS
+    INTAKE_COMPLETE --> SKILLME_ANALYSIS
 ```
 
 #### 6.15.1 Gate schema
@@ -1393,7 +1393,7 @@ raw issue และ user proposal ต้องอยู่คนละ tape:
 
 ### 6.17 Hypothesis Evidence Challenge Protocol
 
-หลัง Phase 10 สร้างสมมติฐานแล้ว UIA ห้ามส่งสมมติฐานไปสร้าง solution candidates โดยยังไม่ผ่าน **Evidence Challenge** ทุกสมมติฐานต้องมีการค้นสองทิศและสองระดับบริบท:
+หลัง Phase 10 สร้างสมมติฐานแล้ว SkillMe ห้ามส่งสมมติฐานไปสร้าง solution candidates โดยยังไม่ผ่าน **Evidence Challenge** ทุกสมมติฐานต้องมีการค้นสองทิศและสองระดับบริบท:
 
 \[
 \mathcal E(H_i)=
@@ -1430,7 +1430,7 @@ Q_i,D_i,T_i
 7. local-context sources และภาษาท้องถิ่น
 8. search date, stopping rule, conflicts of interest และ access limits
 
-หลัก transparency และ reproducibility รับจาก [PRISMA 2020](https://www.bmj.com/content/372/bmj.n71) และหลักการค้นอย่างเป็นระบบจาก [Cochrane Handbook Chapter 4](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-04) แต่ UIA ไม่อ้างว่า Evidence Challenge ทุกครั้งเป็น systematic review เต็มรูปแบบ หากเวลาหรือขอบเขตไม่ถึง ต้องติดป้าย `RAPID_EVIDENCE_CHALLENGE`, `SCOPING_SEARCH` หรือ `TARGETED_SEARCH`
+หลัก transparency และ reproducibility รับจาก [PRISMA 2020](https://www.bmj.com/content/372/bmj.n71) และหลักการค้นอย่างเป็นระบบจาก [Cochrane Handbook Chapter 4](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-04) แต่ SkillMe ไม่อ้างว่า Evidence Challenge ทุกครั้งเป็น systematic review เต็มรูปแบบ หากเวลาหรือขอบเขตไม่ถึง ต้องติดป้าย `RAPID_EVIDENCE_CHALLENGE`, `SCOPING_SEARCH` หรือ `TARGETED_SEARCH`
 
 #### 6.17.2 Bidirectional search
 
@@ -1565,7 +1565,7 @@ f(Q,D,C,B,P,U)
 | strong | local evidence contradicts | `LOCALLY_CONTRADICTED` |
 | insufficient | unresolved | `INSUFFICIENT_EVIDENCE` |
 
-การปรับหลักฐานโลกสู่บริบทประเทศใช้แนวคิด contextualization เช่น [WHO handbook on guideline contextualization](https://iris.who.int/bitstreams/63282011-3089-4189-b09d-40fc555fbafe/download) แต่ UIA ขยายจาก guideline สุขภาพไปยัง domain อื่นผ่าน Context Adapter
+การปรับหลักฐานโลกสู่บริบทประเทศใช้แนวคิด contextualization เช่น [WHO handbook on guideline contextualization](https://iris.who.int/bitstreams/63282011-3089-4189-b09d-40fc555fbafe/download) แต่ SkillMe ขยายจาก guideline สุขภาพไปยัง domain อื่นผ่าน Context Adapter
 
 #### 6.17.8 Hypothesis Evidence Ledger
 
@@ -1727,7 +1727,7 @@ field_truth_claim: NOT_MADE
 
 ### 6.18 Three-Lane Knowledge and Solution Candidate Generator
 
-UIA ต้องไม่หยุดที่คำอธิบาย issue เมื่อ decision ต้องการการแก้ปัญหา ผลผลิตบังคับหลัง issue, agency, topology และ mechanism candidates ถูก compile แล้วคือ **candidate set ที่มีทางเลือกต่างกันเชิงโครงสร้างสามแนวทาง**
+SkillMe ต้องไม่หยุดที่คำอธิบาย issue เมื่อ decision ต้องการการแก้ปัญหา ผลผลิตบังคับหลัง issue, agency, topology และ mechanism candidates ถูก compile แล้วคือ **candidate set ที่มีทางเลือกต่างกันเชิงโครงสร้างสามแนวทาง**
 
 \[
 \mathcal C(I)=
@@ -1961,7 +1961,7 @@ Optional user proposal:
 
 Proposal mode: `HYBRID_BLIND_COMPARE`
 
-UIA internal compilation:
+SkillMe internal compilation:
 
 - retained difference: payment completion readout ต่ำกว่าที่ระบบสถานะรายงาน
 - query: ต้องหยุดผลกระทบอย่างไร และ failure อยู่ที่จุดใด
@@ -2004,7 +2004,7 @@ User proposal outcome:
 
 ---
 
-## 7. Universal Issue Analysis Workflow
+## 7. SkillMe Workflow
 
 ### 7.1 เมื่อมี issue เข้ามา ระบบต้องทำอะไร
 
@@ -2208,10 +2208,10 @@ Analysis ที่ใช้งานได้จริงต้องตอบ�
 8. **Action:** ใครทำอะไร เมื่อไร พร้อม stop/rollback
 9. **Verification:** จะรู้ได้อย่างไรว่าดีขึ้น พร้อมสถานะ `PASS/FAIL/UNRESOLVED`
 
-### 7.8 UIA Analysis Sheet — แบบฟอร์มใช้งานทันที
+### 7.8 SkillMe Analysis Sheet — แบบฟอร์มใช้งานทันที
 
 ```yaml
-uia_analysis_sheet:
+skillme_analysis_sheet:
   issue_id: REQUIRED
 
   1_receive:
@@ -2608,11 +2608,11 @@ w_1\Delta I
 
 ---
 
-## 9. UIA-RGM — Retained Graph–Matrix Protocol
+## 9. SKILLME-RGM — Retained Graph–Matrix Protocol
 
-### 9.1 เหตุใด UIA จึงครอบคลุมทั้งวิธีคลาสสิกและสมัยใหม่
+### 9.1 เหตุใด SkillMe จึงครอบคลุมทั้งวิธีคลาสสิกและสมัยใหม่
 
-UIA ไม่ควรแข่งขันด้วยการอ้างว่าเครื่องมือเดิมทั้งหมดผิด หรือเปลี่ยนชื่อเครื่องมือเดิมให้กลายเป็นความใหม่ของตนเอง จุดแข็งที่เป็นไปได้ของ UIA คือการเป็น **meta-protocol** ซึ่ง:
+SkillMe ไม่ควรแข่งขันด้วยการอ้างว่าเครื่องมือเดิมทั้งหมดผิด หรือเปลี่ยนชื่อเครื่องมือเดิมให้กลายเป็นความใหม่ของตนเอง จุดแข็งที่เป็นไปได้ของ SkillMe คือการเป็น **meta-protocol** ซึ่ง:
 
 1. รับ issue เข้ามาด้วยสัญญาเดียวกัน
 2. ตรวจ topology และ operating regime ของ issue
@@ -2624,7 +2624,7 @@ UIA ไม่ควรแข่งขันด้วยการอ้างว�
 
 > **ทุกวิธีสามารถเสียบเข้ากับรากเดียวกันได้โดยไม่สูญเสียชื่อ ขอบเขต และข้อจำกัดของวิธีนั้น**
 
-| ลักษณะปัญหา | เครื่องมือเดิมที่รักษาไว้ | UIA รับความรู้อะไรเข้า | บทบาทของ UIA |
+| ลักษณะปัญหา | เครื่องมือเดิมที่รักษาไว้ | SkillMe รับความรู้อะไรเข้า | บทบาทของ SkillMe |
 |---|---|---|---|
 | ง่ายและเป็น chain | 5 Whys, Fishbone, PDCA | upstream tracing, cause candidates, action–check loop | ตรวจว่าเป็น chain จริงและแยก hypothesis จาก cause |
 | คุณภาพ/การผลิต | RCA, 8D, FMEA | containment, corrective action, preventive failure analysis, control plan | เพิ่ม lineage, rights, zero/unresolved และ claim tier |
@@ -2642,7 +2642,7 @@ UIA ไม่ควรแข่งขันด้วยการอ้างว�
 - SRE/Observability รักษา telemetry, incident mitigation, timeline และ postmortem
 - Systems Thinking รักษา feedback, delay, nonlinearity, emergence และ unintended effects
 
-UIA เพิ่มเพียงสัญญาการแปล การเลือก และการกล่าวอ้าง ห้ามอ้างว่าเป็นผู้คิดค้นเครื่องมือเหล่านี้
+SkillMe เพิ่มเพียงสัญญาการแปล การเลือก และการกล่าวอ้าง ห้ามอ้างว่าเป็นผู้คิดค้นเครื่องมือเหล่านี้
 
 แหล่งมาตรฐานที่ใช้สร้าง Adapter Cards รุ่นนี้:
 
@@ -2655,7 +2655,7 @@ UIA เพิ่มเพียงสัญญาการแปล การเ
 
 ### 9.2 Knowledge Absorption Contract
 
-เครื่องมือหรือทฤษฎีภายนอกเข้าสู่ UIA ได้เมื่อมี `Adapter Card`:
+เครื่องมือหรือทฤษฎีภายนอกเข้าสู่ SkillMe ได้เมื่อมี `Adapter Card`:
 
 ```yaml
 adapter_card:
@@ -2667,10 +2667,10 @@ adapter_card:
   assumptions: []
   known_failure_modes: []
   evidence_tier: REQUIRED
-  uia_entry_gate: REQUIRED
-  uia_exit_mapping: REQUIRED
+  skillme_entry_gate: REQUIRED
+  skillme_exit_mapping: REQUIRED
   preserved_source_name: true
-  renamed_as_uia_novelty: false
+  renamed_as_skillme_novelty: false
 ```
 
 กฎการรับความรู้:
@@ -2684,7 +2684,7 @@ adapter_card:
 
 ### 9.3 Issue Topology Ladder
 
-UIA ยกระดับ issue ตามโครงสร้างที่ตรวจพบ ไม่ใช่ตามความรู้สึกว่าปัญหา “ยาก”:
+SkillMe ยกระดับ issue ตามโครงสร้างที่ตรวจพบ ไม่ใช่ตามความรู้สึกว่าปัญหา “ยาก”:
 
 | ระดับ | โครงสร้าง | คำถามหลัก | Lane |
 |---|---|---|---|
@@ -2792,7 +2792,7 @@ H_A[i,j]\in\{0,1,\bot\}
 
 ### 9.5 Topology Card
 
-ก่อนเลือกวิธีวิเคราะห์ UIA-RGM ต้องคำนวณหรือประกาศ:
+ก่อนเลือกวิธีวิเคราะห์ SKILLME-RGM ต้องคำนวณหรือประกาศ:
 
 ```yaml
 topology_card:
@@ -2852,11 +2852,11 @@ s_Q=\frac{|V|}{|V_Q|}
 
 threshold ทุกตัวเป็น domain-declared value ห้ามใช้เลขกลางเดียวกับทุกโดเมน
 
-### 9.7 UIA-RGM execution protocol
+### 9.7 SKILLME-RGM execution protocol
 
 ส่วนนี้เป็น graph–matrix adapter view ของ canonical phases 2–19 ไม่ใช่ workflow คู่ขนาน
 
-**Entry precondition:** `INTAKE_COMPLETE` จาก Q1–Q2 เท่านั้น หากไม่มี certificate ให้คืน `WAITING_FOR_ISSUE`, `WAITING_FOR_PROPOSAL_RESPONSE` หรือ `INTAKE_PROTOCOL_FAIL` และห้าม execute ขั้นต่อไป ข้อยกเว้น containment-only อยู่ใน canonical Phase 1 และไม่เรียก UIA-RGM
+**Entry precondition:** `INTAKE_COMPLETE` จาก Q1–Q2 เท่านั้น หากไม่มี certificate ให้คืน `WAITING_FOR_ISSUE`, `WAITING_FOR_PROPOSAL_RESPONSE` หรือ `INTAKE_PROTOCOL_FAIL` และห้าม execute ขั้นต่อไป ข้อยกเว้น containment-only อยู่ใน canonical Phase 1 และไม่เรียก SKILLME-RGM
 
 1. **Freeze query/readout:** ระบุว่า decision ต้องการค่า เหตุการณ์ กลุ่ม pattern ความเสี่ยง หรืออนาคตแบบใด
 2. **Build dual retained tapes:** เก็บ issue evidence และ optional user proposal แยก lineage
@@ -2891,9 +2891,9 @@ benchmark นี้เป็น synthetic capability test ไม่ใช่ fie
 |---|---|---:|---|
 | Chain, 50 runs | static association เลือก root | 0.0% | correlation เลือก proximate node ไม่ใช่ upstream root |
 | Chain, 50 runs | 5 Whys lineage proxy | 100.0% | 5 Whys แข็งแรงมากเมื่อ process เป็น chain ที่ถูกประกาศ |
-| Chain, 50 runs | UIA-RGM `CHAIN` | 100.0% | เสมอ 5 Whys แต่มี protocol overhead มากกว่า |
+| Chain, 50 runs | SKILLME-RGM `CHAIN` | 100.0% | เสมอ 5 Whys แต่มี protocol overhead มากกว่า |
 | Pattern, 40 runs | single global explanation | 35.04% | คำอธิบายเดียวแพ้เมื่อมี issue families หลายแบบ |
-| Pattern, 40 runs | UIA-RGM pattern adapter | 100.0% | กู้สามกลุ่มที่จงใจสร้างให้แยกได้; ไม่รับรองข้อมูลโลกจริง |
+| Pattern, 40 runs | SKILLME-RGM pattern adapter | 100.0% | กู้สามกลุ่มที่จงใจสร้างให้แยกได้; ไม่รับรองข้อมูลโลกจริง |
 | Nonlinear quiet, 40 runs | nonlinear adapter เทียบ linear | แย่ลง 0.22% | nonlinear term มีอยู่ก็ไม่ควรเพิ่มโมเดล หาก operating regime ยังอ่านไม่เห็น |
 | Nonlinear excited, 40 runs | nonlinear adapter เทียบ linear | MSE ลด 76.72% | เมื่อ interaction ปรากฏใน holdout ควร route ไป nonlinear |
 | Scale, 30 runs | 2,000 → 20 states | state ลด 100×; operation proxy ลด 16× | block-mean query ถูกเก็บด้วย error เฉลี่ย \(1.04\times10^{-16}\) |
@@ -2908,9 +2908,9 @@ benchmark นี้เป็น synthetic capability test ไม่ใช่ fie
 ตัวเลข benchmarkด้านบนเป็น historical `[SimulatedData]` record จากรุ่นก่อน และไม่ใช่ dependency ของ protocol kernel ฉบับ standalone การตรวจรุ่นปัจจุบันใช้:
 
 ```bash
-python3 uia_protocol_kernel_v0_4_6.py --self-test
-python3 uia_protocol_kernel_v0_4_6.py --demo
-python3 uia_protocol_kernel_v0_4_6.py --checkpoint-demo
+python3 skillme_protocol_kernel.py --self-test
+python3 skillme_protocol_kernel.py --demo
+python3 skillme_protocol_kernel.py --checkpoint-demo
 ```
 
 การ reproduce ตัวเลข benchmark เดิมโดยไม่มี `uia_rgm_benchmark.py` ที่ตรงเวอร์ชัน **Cannot be confirmed**; v0.4.6 จึงไม่ใช้ตัวเลขเหล่านั้นเป็น acceptance criterion
@@ -2920,28 +2920,28 @@ python3 uia_protocol_kernel_v0_4_6.py --checkpoint-demo
 - คุณภาพความคิดสร้างสรรค์ของ Double Diamond — **Cannot be confirmed**
 - ความชอบธรรมของ stakeholder deliberation — **Cannot be confirmed**
 - คุณภาพการตัดสินใจเชิงนโยบายจริง — **Cannot be confirmed**
-- ความเหนือกว่าสากลของ UIA — **Cannot be confirmed**
+- ความเหนือกว่าสากลของ SkillMe — **Cannot be confirmed**
 
 ### 9.9 ผลการแข่งขันอย่างซื่อสัตย์
 
-| พื้นที่ | ผู้ที่เหนือกว่าในปัจจุบัน | เหตุผล | UIA ต้องทำอะไร |
+| พื้นที่ | ผู้ที่เหนือกว่าในปัจจุบัน | เหตุผล | SkillMe ต้องทำอะไร |
 |---|---|---|---|
 | chain ที่ชัดและเกิดซ้ำ | 5 Whys/PDCA | ง่าย เร็ว และคนเข้าใจทันที | ใช้เป็น adapter ไม่สร้างภาระ matrix เกินจำเป็น |
 | manufacturing quality | 8D/FMEA | template, risk practice และประสบการณ์อุตสาหกรรมสุกงอม | สร้าง domain card และ evidence mapping; ยังไม่ควรอ้างว่าแทนได้ |
-| live software incident | SRE/Observability | มี instrumentation, telemetry, alerting และ incident roles จริง | UIA เป็น governance layer; ห้ามแทน monitoring backend |
-| UX/innovation | Double Diamond | เก่ง divergent discovery, co-design และ reframing | เปิด generative lane; UIA เดิมแพ้ชัดเจน |
+| live software incident | SRE/Observability | มี instrumentation, telemetry, alerting และ incident roles จริง | SkillMe เป็น governance layer; ห้ามแทน monitoring backend |
+| UX/innovation | Double Diamond | เก่ง divergent discovery, co-design และ reframing | เปิด generative lane; SkillMe เดิมแพ้ชัดเจน |
 | nonlinear policy/system | Systems Dynamics/ABM | มีภาษา feedback, stock-flow, delay และ emergence | รับ dynamic adapters; RGM kernel อย่างเดียวยังไม่ใช่ field model |
-| scale ที่ query ระบุชัด | UIA-RGM มีศักยภาพ | query-relative quotient อาจลด state โดยรักษา readout | ต้องพิสูจน์ defect และมี negative control ทุกครั้ง |
-| claim/rights/lineage governance | UIA มีความแตกต่างเชิงสถาปัตยกรรม | รวม zero/unresolved, agency roles, rights, tier และ correction | ยังต้อง field validation ก่อนอ้างประสิทธิผล |
+| scale ที่ query ระบุชัด | SKILLME-RGM มีศักยภาพ | query-relative quotient อาจลด state โดยรักษา readout | ต้องพิสูจน์ defect และมี negative control ทุกครั้ง |
+| claim/rights/lineage governance | SkillMe มีความแตกต่างเชิงสถาปัตยกรรม | รวม zero/unresolved, agency roles, rights, tier และ correction | ยังต้อง field validation ก่อนอ้างประสิทธิผล |
 
 ข้อสรุป:
 
-> **UIA ยังไม่ชนะระบบเดิมโดยรวม และไม่ควรพยายามแทนระบบเหล่านั้น จุดที่ UIA แข็งแรงคือการเลือกและเชื่อมเครื่องมือหลายชนิดโดยรักษา query, readout, rights, evidence tier และ lineage จุดที่มีศักยภาพเชิงคณิตศาสตร์เฉพาะคือ query-relative graph quotient; จุดที่แพ้ชัดคือ domain maturity, observability infrastructure, generative discovery และ empirical adoption**
+> **SkillMe ยังไม่ชนะระบบเดิมโดยรวม และไม่ควรพยายามแทนระบบเหล่านั้น จุดที่ SkillMe แข็งแรงคือการเลือกและเชื่อมเครื่องมือหลายชนิดโดยรักษา query, readout, rights, evidence tier และ lineage จุดที่มีศักยภาพเชิงคณิตศาสตร์เฉพาะคือ query-relative graph quotient; จุดที่แพ้ชัดคือ domain maturity, observability infrastructure, generative discovery และ empirical adoption**
 
-### 9.10 UIA-RGM protocol record
+### 9.10 SKILLME-RGM protocol record
 
 ```yaml
-uia_rgm:
+skillme_rgm:
   version: "0.4.3"
   evidence_label: REAL_OR_SIMULATED
 
@@ -3073,12 +3073,12 @@ uia_rgm:
 
 ---
 
-## 10. UIA Finite Issue Protocol
+## 10. SkillMe Finite Issue Protocol
 
 ทุก analysis run ต้องมี record ขั้นต่ำ:
 
 ```yaml
-uia_run:
+skillme_run:
   protocol_version: "0.4.8"
 
   run_control:
@@ -3192,7 +3192,7 @@ uia_run:
     raw_user_expression: REQUIRED_IMMUTABLE
     inferred_domain_candidates: []
     selected_domain_projection: REQUIRED
-    canonical_uia_mapping: REQUIRED
+    canonical_skillme_mapping: REQUIRED
     adapter_cards: []
     preserved_distinctions: []
     unresolved_terms: []
@@ -3368,7 +3368,7 @@ uia_run:
 
 ## 11. Protocol invariants
 
-UIA run ใช้ไม่ได้หากละเมิดข้อใดข้อหนึ่ง:
+SkillMe run ใช้ไม่ได้หากละเมิดข้อใดข้อหนึ่ง:
 
 1. ไม่มี query หรือ decision ที่ประกาศ
 2. เปลี่ยนเกณฑ์หลังเห็น outcome โดยไม่เปิดเผย
@@ -3425,11 +3425,11 @@ UIA run ใช้ไม่ได้หากละเมิดข้อใดข
 
 ## 12. Epistemic output law
 
-คำตอบ UIA ที่สมบูรณ์ไม่ควรคืนเพียง “สาเหตุคือ X” แต่ต้องคืน:
+คำตอบ SkillMe ที่สมบูรณ์ไม่ควรคืนเพียง “สาเหตุคือ X” แต่ต้องคืน:
 
 \[
 \boxed{
-\mathcal O_{\mathrm{UIA}}
+\mathcal O_{\mathrm{SkillMe}}
 =
 (J_2,E,I,C,A,P,X,G,W,E_H,H_P,P_u,K,D,V,L)
 }
@@ -3478,7 +3478,7 @@ Minimal human-readable report หลัง `INTAKE_COMPLETE`:
 
 ส่วนประกอบจำนวนมากมีบรรพบุรุษชัดเจนและไม่ควรอ้างว่าใหม่โดยลำพัง ได้แก่ systems thinking, root-cause analysis, causal graphs, design thinking, scientific method, decision analysis, exact arithmetic, interval methods, audit trails และ maker–checker separation
 
-ข้อเสนอเฉพาะของ UIA คือการเชื่อมสิ่งเหล่านี้ด้วยสัญญาร่วมหนึ่งชุด:
+ข้อเสนอเฉพาะของ SkillMe คือการเชื่อมสิ่งเหล่านี้ด้วยสัญญาร่วมหนึ่งชุด:
 
 1. issue ถูกนิยามเป็น **agency–context–query-relative retained difference with consequence**
 2. issue ไม่ถูกใส่ใน root แต่เกิดหลัง translation
@@ -3589,12 +3589,12 @@ Minimal human-readable report หลัง `INTAKE_COMPLETE`:
 
 Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, หรือ `protocol_version` (ยังคง `0.4.6` ในไฟล์ที่ executable) เพราะไม่มี validation logic เปลี่ยน มีแค่การรวมและตรวจสอบรากปรัชญา/ตรรกะกับ sibling repo 4 ตัวที่ไม่เคยเชื่อมมาก่อนบน disk:
 
-- แก้ §3 root-grammar equation ให้มี tier tag (`⊢[Th_coqc]`, `⊢[Dr]`) ตรงกับต้นทาง `readout_genesis/READOUT_GENESIS_CORE.md` จริง — รุ่นก่อนหน้าตัด tag ทิ้งเงียบๆ ซึ่งขัดกับ Axiom A12 (Tier Honesty) ของ UIA เอง
+- แก้ §3 root-grammar equation ให้มี tier tag (`⊢[Th_coqc]`, `⊢[Dr]`) ตรงกับต้นทาง `readout_genesis/READOUT_GENESIS_CORE.md` จริง — รุ่นก่อนหน้าตัด tag ทิ้งเงียบๆ ซึ่งขัดกับ Axiom A12 (Tier Honesty) ของ SkillMe เอง
 - เพิ่ม external-lineage note ท้าย §3 ประกาศความสัมพันธ์กับ `readout_genesis` (root), `research_universal_solver` (downstream, physics/chem/biology), `readout_universe` (control-layer คู่ขนาน), `information-discrete-math` (จุดยืนเดียวกับ §2, มี operational toolkit)
 - เพิ่ม §6.9.1 Domain mapping method — ยืมโครงวินัยจาก `readout_genesis`'s domain-registration standard (quotient declaration, tier ceiling, `not_established[]`, `forbidden_claims[]`) มาใช้กับ adapter card เดิม (§6.9) **โดยประกาศชัดว่าผลลัพธ์อยู่ที่ `Dr` tier เป็นอย่างสูงเสมอ ไม่ใช่การเคลมวิทยาศาสตร์** — จบที่ hypothesis portfolio (phase 12) เท่านั้น
 - เพิ่ม §6.9.2 Contaminated-concept guard — pointer ไปยัง `information-discrete-math`'s ตาราง 12 รายการ (มุม→overlap fraction, ระยะทาง→graph geodesic ฯลฯ) สำหรับใช้ตอน hypothesis แตะ continuum-math concept
 - เพิ่ม §6.9.3 อ้างอิงเสริม (informative) ถึง `readout_universe`'s Lens Law/Ω_all loop — ไม่ใช่ requirement ใหม่
-- เปิดเผยช่องว่างตรงๆ: UIA ไม่มีขั้นตอนแบบ R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) ของ `research_universal_solver` เพราะโดเมนที่ UIA ใช้งานจริง (organizational/software/policy) ไม่มี formal proof system ให้ตรวจแบบ physics/chemistry — ไม่ใช่ UIA ตั้งใจหย่อนมาตรฐาน แต่เป็นข้อจำกัดของธรรมชาติโดเมน
+- เปิดเผยช่องว่างตรงๆ: SkillMe ไม่มีขั้นตอนแบบ R3 (`DRIFT_CONTRACT` + dual-implementation checker แบบ machine-verified) ของ `research_universal_solver` เพราะโดเมนที่ SkillMe ใช้งานจริง (organizational/software/policy) ไม่มี formal proof system ให้ตรวจแบบ physics/chemistry — ไม่ใช่ SkillMe ตั้งใจหย่อนมาตรฐาน แต่เป็นข้อจำกัดของธรรมชาติโดเมน
 
 ### v0.4.8 — 10-domain fit-test refinements (2026-08-01)
 
@@ -3653,20 +3653,20 @@ v0.4.6 มี reference validator/state kernel, evidence-ledger structural valid
 
 ### Standalone execution contract and complete fixture
 
-Companion file: `uia_protocol_kernel_v0_4_6.py`
+Companion file: `skillme_protocol_kernel.py`
 
 ```bash
 # deterministic positive/negative protocol tests
-python3 uia_protocol_kernel_v0_4_6.py --self-test
+python3 skillme_protocol_kernel.py --self-test
 
 # complete built-in run; no input file required
-python3 uia_protocol_kernel_v0_4_6.py --demo
+python3 skillme_protocol_kernel.py --demo
 
 # stop after a complete, resumable hypothesis portfolio
-python3 uia_protocol_kernel_v0_4_6.py --checkpoint-demo
+python3 skillme_protocol_kernel.py --checkpoint-demo
 
 # validate a user-supplied JSON run
-python3 uia_protocol_kernel_v0_4_6.py run.json
+python3 skillme_protocol_kernel.py run.json
 ```
 
 Exit codes:

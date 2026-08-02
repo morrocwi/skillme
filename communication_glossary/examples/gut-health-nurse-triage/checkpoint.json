@@ -100,7 +100,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H1",
             "claim_supported_or_challenged": "SIM-CIT-H1 boundary",
             "context_country_or_region": "synthetic/clinical",
@@ -176,7 +176,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H2",
             "claim_supported_or_challenged": "SIM-CIT-H2 boundary",
             "context_country_or_region": "synthetic/clinical",
@@ -252,7 +252,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H3",
             "claim_supported_or_challenged": "SIM-CIT-H3 boundary",
             "context_country_or_region": "synthetic/clinical",
@@ -323,7 +323,7 @@
       }
     ],
     "review_mode": "TARGETED_SEARCH",
-    "search_protocol_id": "SEARCH-UIA-GUT-NURSE-DEMO",
+    "search_protocol_id": "SEARCH-SKILLME-GUT-NURSE-DEMO",
     "status": "EVIDENCE_CHALLENGE_COMPLETE",
     "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
     "target_context": {
@@ -336,7 +336,7 @@
     }
   },
   "hypothesis_portfolio": {
-    "checkpoint_certificate": "HYP-UIA-GUT-NURSE-DEMO-001",
+    "checkpoint_certificate": "HYP-SKILLME-GUT-NURSE-DEMO-001",
     "diversity_test": "PASS",
     "evidence_linkage_test": "PASS",
     "hypothesis_cards": [
@@ -494,7 +494,7 @@
     "zero_semantics": "no symptom entry under frozen readout that lacks a distinguishable urgency tier at list level"
   },
   "metadata": {
-    "fixture_id": "UIA-gut-health-symptom-tracker-nurse-triage-001",
+    "fixture_id": "SKILLME-gut-health-symptom-tracker-nurse-triage-001",
     "label": "[SimulatedData]",
     "simulation": true
   },
@@ -537,7 +537,7 @@
   },
   "run_control": {
     "continuation_policy": "STOP_AT_HYPOTHESIS",
-    "continuation_record": "CONT-UIA-GUT-NURSE-HYP-DEMO-001",
+    "continuation_record": "CONT-SKILLME-GUT-NURSE-HYP-DEMO-001",
     "requested_by": "gut-health symptom-tracker nurse-triage checkpoint (founder-requested worked example)"
   },
   "system_graph": {
@@ -571,7 +571,7 @@
       "event-schema granularity redesign",
       "red-flag symptom escalation protocol"
     ],
-    "canonical_uia_mapping": "retained difference between the app's single symptom-severity readout and the clinical urgency distinctions nursing triage actually needs",
+    "canonical_skillme_mapping": "retained difference between the app's single symptom-severity readout and the clinical urgency distinctions nursing triage actually needs",
     "loss_audit": "PASS",
     "raw_user_expression": "nurse บ่นว่าเปิด queue มาเจอแต่ 'stomach issue' เหมือนกันหมด แยกไม่ออกว่าเคสไหนต้องรีบดู",
     "selected_domain_projection": "clinical symptom-taxonomy granularity vs. app data-schema granularity",
@@ -579,7 +579,7 @@
     "user_facing_issue_statement": "Symptom log ของแอปรวมอาการทางเดินอาหารทุกชนิดไว้ในป้ายเดียว ทำให้ nurse แยกความรุนแรงทางคลินิกไม่ได้จากหน้าจอ triage"
   },
   "two_question_intake": {
-    "certificate": "J2-UIA-GUT-NURSE-001",
+    "certificate": "J2-SKILLME-GUT-NURSE-001",
     "entry_status": "INTAKE_COMPLETE",
     "q1_answer_verbatim": "Nurse ในทีม triage เปิด symptom log จากแอปแล้วเห็นแค่ checkbox เดียวว่า 'stomach issue' รวมทุกอาการทางเดินอาหารไว้ด้วยกัน ไม่ว่าจะเป็นท้องอืดธรรมดา ปวดบิด ท้องเสีย ท้องผูก หรืออาการที่ควรเป็น red-flag เช่นถ่ายเป็นเลือด ทำให้ nurse ต้องเปิดดูทีละเคสเพื่อแยกความรุนแรงเอง เสียเวลาและเสี่ยงมองข้ามเคสฉุกเฉิน",
     "q1_prompt": "Issue คืออะไร?",

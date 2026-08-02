@@ -17,7 +17,7 @@ domain-mapping discipline and the maker-checker pattern this repo's own PRs
 were built with — not benchmarked against alternatives).
 
 Inputs:
-  - <checkpoint.json>  — the real UIA run record (Layer 0)
+  - <checkpoint.json>  — the real SkillMe run record (Layer 0)
   - <glossary.md>       — Layer 3's issue-anchored vocabulary (for Human's
                           "what vocabulary" section — referenced, not copied)
   - <kg_expert_layer.md> — Layer 2's Open-questions section, if useful context
@@ -326,9 +326,9 @@ def build(run: dict, glossary_md: str, expert_md: str) -> str:
 def load_kernel():
     repo_root = Path(__file__).resolve().parent.parent
     sys.path.insert(0, str(repo_root))
-    import uia_protocol_kernel  # type: ignore
+    import skillme_protocol_kernel  # type: ignore
 
-    return uia_protocol_kernel
+    return skillme_protocol_kernel
 
 
 def validate_checkpoint(run: dict) -> dict:

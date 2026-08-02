@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Bridge: UIA phase-12 hypothesis checkpoint -> doc-ecosystem project scaffold.
+"""Bridge: SkillMe phase-12 hypothesis checkpoint -> doc-ecosystem project scaffold.
 
 See README.md in this folder for the design rationale and the test plan (already
-run once as a smoke test against the UIA `--print-checkpoint-demo` fixture — see
+run once as a smoke test against the SkillMe `--print-checkpoint-demo` fixture — see
 README "Status"). Originally written and smoke-tested in a standalone
 `uia-doc-ecosystem-bridge` repo, then absorbed into this repo (2026-08-01) so the
 integration lives with the protocol it extends, under one name.
@@ -33,9 +33,9 @@ DECISIONS_OPEN_MARKER = "| # | Question | Blocks | Who decides | Since |\n|---|-
 
 def load_kernel(uia_repo: Path):
     sys.path.insert(0, str(uia_repo))
-    import uia_protocol_kernel  # type: ignore
+    import skillme_protocol_kernel  # type: ignore
 
-    return uia_protocol_kernel
+    return skillme_protocol_kernel
 
 
 def validate_checkpoint(kernel, run: dict) -> dict:
@@ -107,8 +107,8 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
     issue = run.get("issue", {}) or {}
     retained_difference = run.get("retained_difference", {}) or {}
     disclaimer = (
-        f"\n\n{SEED_DOCS_MARKER} (from UIA checkpoint {checkpoint_ref})\n\n"
-        "> Draft only, pulled from a validated UIA checkpoint — not written by "
+        f"\n\n{SEED_DOCS_MARKER} (from SkillMe checkpoint {checkpoint_ref})\n\n"
+        "> Draft only, pulled from a validated SkillMe checkpoint — not written by "
         "whoever did the encountering. Review and edit before treating as settled.\n\n"
     )
 
@@ -126,7 +126,7 @@ def seed_docs(target: Path, run: dict, checkpoint_ref: str) -> int:
         ),
         "PLAN.md": (
             f"**Checkpoint status:** {(run.get('hypothesis_portfolio') or {}).get('status', '(not recorded)')}\n\n"
-            "**Candidate directions to evaluate before UIA phase 13** (from this "
+            "**Candidate directions to evaluate before SkillMe phase 13** (from this "
             "checkpoint's hypothesis portfolio, not yet decided):\n\n"
             + "\n".join(
                 f"- `{_escape_cell(c.get('hypothesis_id', '?'))}` "
@@ -405,7 +405,7 @@ def _render_eq_md(run: dict, checkpoint_ref: str) -> str:
         "**Tier: readout** (mechanical — the fields below, verbatim, are where a numeric "
         "threshold or quantitative claim would already be stated if this checkpoint has "
         "one) **+ Dr** (the last section — human/AI to fill in, and is very often correctly "
-        "left empty: most UIA hypotheses are qualitative causal claims with no citable "
+        "left empty: most SkillMe hypotheses are qualitative causal claims with no citable "
         "formula, and that is not a gap).",
         "",
         "## Readout: claim/mechanism/predicted_readout/falsifier per hypothesis",
@@ -430,7 +430,7 @@ def _render_eq_md(run: dict, checkpoint_ref: str) -> str:
         "",
         "## Formulas/equations that formalize this issue's mechanism (human/AI to add — NOT auto-generated)",
         "",
-        "_(most UIA hypotheses are qualitative causal claims — this section correctly stays "
+        "_(most SkillMe hypotheses are qualitative causal claims — this section correctly stays "
         "empty unless the domain genuinely has a citable quantitative relationship, e.g. a "
         "staging threshold, a percentage-of-completion formula, a validated scoring cut-off. "
         "Verify via WebSearch the same way `communication_glossary`'s Layer 2 does before "
@@ -532,7 +532,7 @@ def append_logbook(target: Path, checkpoint_ref: str, cards: list[dict]) -> int:
             "kind": "hypothesis",
             "what": card["claim"],
             "falsifier": card["falsifier"],
-            "source": f"UIA checkpoint {checkpoint_ref} / hypothesis {card['hypothesis_id']} "
+            "source": f"SkillMe checkpoint {checkpoint_ref} / hypothesis {card['hypothesis_id']} "
             f"/ lane {card['lane']}",
             "mechanism": card.get("mechanism"),
             "causal_tier": card.get("causal_tier"),
@@ -587,7 +587,7 @@ def append_decisions_open(
             who = _escape_cell(", ".join(decision_owners))
         else:
             who = "founder" if card.get("legal_relevance") != "NONE" else "AI + founder review"
-        new_rows.append(f"| {n} | {question} | UIA phase 13 candidate generation | {who} | {since} |")
+        new_rows.append(f"| {n} | {question} | SkillMe phase 13 candidate generation | {who} | {since} |")
     text = text[:insertion_point] + "\n".join(new_rows) + "\n" + text[insertion_point:]
     decisions_md.write_text(text, encoding="utf-8")
     return len(new_rows)
@@ -595,7 +595,7 @@ def append_decisions_open(
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("run_json", type=Path, help="UIA run record JSON file")
+    p.add_argument("run_json", type=Path, help="SkillMe run record JSON file")
     p.add_argument("target", type=Path, help="target project directory for doc-ecosystem")
     p.add_argument(
         "--uia-repo",
