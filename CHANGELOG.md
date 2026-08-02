@@ -5,6 +5,39 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.9**.
 
+## Phase 1b — hypothesis_runner.py: real sandboxed execution (2026-08-02, no protocol_version bump)
+
+Founder confirmed the workspace's `anse-multi-agent-subuser` OS-identity substrate has never
+actually been provisioned on this machine (verified live: zero `anse-*` OS users exist,
+provisioning needs an interactive `sudo` run) and chose Docker UID/mount separation instead,
+scoped to this repo. Every hardening flag was verified live against real Docker on this host
+before being relied on -- including catching that `--storage-opt size=...` silently no-ops on
+this host's overlay2 driver (a `--storage-opt size=10m` container wrote 50MB with zero error);
+`--tmpfs size=Nm` is used instead, confirmed to genuinely enforce.
+
+- New `hypothesis_runner.py`: executes a hypothesis card's `verification_payload` (v0.4.9) in a
+  hardened container (`--network=none` by default, `--read-only`, `--cap-drop=ALL`, non-root UID
+  65534, no writable bind mount anywhere, `--tmpfs` disk cap, global concurrency lock).
+- Every `raw_result` record is hardcoded `status: PENDING_INDEPENDENT_CHECK` /
+  `tier: finite_diagnostic` -- there is no code path that writes `APPROVED`, by construction.
+  Closes the *filesystem* self-certification loophole; does NOT close the *actor*-level loophole
+  (Phase 2, `principal_id` separation, not built here).
+- `COQC` (declared in v0.4.9's schema) has no image wired -- refuses cleanly rather than fake it.
+- Real bug found by actually running this against a mode-660 fixture file: the sandbox's fixed
+  UID can't read files it doesn't own/share a group with -- was a cryptic Docker permission
+  error, now a clean preflight refusal with a `chmod` fix in the message.
+- **Fixed after independent review** (reviewer actually ran real Docker commands, not just read
+  code): (1) `docker` missing from `PATH` raised a raw unhandled `FileNotFoundError` traceback
+  instead of a clean refusal -- now caught and refused; (2) `record = {..., "status": ...,
+  **execution}` placed the hardcoded `status`/`tier` fields *before* `**execution` in the dict
+  literal, so a future field added to `run_in_container()`'s return value named `status` or
+  `tier` would silently win Python's last-key-wins merge and defeat the "never writes APPROVED"
+  guarantee -- reordered (`**execution` first, hardcoded fields last) plus an explicit `assert`
+  that fails loudly if this is ever violated. Both fixes have dedicated regression tests.
+- 12 new tests against real Docker (no mocking; 2 of the 12 are the review-driven fixes above).
+  `pytest` 89/89 (was 77). `protocol_version` stays `0.4.9` -- new sibling script, kernel/schema
+  untouched.
+
 ## v0.4.9 — Phase 1a: hypothesis verification-payload schema (2026-08-02)
 
 Founder-driven ultracode team meeting (5 position papers → chair synthesis → 3-lens adversarial

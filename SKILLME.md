@@ -3659,6 +3659,78 @@ hardening.
   a Python `int` subclass, blank `payload_ref`). `pytest` 77/77 (was 67), kernel `--self-test`
   14/14 unaffected.
 
+### Phase 1b — hypothesis_runner.py: real sandboxed execution (2026-08-02, no protocol_version bump)
+
+Founder confirmed via `AskUserQuestion`: the workspace's `anse-multi-agent-subuser` OS-identity
+substrate (referenced in the team-meeting roadmap as an existing mechanism) has never actually
+been provisioned on this machine — verified live (`getent passwd`/`getent group` show zero
+`anse-*` accounts), and provisioning requires an interactive `sudo` run this session cannot
+perform itself. Founder chose Docker UID/mount separation instead, scoped to this repo only, in
+place of the OS-subuser mechanism the original roadmap assumed.
+
+Added `hypothesis_runner.py` (repo root, sibling to the kernel) — the maker-side execution
+engine for a hypothesis card's `verification_payload` (§10 above, added v0.4.9). Every hardening
+flag below was **verified live against this host's real Docker** before being relied on, not
+assumed from documentation:
+
+- `--network=none` (default) confirmed to actually block network (`ping` → `Network unreachable`).
+- `--read-only` + `--user 65534:65534` confirmed non-root, confirmed host filesystem writes
+  blocked (`touch /etc/...` → `Read-only file system`).
+- `--storage-opt size=...` **confirmed broken on this host** (overlay2 driver): a
+  `--storage-opt size=10m` container wrote 50MB with zero error, exactly matching the
+  feasibility review's warning. **Not used.** `--tmpfs /tmp:size=Nm` used instead — confirmed to
+  genuinely enforce (`dd` hit `No space left on device` at the declared limit).
+- Global concurrency cap (`fcntl.flock` on a host-wide lockfile) — the aggregate-OOM gap the
+  security review named (per-container limits alone don't stop N parallel sandboxes summing past
+  host RAM, the same 2026-06-20 `system_guard` incident class at fleet scale).
+- No writable bind mount into the container **at all** — the payload directory is mounted
+  `:ro`; there is no host path the container can write to, so there is nothing for it to write a
+  status/approval into even if compromised. The `raw_result_<hypothesis_id>.json` record is
+  written by `hypothesis_runner.py`'s own process, after the container exits, from the captured
+  stdout/stderr/exit-code only.
+
+**What this closes and what it explicitly does not, stated honestly per the adversarial review's
+own framing:**
+
+- Closes the *filesystem* self-certification loophole (no bind-mount path for the sandbox to
+  write its own "Approved").
+- Does **not** close the *actor*-level loophole the review named: the same session that runs
+  this script could, without anything stopping it, later also be the one that marks a result
+  "checked" — real `principal_id` separation is Phase 2, not built here.
+- Every `raw_result` record's `status` is hardcoded `PENDING_INDEPENDENT_CHECK` and `tier`
+  `finite_diagnostic` — there is no code path in `hypothesis_runner.py` that writes `APPROVED`,
+  by construction, not by convention.
+- `COQC` is a declared schema language (v0.4.9) with no image wired here — refuses cleanly
+  (`REFUSED: ... no image wired for it yet`) rather than silently no-op.
+- `payload_ref` resolves to a **local directory path only** — no remote fetch, no
+  signature/provenance verification of its contents. Named, not fixed (security review finding
+  #9).
+
+**A real bug found only by actually running this against a live container, not by reasoning
+about the design:** the sandbox's fixed non-root UID (65534) shares no group with the host user
+who owns a payload directory, so a normal-looking `mode 660` fixture file produced a raw
+`Permission denied` from inside the container — a cryptic failure, not a clean refusal. Added a
+preflight `check_payload_world_readable_or_refuse()` that catches this before spawning Docker at
+all, with a `chmod` fix listed in the refusal message.
+
+**Fixed after independent review** (reviewer actually ran real Docker commands against the code,
+not just read it): (1) `docker` missing from `PATH` raised a raw unhandled `FileNotFoundError`
+traceback instead of a clean refusal — now caught explicitly; (2) the result-record dict literal
+placed hardcoded `status`/`tier` fields *before* `**execution`, so a future field added to
+`run_in_container()`'s return value named `status` or `tier` would silently win Python's
+last-key-wins dict-merge and defeat the "never writes APPROVED" guarantee — reordered
+(`**execution` first, hardcoded fields last) plus an explicit `assert` that fails loudly if this
+is ever violated again.
+
+12 new tests (`tests/test_hypothesis_runner.py`, 2 of the 12 are the review-driven fixes above),
+all against real Docker (some skipped if `docker` is absent) — no mocking, matching this repo's
+own convention: passing payload, failing payload, missing-payload refusal, invalid-checkpoint
+refusal, unknown-hypothesis-id refusal, unsupported-language refusal, path-escape refusal,
+missing-declared-input refusal, non-world-readable refusal (the bug above, now locked in as a
+regression test), concurrency-lock refusal, missing-docker-binary refusal, status/tier-override
+protection. `pytest` 89/89 (was 77). `protocol_version` stays `0.4.9` — this entry adds a new
+sibling script, it does not touch the kernel or its schema.
+
 ### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
 
 ลงทะเบียนไว้ตรงนี้ตามหลัก "เขียนก่อนเริ่ม ไม่ใช่แก้ทีหลังตอนมีคนถามว่าทำไมไม่บอกไว้ก่อน" — founder ระบุทิศทางถัดไปคร่าวๆ ว่าจะเป็น:
