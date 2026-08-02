@@ -5,6 +5,20 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.8**.
 
+## v0.4.8-rebrand — Repo/plugin/marketplace renamed to `skillme` (2026-08-02)
+
+Founder rebrand decision (no protocol/kernel change, `protocol_version` stays `0.4.8`): GitHub
+repo `morrocwi/universal-issue-analysis` -> `morrocwi/skillme`, plugin subtree
+`plugins/universal-issue-analysis/` -> `plugins/skillme/` (including the installable skill's
+own invocation name), `plugin.json`/`marketplace.json` name fields, git-subdir `source.url`,
+and every outward-facing install command/path reference in README.md/llms.txt/AI_START_HERE.md.
+This tag exists so `marketplace.json`'s git-subdir `ref` has a real commit to resolve against
+that actually contains `plugins/skillme/` — the prior `v0.4.8` tag predates the rename and only
+has `plugins/universal-issue-analysis/` at that commit, which would make a fresh
+`/plugin install` fail to resolve the path. The protocol's own internal identity (`UIA` inside
+`uia_protocol_kernel.py`, the canonical spec's title) is intentionally untouched — a separate,
+higher-risk follow-up decision, not done here.
+
 ## v0.4.8 — 10-domain fit-test refinements
 
 - Ran issue→hypothesis across 10 new domains (astronomy, agriculture, music, law, sports, urban
