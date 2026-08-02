@@ -2,7 +2,7 @@
 ## ปรัชญาการวิเคราะห์ประเด็นสากลบนฐาน Readout Genesis และ Information Discrete Mathematics
 
 **Document ID:** `SKILLME-CORE`  
-**Version:** `0.4.8`  
+**Version:** `0.4.9`  
 **Status:** `STANDALONE_REFERENCE_SPECIFICATION_WITH_EXECUTABLE_PROTOCOL_KERNEL`  
 **Authorial lineage:** Yaoharee Lahtee — Readout Genesis → Information Discrete Mathematics → SkillMe  
 **Intended use:** human reasoning, AI reasoning, organizational analysis, policy analysis, research, software incidents, social issues, and everyday decisions  
@@ -3079,7 +3079,7 @@ skillme_rgm:
 
 ```yaml
 skillme_run:
-  protocol_version: "0.4.8"
+  protocol_version: "0.4.9"
 
   run_control:
     continuation_policy:
@@ -3281,6 +3281,25 @@ skillme_run:
         legitimacy_status: REQUIRED
         proposal_relation: REQUIRED
         uncertainties: [REQUIRED_NONEMPTY]
+        verification_payload: OPTIONAL
+          # Phase 1a (2026-08-02). Absent on most hypothesis cards -- most
+          # hypotheses in this protocol are qualitative causal claims with no
+          # executable payload at all. When present, declares that this
+          # hypothesis intends to be mechanically verified, not just
+          # analytically reasoned about. The kernel validates SHAPE ONLY: it
+          # never resolves payload_ref, never executes entrypoint, and this
+          # declaration alone proves NOTHING about the hypothesis being true
+          # -- claim_boundary stays FINITE_DIAGNOSTIC_ONLY / STRUCTURE_ONLY
+          # exactly as for every other field. No runner that actually
+          # executes this payload exists yet (that is a separate, not-yet-
+          # built Phase 1b).
+          payload_ref: REQUIRED        # pointer/hash to the code, never inline
+          entrypoint: REQUIRED         # relative path within the payload to run
+          language: PYTHON3_OR_BASH_OR_COQC
+          declared_inputs: [REQUIRED_LIST_OF_STRINGS]
+          network_required: REQUIRED_BOOL
+          resource_class: LIGHT_OR_HEAVY
+          expected_exit_status: REQUIRED_INT
     diversity_test: PASS_REQUIRED_IF_READY
     evidence_linkage_test: PASS_REQUIRED_IF_READY
     proposal_comparison_status: COMPLETE_OR_NOT_APPLICABLE
@@ -3605,6 +3624,40 @@ Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, ห�
 - เพิ่มคำเตือน false-precision ท้าย §2 สำหรับกรณี reader เป็นประสาทสัมผัสมนุษย์ (ไม่ใช่ sensor) — คำว่า "retained difference" ต้องไม่ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือเกินจริง
 - `pytest` 13/13 (เพิ่ม 4 test จาก 9 เดิม), kernel `--self-test` ไม่กระทบ (ไม่แตะ demo/checkpoint-demo fixture)
 - **แก้ไขภายหลัง (2026-08-02):** commit ที่แตะ `uia_protocol_kernel.py` ข้างต้นลืม bump `VERSION` constant (ยังเขียน `"0.4.6"` แม้ schema เปลี่ยนจริง) — เจอตอนตรวจสอบ "สถานะตรงกับออนไลน์ครบถ้วนหรือยัง" ก่อน tag release แก้เป็น `"0.4.8"` พร้อม sync `protocol_version` ใน fixture/example ทุกไฟล์ที่ hardcode ค่านี้ไว้ (`fixtures/checkpoint_demo_alt_domain.json` + 3 ไฟล์ใน `communication_glossary/examples/`) และ header เอกสารนี้ (§ ด้านบน, §10) ให้ตรงกัน; `pytest` 67/67, kernel `--self-test` 14/14 ผ่านหลังแก้
+
+### v0.4.9 — Phase 1a: hypothesis verification-payload schema (2026-08-02)
+
+Founder-driven ultracode team-meeting (position papers → chair synthesis → 3-lens adversarial
+review) proposed a docker hypothesis-verification sandbox, then found via independent review
+that the design's core premise had no real attachment point: `HYPOTHESIS_REQUIRED`
+(§10 above) has zero fields that can hold executable code, so "run the hypothesis in a
+container" had nothing defined to `exec`. This entry is Phase 1a of the resulting fixed build
+order — define the execution-payload schema extension before any sandboxing/container work
+begins, per the review's explicit instruction not to bundle schema design into container
+hardening.
+
+- Added `verification_payload` (OPTIONAL, §10 above) to each hypothesis card:
+  `payload_ref` (pointer/hash, never inline code), `entrypoint`, `language`
+  (`PYTHON3`/`BASH`/`COQC`), `declared_inputs` (list of strings), `network_required` (bool),
+  `resource_class` (`LIGHT`/`HEAVY`), `expected_exit_status` (int). Kernel validates **shape
+  only** — it does not resolve `payload_ref`, does not execute `entrypoint`, and this
+  declaration alone proves nothing; `claim_boundary` stays `STRUCTURE_ONLY`/
+  `FINITE_DIAGNOSTIC_ONLY` exactly as for every other field.
+- Fully optional and backward-compatible: absent on every existing fixture/example, all of
+  which stay `VALID_CHECKPOINT` unchanged. Most hypotheses in this protocol are qualitative
+  causal claims with no executable payload at all.
+- The actual runner that would execute a declared payload (Docker sandbox, hardened
+  `--network=none --read-only --cap-drop=ALL`, separate-OS-identity status writer to close the
+  self-certification loophole the review found) is **Phase 1b — not built in this entry**.
+  Also explicitly deferred per the review: `principal_id`-level maker/checker separation
+  (pulled forward to Phase 2 in the roadmap, not this schema addition) and the expert-
+  registration routing layer (Phase 3).
+- 10 new kernel tests (positive shape-valid case, absent-by-default case, and one negative
+  case per validated sub-field: not-an-object, missing field, invalid `language` enum,
+  invalid `resource_class` enum, non-string-list `declared_inputs`, non-bool
+  `network_required`, non-int `expected_exit_status` — explicitly excluding `bool` since it's
+  a Python `int` subclass, blank `payload_ref`). `pytest` 77/77 (was 67), kernel `--self-test`
+  14/14 unaffected.
 
 ### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
 

@@ -507,7 +507,7 @@
     "requested_mode": "AUTO",
     "resolved_mode": "HYBRID_BLIND_COMPARE"
   },
-  "protocol_version": "0.4.8",
+  "protocol_version": "0.4.9",
   "registration": {
     "abstention_rule": "UNRESOLVED หากข้อมูล symptom-duration ที่ engineer เก็บไม่พอให้ nurse ใช้เกณฑ์ทางคลินิกจริง",
     "authorized_users": [

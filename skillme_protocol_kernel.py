@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SkillMe v0.4.8 standalone protocol kernel.
+"""SkillMe v0.4.9 standalone protocol kernel.
 
 This standard-library-only reference implementation validates protocol
 structure and state transitions. It does not establish the truth, causal
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.4.8"
+VERSION = "0.4.9"
 ABSENT_PROPOSAL_TERMS = {
     "ไม่มี",
     "ไม่มีข้อเสนอ",
@@ -180,6 +180,35 @@ LANES = {
     "KNOWN_DIRECT",
     "CROSS_ADAPTIVE",
     "GENERATIVE_TRANSFORMATIVE",
+}
+
+# Phase 1a (2026-08-02): optional structural declaration that a hypothesis card
+# intends to be mechanically verified, not just analytically reasoned about.
+# The kernel validates SHAPE ONLY -- it never resolves payload_ref, never
+# executes entrypoint, and this declaration alone proves nothing about the
+# hypothesis. A separate runner (Phase 1b, not built yet as of this schema
+# addition) would be the only thing authorized to execute it. Most hypotheses
+# in this protocol are qualitative causal claims with no executable payload at
+# all, so verification_payload stays fully optional on every hypothesis card.
+VERIFICATION_LANGUAGES = {
+    "PYTHON3",
+    "BASH",
+    "COQC",
+}
+
+RESOURCE_CLASSES = {
+    "LIGHT",
+    "HEAVY",
+}
+
+VERIFICATION_PAYLOAD_REQUIRED = {
+    "payload_ref",
+    "entrypoint",
+    "language",
+    "declared_inputs",
+    "network_required",
+    "resource_class",
+    "expected_exit_status",
 }
 
 CANONICAL_PHASES = [
@@ -969,6 +998,65 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
             )
         else:
             proposal_relations.add(str(relation))
+        # verification_payload is fully optional (see comment at
+        # VERIFICATION_LANGUAGES definition) -- most hypotheses have none.
+        if "verification_payload" in card:
+            payload = card.get("verification_payload")
+            if not isinstance(payload, dict):
+                errors.append(
+                    f"VERIFICATION_PAYLOAD_NOT_OBJECT:{hypothesis_id}"
+                )
+            else:
+                payload_missing = sorted(
+                    field
+                    for field in VERIFICATION_PAYLOAD_REQUIRED
+                    if field not in payload
+                )
+                if payload_missing:
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_MISSING:{hypothesis_id}:"
+                        + ",".join(payload_missing)
+                    )
+                if not nonblank(payload.get("payload_ref")):
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_BLANK:{hypothesis_id}:payload_ref"
+                    )
+                if not nonblank(payload.get("entrypoint")):
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_BLANK:{hypothesis_id}:entrypoint"
+                    )
+                language = payload.get("language")
+                if language not in VERIFICATION_LANGUAGES:
+                    errors.append(
+                        f"INVALID_VERIFICATION_LANGUAGE:{hypothesis_id}:{language}"
+                    )
+                resource_class = payload.get("resource_class")
+                if resource_class not in RESOURCE_CLASSES:
+                    errors.append(
+                        f"INVALID_VERIFICATION_RESOURCE_CLASS:"
+                        f"{hypothesis_id}:{resource_class}"
+                    )
+                declared_inputs = payload.get("declared_inputs")
+                if not isinstance(declared_inputs, list) or not all(
+                    isinstance(item, str) and item for item in declared_inputs
+                ):
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_DECLARED_INPUTS_INVALID:"
+                        f"{hypothesis_id}"
+                    )
+                if not isinstance(payload.get("network_required"), bool):
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_NETWORK_REQUIRED_NOT_BOOL:"
+                        f"{hypothesis_id}"
+                    )
+                exit_status = payload.get("expected_exit_status")
+                if not isinstance(exit_status, int) or isinstance(
+                    exit_status, bool
+                ):
+                    errors.append(
+                        f"VERIFICATION_PAYLOAD_EXPECTED_EXIT_STATUS_NOT_INT:"
+                        f"{hypothesis_id}"
+                    )
 
     if len(hypothesis_mechanisms) != len(set(hypothesis_mechanisms)):
         errors.append("HYPOTHESIS_DIVERSITY_FAIL:DUPLICATE_MECHANISM")
@@ -1834,8 +1922,8 @@ def checkpoint_demo_run_alt_domain() -> dict[str, Any]:
 def schema_summary() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/skillme/0.4.8/run.schema.json",
-        "title": "SkillMe v0.4.8 finite issue protocol with resumable checkpoint",
+        "$id": "https://example.invalid/skillme/0.4.9/run.schema.json",
+        "title": "SkillMe v0.4.9 finite issue protocol with resumable checkpoint",
         "type": "object",
         "required": [
             "protocol_version",
@@ -2143,7 +2231,7 @@ def emit(data: Any) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate SkillMe v0.4.8 resumable protocol records."
+        description="Validate SkillMe v0.4.9 resumable protocol records."
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--demo", action="store_true")

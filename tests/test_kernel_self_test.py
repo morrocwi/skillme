@@ -216,3 +216,128 @@ def test_small_direct_agency_may_leave_non_enforced_roles_empty():
             run["agency"][field] = []
     report = k.validate(run)
     assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def _valid_verification_payload() -> dict:
+    return {
+        "payload_ref": "sha256:deadbeef",
+        "entrypoint": "verify.py",
+        "language": "PYTHON3",
+        "declared_inputs": ["evidence.json"],
+        "network_required": False,
+        "resource_class": "LIGHT",
+        "expected_exit_status": 0,
+    }
+
+
+def test_hypothesis_card_has_no_verification_payload_by_default():
+    # Phase 1a (2026-08-02): most hypotheses are qualitative causal claims with
+    # no executable payload at all -- the demo fixture must stay VALID_CHECKPOINT
+    # with the field entirely absent, proving it's genuinely optional.
+    run = copy.deepcopy(_demo_checkpoint())
+    for card in run["hypothesis_portfolio"]["hypothesis_cards"]:
+        assert "verification_payload" not in card
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_verification_payload_valid_shape_accepted():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = (
+        _valid_verification_payload()
+    )
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_verification_payload_not_object_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = "not-an-object"
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("VERIFICATION_PAYLOAD_NOT_OBJECT" in e for e in report["errors"])
+
+
+def test_verification_payload_missing_field_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    del payload["expected_exit_status"]
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "VERIFICATION_PAYLOAD_MISSING" in e and "expected_exit_status" in e
+        for e in report["errors"]
+    )
+
+
+def test_verification_payload_invalid_language_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["language"] = "PERL"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("INVALID_VERIFICATION_LANGUAGE" in e for e in report["errors"])
+
+
+def test_verification_payload_invalid_resource_class_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["resource_class"] = "MEDIUM"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("INVALID_VERIFICATION_RESOURCE_CLASS" in e for e in report["errors"])
+
+
+def test_verification_payload_declared_inputs_must_be_string_list():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["declared_inputs"] = "evidence.json"  # not a list
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "VERIFICATION_PAYLOAD_DECLARED_INPUTS_INVALID" in e for e in report["errors"]
+    )
+
+
+def test_verification_payload_network_required_must_be_bool():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["network_required"] = "false"  # string, not bool
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "VERIFICATION_PAYLOAD_NETWORK_REQUIRED_NOT_BOOL" in e for e in report["errors"]
+    )
+
+
+def test_verification_payload_expected_exit_status_must_be_int_not_bool():
+    # bool is a subclass of int in Python -- must be explicitly excluded so
+    # True/False can't silently pass as 1/0.
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["expected_exit_status"] = True
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "VERIFICATION_PAYLOAD_EXPECTED_EXIT_STATUS_NOT_INT" in e
+        for e in report["errors"]
+    )
+
+
+def test_verification_payload_blank_payload_ref_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    payload = _valid_verification_payload()
+    payload["payload_ref"] = "   "
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["verification_payload"] = payload
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "VERIFICATION_PAYLOAD_BLANK" in e and "payload_ref" in e
+        for e in report["errors"]
+    )
