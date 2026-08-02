@@ -3950,10 +3950,16 @@ machinery.
   error variable → gap → event node → coherent outcome` — is structurally identical to what a
   Universal Adapter Card (§6.9) should already require of every candidate; worth making that
   backtrace field explicit and mandatory rather than implicit.
-- **A weakest-link readiness gate, formalizing `SKILLME-A9 — Decision-Boundary Exactness`.**
-  ARAYA's `R_E = min(1 - η_i, ρ_repair)` — readiness is capped by its single worst unresolved
-  dimension, not averaged across dimensions — is a genuinely useful operationalization that A9
-  currently states only as a principle, not a computable gate. Reframed in SkillMe's own
+- **A weakest-link readiness gate — same spirit as `SKILLME-A9 — Decision-Boundary Exactness`, not
+  a formalization of it.** Correction after review: A9's actual text (§5) is specifically about
+  numerical exactness near a decision threshold (cancellation/near-singularity, `κu < δ`, exact
+  rational/interval/certified fallback) — a different, narrower claim than "aggregate several
+  named dimensions by their worst score." Calling this a formalization of A9 was a loose analogy,
+  not accurate; corrected here rather than left standing. What's actually being proposed is a
+  *new, separate* mechanism that shares A9's underlying spirit (never let something weak slide
+  past a decision boundary uncaught) but is its own gate, not a computation of A9. ARAYA's `R_E =
+  min(1 - η_i, ρ_repair)` — readiness capped by its single worst unresolved dimension, not
+  averaged across dimensions — is a genuinely useful pattern regardless. Reframed in SkillMe's own
   vocabulary (ordinal tiers, not floats): a candidate/hypothesis is only as ready to commit as its
   *worst-scored* dimension, and no single strong dimension may compensate for another dimension
   still at `CRITICAL`/`MAJOR`. This maps naturally onto SkillMe's existing three-lane candidate
