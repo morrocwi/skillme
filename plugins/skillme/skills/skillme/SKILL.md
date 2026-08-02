@@ -186,12 +186,20 @@ checks, at the end of every turn where this skill was loaded:
    map, hypothesis evidence challenge, hypothesis portfolio) — not just this file's prose
    telling you to.
 2. **If a run reached `VALID_CHECKPOINT`, `doc_ecosystem_bridge/bridge.py` was actually run**
-   against it before the turn ends.
+   against it before the turn ends — **only when that file is actually reachable on disk.**
+   A `git-subdir` plugin-only install (per this file's own note above) never fetches
+   `doc_ecosystem_bridge/`, since it lives at the full repo's root, outside the installed
+   `plugins/skillme/` subtree. Demanding it unconditionally would block a plugin-only session
+   forever with no possible way to satisfy the gate — the hook checks a few plausible paths
+   (the project dir, cwd, alongside a full repo clone) and skips this specific requirement
+   when none of them exist, rather than blocking indefinitely on something that was never
+   installed.
 
-If either is missing, the hook blocks the turn end with a `reason` naming exactly what's
-missing — act on it (call `TaskCreate`, run `bridge.py`) and the next `Stop` check passes
-cleanly; it does not hard-stop the session. This is deliberate: the two soft instructions
-above (use `TaskCreate`, run `bridge.py` at checkpoint) are advisory and can silently get
-skipped under time pressure — the hook makes them structural instead. It only activates for
-sessions that actually invoked this skill; it is a silent no-op for every other Bash/Skill/Stop
-event in a project where the plugin happens to be installed.
+If either applicable requirement is missing, the hook blocks the turn end with a `reason`
+naming exactly what's missing — act on it (call `TaskCreate`, run `bridge.py`) and the next
+`Stop` check passes cleanly; it does not hard-stop the session. This is deliberate: the two
+soft instructions above (use `TaskCreate`, run `bridge.py` at checkpoint) are advisory and can
+silently get skipped under time pressure — the hook makes them structural instead, exactly
+when structural enforcement is actually possible. It only activates for sessions that actually
+invoked this skill; it is a silent no-op for every other Bash/Skill/Stop event in a project
+where the plugin happens to be installed.

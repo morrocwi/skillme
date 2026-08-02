@@ -3804,6 +3804,97 @@ a real, non-advisory MIMCG gate now in force workspace-wide, this entry builds t
 
 **สถานะตรงๆ ณ จุดที่บันทึก**: นี่คือทิศทางที่ founder บอกไว้ ยังไม่มี scope, ยังไม่มี artifact, ยังไม่มี tier — บันทึกไว้เป็น pointer สำหรับ session ถัดไป ไม่ใช่ commitment ว่าจะสร้างแบบไหน ต้อง clarify scope กับ founder ก่อนเริ่มออกแบบจริง (ตาม pattern ที่ session นี้ใช้มาตลอด: AskUserQuestion ก่อนแตะไฟล์เมื่อ scope ยังไม่ชัด)
 
+### Personal epistemic OS direction — synthesis from two external reviews (2026-08-02, Dr-tier, not scoped or built)
+
+Founder handed over a raw vision note (`skillmenote.md`) — SkillMe as a daily-life "issue/idea →
+skill" personal epistemic OS, with a north-star identity-reflection layer — plus two AI-authored
+critiques of it, the second of which actually read this live repo at commit `98b5381` and ran the
+kernel self-test before writing its review. This entry registers what survives independent
+judgment from both, tier-honestly, as design direction only. It does **not** change any schema,
+kernel behavior, or protocol_version — nothing below is built.
+
+**Where the two reviews disagreed, and which side this entry takes**: the first review proposed
+cutting RAG/KG/project-management/doc-ecosystem from the MVP down to one minimal machine. The
+second review — after reading the actual repo — disagreed, and its argument is adopted here: those
+layers are not decoration, they are the only way to test the vision's actual hypothesis (*does
+insight from one issue reduce the epistemic cost of a later, unrelated issue?*). Cutting them tests
+only "can SkillMe analyze one issue," not the claim the founder's note is actually making. MVP
+should mean the smallest **closed epistemic loop** — capture → connect to prior memory → minimum
+cut → object → human gate → field readout → lesson back into memory — not the smallest component
+count.
+
+**What both reviews agreed already exists and should not be rediscovered as new**: the *minimum
+epistemic cut* — "what must this person understand, at minimum, to unlock this issue" — is not a
+missing feature; it is already `SKILLME-A5 — Minimal Sufficient Quotient` (§5 above). The gap is
+that A5 is a design axiom, not yet a computable pipeline (`Issue → Unknowns → Blocking unknowns →
+Minimum knowledge cut → Required human expertise → Required AI skills/tools → Smallest reversible
+action → Object`). Also agreed: the founder's "AI shows positive/negative consequences, human
+chooses" principle is MIMCG (§ maker-checker discipline used elsewhere in this workspace) applied
+to personal cognition — maker = AI, checker = human, "no independent check, no release" becomes
+"no human confirmation, no object."
+
+**Concrete structural proposals worth carrying forward, none built**:
+
+- **Origin/provenance fields on every inferred node or edge** — `origin` (human / sensor / document
+  / AI inference), `source_ref`, `created_at`, `valid_time`, `confidence`, `claim_tier`,
+  `confirmed_by`, `supersedes`, `inference_depth` — plus the rule *an unconfirmed inference must
+  not become the base for another unconfirmed inference without a budget or independent support*.
+  This is the same readout-vs-truth separation this repo already enforces elsewhere
+  (`hypothesis_evidence_challenge`, `causal_analysis.causal_tier`), stated as a graph-construction
+  guard rather than a validation-time check.
+- **Episode vs Constraint split for failure records** — a narrative ("customer didn't send the
+  document on time") does not transfer across domains; the constraint it teaches ("a workflow
+  dependent on a third party with no incentive needs a deadline, reminder, fallback, and stop
+  rule") does. Storing only episodes makes cross-domain reuse — the thing the founder's note calls
+  "ตกตะกอนที่จะไปปลดล็อกประเด็นอื่นๆ" — undiscoverable by construction.
+- **Issue-debt lifecycle, not a fixed close-after-N-days rule** — the first review's flat 30-day
+  garbage-collection deadline was correctly narrowed by the second: some issues have a genuinely
+  long horizon. Proposed states: `active / waiting_for_evidence / waiting_for_agency / scheduled /
+  dormant_with_reason / merged / converted_to_constraint / converted_to_object / closed /
+  abandoned_with_lesson` — attention decay plus an explicit horizon, not a silent timeout.
+- **Canonical epistemic object types**, distinct from a single generic "note" or graph-node type:
+  `Observation, Claim, Inference, Question, Hypothesis, Evidence, Constraint, Decision, Experiment,
+  Outcome, Lesson, Skill, Tool, Project, Artifact, Object` — with explicit non-identities the schema
+  should enforce: `Observation ≠ Claim`, `Claim ≠ Inference`, `Hypothesis ≠ Decision`, `Valid
+  checkpoint ≠ Success`, `Skill plan ≠ Installed skill`, `Design doc ≠ Working product`. The last
+  two are direct, checkable statements about this repo's own `skill_plan.py` output and
+  `VALID_CHECKPOINT` status — worth turning into fixture assertions when this direction is scoped.
+- **Object contract with maturity levels** — a produced object (four kinds: Knowledge / Capability
+  / Coordination / World) carries identity, owner, interface, artifact, provenance, acceptance
+  test, version, lifecycle state, and field-readout result; maturity is staged `O0 Captured → O1
+  Structured → O2 Designed → O3 Executable → O4 Independently checked → O5 Field-verified and
+  reusable`. This gives the system an honest way to say *this is at O2, not O5* instead of
+  overclaiming a finished artifact — the same tier-honesty this repo already applies to protocol
+  claims (`Th_coqc`/`finite_diagnostic`/`Dr`/`Open`), extended to produced objects.
+- **Constitutional layer above the protocol** — `my-philosophy.md` (personal values, non-negotiable
+  rights) and `my-logic.md` (personal inference/uncertainty handling) sitting *above*
+  `SKILLME.md`/`AGENTS.md`/project docs/task instructions in authority order. The review's point:
+  SkillMe's own philosophy (§2 above) is universal-protocol-level; a person's own values are not the
+  same object and the repo currently has no place for the latter.
+- **Five memory types** (episodic / semantic / procedural / normative / project) instead of one
+  undifferentiated store, so a thing that happened once is not silently promoted to a general rule
+  without going through confirmation — the same discipline as the Episode/Constraint split above,
+  generalized.
+- **Three-plane timing model** — Capture (seconds, near-zero friction, fails if slow), Deliberation
+  (minutes-to-days, produces issue/hypothesis/project/object, fails if shallow), Reflection
+  (daily/weekly, identity/progress/next-direction), sharing one event log + constitution + epistemic
+  graph rather than being three separate products (this reframes, not replaces, the first review's
+  capture/transform/north-star three-layer observation).
+- **Metrics beyond note count or open-issue count** — the two reviews converge that the real
+  north-star metric is a *reuse rate*: % of new issues unlocked using constraint/skill/object
+  memory from an unrelated prior issue. Zero means the system is an expensive note store; growth
+  over time is the actual moat, because the sediment is personal and non-copyable. Secondary
+  metrics proposed: capture latency, lineage integrity (does raw input survive to object without
+  meaning drift), inference-confirmation rate, false-link rate, epistemic-cut efficiency,
+  time-to-field-readout, human-override rate, issue debt count, and whether reflection actually
+  changes a choice versus just generating guilt.
+
+**Explicitly not decided here**: whether/when to build any of this, what the MVP vertical slice
+looks like, what "object" means as a completion criterion (a runnable `SKILL.md` this repo can
+ship this week is a categorically different scope than a shipped hardware/software product — the
+first review's closing question, still open). This is a registered direction, not a plan — scope
+must be clarified with the founder (`AskUserQuestion`) before any schema or kernel change lands.
+
 ### v0.5 — Formal semantics and executable kernel
 
 - ทำ typed definitions ของ `Issue`, `Agency`, `Stakeholder`, `Context`, `TranslationRecord` และ `ReadoutStatus`
