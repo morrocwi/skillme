@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 KERNEL = REPO_ROOT / "skillme_protocol_kernel.py"
 
@@ -339,5 +341,190 @@ def test_verification_payload_blank_payload_ref_rejected():
     assert report["protocol_status"] != "VALID_CHECKPOINT"
     assert any(
         "VERIFICATION_PAYLOAD_BLANK" in e and "payload_ref" in e
+        for e in report["errors"]
+    )
+
+
+# --- Phase 2 (2026-08-02): checker_result / MC-02 principal separation ---
+
+def _valid_checker_result() -> dict:
+    return {
+        "maker_principal_id": "agent-session-abc",
+        "checker_principal_id": "agent-session-xyz",
+        "checker_type": "AI",
+        "tier": "L0",
+        "verdict": "APPROVED",
+        "rationale": "Re-ran the raw_result mechanically, exit code matched.",
+        "checked_at": "2026-08-02T12:00:00+07:00",
+    }
+
+
+def test_hypothesis_card_has_no_checker_result_by_default():
+    run = copy.deepcopy(_demo_checkpoint())
+    for card in run["hypothesis_portfolio"]["hypothesis_cards"]:
+        assert "checker_result" not in card
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_checker_result_valid_distinct_principals_accepted():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = (
+        _valid_checker_result()
+    )
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_checker_result_can_exist_without_verification_payload():
+    # A purely analytical hypothesis (no mechanical payload at all) can still
+    # be human-reviewed and approved by judgment -- checker_result doesn't
+    # require verification_payload to be present.
+    run = copy.deepcopy(_demo_checkpoint())
+    card = run["hypothesis_portfolio"]["hypothesis_cards"][0]
+    assert "verification_payload" not in card
+    card["checker_result"] = _valid_checker_result()
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_checker_result_same_principal_rejected():
+    # This is the core MC-02 guarantee: the same principal cannot be both
+    # maker and checker.
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_principal_id"] = checker["maker_principal_id"]
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
+
+
+def test_checker_result_same_principal_with_whitespace_rejected():
+    # Real bug found by independent review: a raw string-equality comparison
+    # let "agent-x" vs "agent-x " (trailing space) through as different
+    # principals. normalize_principal_id() (strip + casefold) closes this.
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_principal_id"] = checker["maker_principal_id"] + " "
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
+
+
+def test_checker_result_same_principal_with_different_case_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_principal_id"] = checker["maker_principal_id"].upper()
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
+
+
+def test_normalize_principal_id_strips_and_casefolds():
+    assert k.normalize_principal_id("M1") == k.normalize_principal_id("m1")
+    assert k.normalize_principal_id("M1") == k.normalize_principal_id(" M1 ")
+    assert k.normalize_principal_id("agent-a") != k.normalize_principal_id("agent-b")
+
+
+def test_checker_result_not_object_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = "nope"
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_NOT_OBJECT" in e for e in report["errors"])
+
+
+def test_checker_result_missing_field_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    del checker["rationale"]
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "CHECKER_RESULT_MISSING" in e and "rationale" in e for e in report["errors"]
+    )
+
+
+def test_checker_result_invalid_checker_type_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_type"] = "ROBOT"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("INVALID_CHECKER_TYPE" in e for e in report["errors"])
+
+
+def test_checker_result_invalid_tier_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["tier"] = "L9"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("INVALID_CHECKER_TIER" in e for e in report["errors"])
+
+
+def test_checker_result_invalid_verdict_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["verdict"] = "MAYBE"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("INVALID_CHECKER_VERDICT" in e for e in report["errors"])
+
+
+@pytest.mark.parametrize("tier", ["L3", "L4", "L5"])
+def test_checker_tier_l3_plus_requires_human_not_ai(tier):
+    # MIMCG L3+ requires a human final owner (cpg/AGENTS.md step 6.5,
+    # ratified 2026-08-02) -- structurally enforced, not just documented.
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["tier"] = tier
+    checker["checker_type"] = "AI"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "CHECKER_TIER_REQUIRES_HUMAN" in e and tier in e for e in report["errors"]
+    )
+
+
+@pytest.mark.parametrize("tier", ["L3", "L4", "L5"])
+def test_checker_tier_l3_plus_accepts_human(tier):
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["tier"] = tier
+    checker["checker_type"] = "HUMAN"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+@pytest.mark.parametrize("tier", ["L0", "L1", "L2"])
+def test_checker_tier_below_l3_accepts_ai(tier):
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["tier"] = tier
+    checker["checker_type"] = "AI"
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] == "VALID_CHECKPOINT", report["errors"]
+
+
+def test_checker_result_blank_principal_ids_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["maker_principal_id"] = "   "
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any(
+        "CHECKER_RESULT_BLANK" in e and "maker_principal_id" in e
         for e in report["errors"]
     )

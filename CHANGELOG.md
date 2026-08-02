@@ -3,7 +3,37 @@
 All notable changes to SkillMe are recorded here. This repo starts its
 public history at v0.4.6; the version history from v0.4.6 down through v0.3 is carried over
 from the standalone spec document's own §14 Development roadmap for continuity. Current
-protocol version: **v0.4.9**.
+protocol version: **v0.4.10**.
+
+## v0.4.10 — Phase 2: checker_result (MC-02 principal separation + MIMCG tier enforcement, 2026-08-02)
+
+Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an
+explicit `human_pi` act -- an AI ratifying its own governance escalation would have defeated the
+principle being enforced. With a real MIMCG gate now in force, this builds the actual "check"
+step Phase 1b's `raw_result` explicitly refused to be.
+
+- New optional `checker_result` on hypothesis cards (§10). Kernel enforces MC-02
+  (`maker_principal_id != checker_principal_id`, hard reject on match) and MIMCG's
+  L3+-requires-`HUMAN` rule, both live-verified in both directions. Declaration checks, not
+  identity verification -- no identity infrastructure is wired to this repo.
+- New `hypothesis_checker.py`: a genuinely separate program from `hypothesis_runner.py`, invoked
+  separately -- no flag lets one invocation both generate and check a result. Re-derives
+  pass/fail from `raw_result`'s own fields (MC-04), refuses invalid/mismatched/pre-Phase-2
+  inputs, warns on mechanically-failed-but-approved.
+- `hypothesis_runner.py` gained required `--maker-principal-id`; fixed the same dict-ordering
+  bug class the Phase 1b review caught (moved after `**execution`, assert extended).
+- 30 new tests (19 kernel + 11 checker), all real invocations, no mocking. `pytest` 119/119 (was
+  89). `protocol_version` `0.4.9` -> `0.4.10`.
+- **Fixed after independent PR review** (2026-08-02): the MC-02 same-principal comparison in both
+  the kernel's `validate()` and `hypothesis_checker.py`'s own preflight check was raw string
+  equality, so `"agent-x"` vs `"agent-x "` (trailing whitespace) or `"AGENT-X"` (different case)
+  silently passed as two different principals, defeating the guarantee this entry's own text
+  above claims. Added `normalize_principal_id()` (strip + casefold) to `skillme_protocol_kernel.py`
+  and applied it in both enforcement points -- still a DECLARATION check, not identity
+  verification, per the existing scope note above; normalizing closes the trivial bypass, it does
+  not add cryptographic identity. 6 new regression tests (2 kernel MC-02 case/whitespace, 1 kernel
+  unit test for the normalizer itself, 2 checker-script case/whitespace, 1 checker
+  genuinely-different-principals guard against over-normalizing). `pytest` 129/129.
 
 ## v0.5.2 — on-stop.sh: fix plugin-only install permanent-block gap (2026-08-02, no protocol_version bump)
 

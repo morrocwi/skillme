@@ -125,6 +125,8 @@ skillme/
 ├── hypothesis_runner.py                  Phase 1b: sandboxed execution of a hypothesis card's
 │                                          verification_payload (Docker, maker-side only, never
 │                                          writes APPROVED -- see CHANGELOG.md)
+├── hypothesis_checker.py                 Phase 2: the checker side (MC-02) -- a separate program,
+│                                          invoked separately, writes checker_result/APPROVED
 ├── fixtures/checkpoint_demo_alt_domain.json  a second, non-booking-app checkpoint fixture
 ├── fixtures/hyp_payloads/                 real verification_payload test fixtures for the above
 ├── tools/generate_field_reference.py     regenerates docs/FIELD_REFERENCE.md from the kernel's own constants

@@ -275,6 +275,17 @@ def main() -> None:
     p.add_argument("checkpoint", type=Path, help="SkillMe checkpoint JSON file")
     p.add_argument("hypothesis_id", help="hypothesis_id of the card to verify")
     p.add_argument("--out-dir", type=Path, required=True, help="where to write raw_result JSON")
+    p.add_argument(
+        "--maker-principal-id",
+        required=True,
+        help=(
+            "identifier for whoever/whatever is running this (Phase 2, MC-02): "
+            "a session id, agent id, or human identifier. Stamped into the "
+            "raw_result so hypothesis_checker.py can structurally refuse a "
+            "checker_principal_id that matches this one. Declared, not "
+            "cryptographically verified -- see module docstring."
+        ),
+    )
     args = p.parse_args()
 
     run = validate_checkpoint_or_refuse(args.checkpoint)
@@ -291,15 +302,18 @@ def main() -> None:
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     out_path = args.out_dir / f"raw_result_{args.hypothesis_id}.json"
-    # Structural guarantee (independent review finding): status/tier/
-    # claim_boundary are placed AFTER **execution in this dict literal, so
-    # they always win Python's last-key-wins merge semantics even if a future
-    # edit adds a same-named key to run_in_container()'s return value.
-    # Asserted explicitly too, so that scenario fails loudly instead of
-    # silently overriding the one guarantee this whole design rests on.
-    assert not {"status", "tier", "claim_boundary"} & set(execution), (
-        "run_in_container() must never return a 'status'/'tier'/'claim_boundary' "
-        "key -- those are hardcoded below and must not be payload-influenceable"
+    # Structural guarantee (independent review finding, extended to
+    # maker_principal_id in Phase 2 since hypothesis_checker.py's MC-02
+    # enforcement now depends on it): status/tier/claim_boundary/
+    # maker_principal_id are placed AFTER **execution in this dict literal,
+    # so they always win Python's last-key-wins merge semantics even if a
+    # future edit adds a same-named key to run_in_container()'s return
+    # value. Asserted explicitly too, so that scenario fails loudly instead
+    # of silently overriding a guarantee this design rests on.
+    _protected_keys = {"status", "tier", "claim_boundary", "maker_principal_id"}
+    assert not _protected_keys & set(execution), (
+        f"run_in_container() must never return any of {sorted(_protected_keys)} "
+        "-- those are hardcoded below and must not be payload-influenceable"
     )
     record = {
         "schema": "skillme_verification_raw_result_v1",
@@ -308,6 +322,7 @@ def main() -> None:
             (run.get("hypothesis_portfolio") or {}).get("checkpoint_certificate")
         ),
         **execution,
+        "maker_principal_id": args.maker_principal_id,
         "tier": "finite_diagnostic",
         "status": "PENDING_INDEPENDENT_CHECK",
         "claim_boundary": (
