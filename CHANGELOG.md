@@ -5,6 +5,37 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.9**.
 
+## v0.5.2 — on-stop.sh: fix plugin-only install permanent-block gap (2026-08-02, no protocol_version bump)
+
+Founder handed over two external AI-authored review documents of the live repo
+(`skillmenote.md`, `SKILLME.md` snapshot) for extraction. Each of the three claimed P0 bugs was
+independently verified against the actual repo before trusting it (readout-not-truth discipline),
+not applied on the reviewer's say-so:
+
+- **Confirmed real** — `on-stop.sh`'s fail-closed Stop gate unconditionally required
+  `doc_ecosystem_bridge/bridge.py` to have run after a `VALID_CHECKPOINT`. But
+  `marketplace.json`'s git-subdir install only fetches `plugins/skillme/` -- `doc_ecosystem_bridge/`
+  lives at the repo root and is never present in a plugin-only install. That combination meant a
+  plugin-only-install user could never satisfy this gate and would be blocked forever with no way
+  out. Fixed: only enforce the bridge requirement when `doc_ecosystem_bridge/bridge.py` is actually
+  reachable on disk (checked across `CLAUDE_PROJECT_DIR`, `$(pwd)`, and the plugin root's repo-root
+  sibling). Live-verified in three scenarios (isolated plugin-only tree -> no block; full-repo
+  checkout -> still blocks, no regression; `doc_eco_done` already true -> no block) plus new
+  `tests/test_on_stop_hook.py` regression coverage (4 tests, real `bash` subprocess calls against
+  `tmp_path` trees, no mocking).
+- **Rejected after verification** — the review's claim that `review_mode` needed strict enum
+  validation was checked against the actual fintech fixture
+  (`communication_glossary/examples/fintech/checkpoint.json`) and the kernel's own inline comment:
+  a non-enum `review_mode` value (`'TARGETED_SEARCH "Phase-2 (draft)"'`) is explicitly documented as
+  an intentional, backward-compatible fallback path, with `skill_plan.py` surfacing a graceful note
+  about it rather than refusing. An initial attempt to "fix" this as a hard `PROTOCOL_FAIL` broke
+  `test_cli_end_to_end_against_real_fintech_fixture` -- confirming it was not a bug, and the change
+  was reverted before commit.
+- **Deferred, not conclusively verified** — the review's third claim (semantic lineage / narrative
+  consistency across the fintech fixture's Q1 vs domain projection) was investigated but not
+  conclusively confirmed as a cleanly fixable bug distinct from the kernel's already-disclosed
+  structural-only-validation limit; not acted on this round.
+
 ## Phase 1b — hypothesis_runner.py: real sandboxed execution (2026-08-02, no protocol_version bump)
 
 Founder confirmed the workspace's `anse-multi-agent-subuser` OS-identity substrate has never
