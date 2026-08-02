@@ -17,7 +17,24 @@ state_file="$state_dir/$session_id.json"
 active="$(jq -r '.skillme_active // false' "$state_file" 2>/dev/null || echo false)"
 [[ "$active" == "true" ]] || exit 0
 
-task_created="$(jq -r '.task_created // false' "$state_file" 2>/dev/null || echo false)"
+# The TaskCreated hook event was live-tested and never fires in this Claude
+# Code version (2.1.220) -- so .task_created from state is unreliable and
+# only kept as a secondary OR. Primary signal: Claude Code's own real task
+# storage at ~/.claude/tasks/<session_id>/*.json (reverse-engineered by
+# inspecting a live session, not officially documented -- if this path ever
+# changes, this check silently stops finding tasks and falls back to state).
+real_tasks_dir="${HOME:-/root}/.claude/tasks/$session_id"
+real_task_count=0
+if [[ -d "$real_tasks_dir" ]]; then
+  real_task_count="$(find "$real_tasks_dir" -maxdepth 1 -name '*.json' 2>/dev/null | wc -l)"
+fi
+
+task_created_flag="$(jq -r '.task_created // false' "$state_file" 2>/dev/null || echo false)"
+task_created="false"
+if [[ "$real_task_count" -gt 0 || "$task_created_flag" == "true" ]]; then
+  task_created="true"
+fi
+
 checkpoint="$(jq -r '.checkpoint_reached // false' "$state_file" 2>/dev/null || echo false)"
 doc_eco="$(jq -r '.doc_eco_done // false' "$state_file" 2>/dev/null || echo false)"
 

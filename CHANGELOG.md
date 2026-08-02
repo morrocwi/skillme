@@ -5,6 +5,35 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.8**.
 
+## Plugin v0.5.1 — Live-tested and fixed two real hook bugs (2026-08-02)
+
+Founder asked to actually test the v0.5.0 hooks in a fresh session rather than trust static
+review. Spun up genuinely separate `claude -p ... --plugin-dir plugins/skillme` subprocesses
+(a real new process, not this session) and inspected `~/.claude/debug/<session>.txt` for ground
+truth. Found two real bugs neither static review nor pipe-testing could have caught:
+
+1. **Hook loading failed entirely.** `plugin.json`'s `"hooks": "./hooks/hooks.json"` field
+   (added "for clarity" in v0.5.0) duplicated the same path Claude Code auto-discovers by
+   default, and the loader treats that as an error: `Duplicate hooks file detected... Hook
+   load failed`. Every skillme hook was silently registered as zero hooks. Fixed by removing
+   the redundant declaration.
+2. **The `TaskCreated` hook event never fires** in Claude Code 2.1.220 despite being in the
+   documented event list — confirmed by calling `TaskCreate` 4 times in a live session and
+   finding zero `TaskCreated` log lines. `on-stop.sh`'s `task_created` check was silently
+   always false via that path. Fixed by checking Claude Code's own real task storage
+   (`~/.claude/tasks/<session_id>/*.json`, found by inspecting a live session -- not
+   officially documented, kept as the primary signal with the old state-file flag as a
+   fallback OR in case a future version does fire `TaskCreated`).
+
+After both fixes, re-tested live end-to-end: a session instructed to invoke skillme then
+explicitly refuse to call TaskCreate under any circumstances was blocked by the `Stop` hook
+**9 consecutive times** (`"decision":"block"` in the debug log each time, matching the model's
+own "Fourth repetition... still holding" text) until the CLI's own unrelated turn budget ended
+the process -- the hook itself never gave up. A second session (compliant, not told to refuse)
+was blocked twice, called `TaskCreate` in response, and passed cleanly. `on-skill-invoke.sh`'s
+`additionalContext` injection was also confirmed firing (555 chars logged) exactly once per
+skill load.
+
 ## Plugin v0.5.0 — Bundled fail-closed Stop hook (2026-08-02)
 
 Founder request: connect the plugin's own operational contract (use `TaskCreate` to track
