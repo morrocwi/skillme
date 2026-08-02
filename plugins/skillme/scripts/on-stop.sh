@@ -61,7 +61,7 @@ done
 
 missing=""
 if [[ "$task_created" != "true" ]]; then
-  missing="${missing}TaskCreate was never called this session to track the UIA phases. "
+  missing="${missing}TaskCreate was never called this session to track the SkillMe phases. "
 fi
 if [[ "$checkpoint" == "true" && "$doc_eco" != "true" && "$bridge_reachable" == "true" ]]; then
   missing="${missing}A hypothesis portfolio reached VALID_CHECKPOINT but doc_ecosystem_bridge/bridge.py was never run against it. "
