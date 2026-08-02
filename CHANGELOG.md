@@ -3,7 +3,26 @@
 All notable changes to SkillMe are recorded here. This repo starts its
 public history at v0.4.6; the version history from v0.4.6 down through v0.3 is carried over
 from the standalone spec document's own §14 Development roadmap for continuity. Current
-protocol version: **v0.4.8**.
+protocol version: **v0.4.9**.
+
+## v0.4.9 — Phase 1a: hypothesis verification-payload schema (2026-08-02)
+
+Founder-driven ultracode team meeting (5 position papers → chair synthesis → 3-lens adversarial
+review) proposed connecting a docker hypothesis-verification sandbox + maker-checker gate +
+expert-registration into skillme. Review found the design's core premise had no attachment
+point in the real repo: `HYPOTHESIS_REQUIRED` had zero fields able to hold executable code.
+This is Phase 1a of the review's fixed build order -- schema first, container work later.
+
+- Added `verification_payload` (OPTIONAL, spec §10) to hypothesis cards: `payload_ref`,
+  `entrypoint`, `language` (`PYTHON3`/`BASH`/`COQC`), `declared_inputs`, `network_required`,
+  `resource_class` (`LIGHT`/`HEAVY`), `expected_exit_status`. Kernel validates shape only --
+  never resolves/executes anything; `claim_boundary` unchanged (`STRUCTURE_ONLY`).
+- Fully backward-compatible: absent on every existing fixture, all stay `VALID_CHECKPOINT`.
+- Phase 1b (the actual sandbox runner + separate-identity status writer) and Phase 2
+  (`principal_id`-level maker/checker separation) are explicitly NOT part of this entry -- see
+  spec §14 for the full review findings on why those can't be claimed "closed" yet.
+- 11 new kernel tests (1 positive shape-valid, 1 absent-by-default, 9 negative cases covering
+  every validated sub-field). `pytest` 77/77 (was 67), kernel `--self-test` 14/14 unaffected.
 
 ## Plugin v0.5.1 — Live-tested and fixed two real hook bugs (2026-08-02)
 

@@ -497,7 +497,7 @@
     "requested_mode": "AUTO",
     "resolved_mode": "HYBRID_BLIND_COMPARE"
   },
-  "protocol_version": "0.4.8",
+  "protocol_version": "0.4.9",
   "registration": {
     "abstention_rule": "UNRESOLVED if maintenance-log linkage across systems is insufficient",
     "authorized_users": [
