@@ -122,7 +122,11 @@ skillme/
 ├── SKILLME.md   canonical spec — normative source of truth
 ├── skillme_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
 ├── docs/FIELD_REFERENCE.md               generated field-by-field reference (tools/generate_field_reference.py)
+├── hypothesis_runner.py                  Phase 1b: sandboxed execution of a hypothesis card's
+│                                          verification_payload (Docker, maker-side only, never
+│                                          writes APPROVED -- see CHANGELOG.md)
 ├── fixtures/checkpoint_demo_alt_domain.json  a second, non-booking-app checkpoint fixture
+├── fixtures/hyp_payloads/                 real verification_payload test fixtures for the above
 ├── tools/generate_field_reference.py     regenerates docs/FIELD_REFERENCE.md from the kernel's own constants
 ├── tests/                                 pytest: kernel self-test + skill_plan.py/bridge.py coverage
 ├── run_pipeline.py                       one-command orchestrator over the 4-layer pipeline below
