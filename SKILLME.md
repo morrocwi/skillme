@@ -3079,7 +3079,7 @@ skillme_rgm:
 
 ```yaml
 skillme_run:
-  protocol_version: "0.4.8"
+  protocol_version: "0.4.9"
 
   run_control:
     continuation_policy:
@@ -3652,7 +3652,7 @@ hardening.
   Also explicitly deferred per the review: `principal_id`-level maker/checker separation
   (pulled forward to Phase 2 in the roadmap, not this schema addition) and the expert-
   registration routing layer (Phase 3).
-- 11 new kernel tests (positive shape-valid case, absent-by-default case, and one negative
+- 10 new kernel tests (positive shape-valid case, absent-by-default case, and one negative
   case per validated sub-field: not-an-object, missing field, invalid `language` enum,
   invalid `resource_class` enum, non-string-list `declared_inputs`, non-bool
   `network_required`, non-int `expected_exit_status` — explicitly excluding `bool` since it's

@@ -21,7 +21,7 @@ This is Phase 1a of the review's fixed build order -- schema first, container wo
 - Phase 1b (the actual sandbox runner + separate-identity status writer) and Phase 2
   (`principal_id`-level maker/checker separation) are explicitly NOT part of this entry -- see
   spec §14 for the full review findings on why those can't be claimed "closed" yet.
-- 11 new kernel tests (1 positive shape-valid, 1 absent-by-default, 9 negative cases covering
+- 10 new kernel tests (1 positive shape-valid, 1 absent-by-default, 8 negative cases covering
   every validated sub-field). `pytest` 77/77 (was 67), kernel `--self-test` 14/14 unaffected.
 
 ## Plugin v0.5.1 — Live-tested and fixed two real hook bugs (2026-08-02)
