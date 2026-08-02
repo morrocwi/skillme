@@ -176,3 +176,22 @@ prose on trust.
 $ python3 skillme_protocol_kernel.py --self-test
 {"status": "PASS", "passed": 14, "test_count": 14, ...}
 ```
+
+## Session-tracking contract (enforced by a bundled hook, not just this prose)
+
+Installing this plugin also installs a fail-closed `Stop` hook (`hooks/hooks.json`) that
+checks, at the end of every turn where this skill was loaded:
+
+1. **TaskCreate was actually called** to track the run's phases (intake, agency/stakeholder
+   map, hypothesis evidence challenge, hypothesis portfolio) — not just this file's prose
+   telling you to.
+2. **If a run reached `VALID_CHECKPOINT`, `doc_ecosystem_bridge/bridge.py` was actually run**
+   against it before the turn ends.
+
+If either is missing, the hook blocks the turn end with a `reason` naming exactly what's
+missing — act on it (call `TaskCreate`, run `bridge.py`) and the next `Stop` check passes
+cleanly; it does not hard-stop the session. This is deliberate: the two soft instructions
+above (use `TaskCreate`, run `bridge.py` at checkpoint) are advisory and can silently get
+skipped under time pressure — the hook makes them structural instead. It only activates for
+sessions that actually invoked this skill; it is a silent no-op for every other Bash/Skill/Stop
+event in a project where the plugin happens to be installed.
