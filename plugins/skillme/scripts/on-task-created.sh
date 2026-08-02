@@ -2,10 +2,10 @@
 # TaskCreated: proof the assistant's own todolist was actually used this
 # session. Only meaningful once skillme_active is set by on-skill-invoke.sh;
 # a no-op state file (not skillme_active) still records it harmlessly.
-set -euo pipefail
+set -uo pipefail
 
 input="$(cat)"
-session_id="$(jq -r '.session_id // "unknown"' <<<"$input")"
+session_id="$(jq -r '.session_id // "unknown"' <<<"$input" 2>/dev/null || echo unknown)"
 
 state_dir="${TMPDIR:-/tmp}/skillme-hook-state"
 mkdir -p "$state_dir"

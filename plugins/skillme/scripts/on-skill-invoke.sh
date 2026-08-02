@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # PostToolUse(Skill): marks this session as a skillme run and reminds the
 # assistant of the todolist/doc-eco contract. Never blocks -- Stop enforces.
-set -euo pipefail
+#
+# Field-name note: the documented Bash hook example shows tool_input mirrors
+# the tool's own call parameters 1:1 (command/description/timeout/...), and
+# the Skill tool's own parameter is literally named "skill" -- so
+# tool_input.skill is the primary bet, with .name/.skill_name as a defensive
+# fallback in case that assumption is wrong. Malformed/non-JSON stdin must
+# never hard-exit this script (that would break the "silent no-op for
+# unrelated sessions" guarantee) -- every jq call below tolerates that.
+set -uo pipefail
 
 input="$(cat)"
-session_id="$(jq -r '.session_id // "unknown"' <<<"$input")"
-skill_name="$(jq -r '.tool_input.skill // empty' <<<"$input")"
+session_id="$(jq -r '.session_id // "unknown"' <<<"$input" 2>/dev/null || echo unknown)"
+skill_name="$(jq -r '.tool_input.skill // .tool_input.name // .tool_input.skill_name // empty' <<<"$input" 2>/dev/null || echo "")"
 
 [[ "$skill_name" == "skillme" ]] || exit 0
 
