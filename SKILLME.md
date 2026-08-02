@@ -3994,6 +3994,123 @@ required fields on the Universal Adapter Card (§6.9) or a separate optional ext
 (§10, Phase 2). This is a registered direction, not a plan — scope must be clarified with the
 founder before any schema or kernel change lands, per this session's standing practice.
 
+### Expertise-typed roles + user-growth loop, from Collins & Evans (2002) (2026-08-02, Dr-tier, not scoped or built)
+
+Founder asked for a close reading of H.M. Collins and Robert Evans, "The Third Wave of Science
+Studies: Studies of Expertise and Experience," *Social Studies of Science* 32/2 (2002), 235–296 —
+read in full (main body through the Conclusion, plus the start of the Appendix) via the paper's
+public PDF, not summarized from memory. This entry registers what the paper's typology of
+expertise contributes to two open SkillMe questions: (1) the founder-stated but unscoped
+expert-declaration/skill-registration direction (§14, registered 2026-08-01), and (2) a founder
+requirement stated in this same conversation that SkillMe must help the *user* grow alongside
+resolving their issue — starting from only the vocabulary necessary to the decision at hand, in
+language the user can understand, learning from the act of resolving the issue itself, regardless
+of the user's profession or domain of origin.
+
+**The paper's core typology, as actually stated (not paraphrased from secondary sources)**:
+Collins & Evans propose three ideal-type levels of expertise on a continuum — **No Expertise**
+(insufficient to interact meaningfully or contribute), **Interactional Expertise** (enough to
+interact competently with practitioners and understand a field's vocabulary/practice, without
+being able to do the work), and **Contributory Expertise** (enough to actually do the work and
+contribute to the field itself) — plus two supporting concepts: **Referred Expertise** (expertise
+"at one remove," e.g. a manager who has *experience of having had* contributory expertise, which
+licenses understanding what contributing looks like without doing it directly) and
+**Discrimination** (the ability to judge a claim's credibility using social/structural cues alone,
+with zero technical knowledge of the field — e.g., knowing cold fusion is broadly rejected from
+having followed the controversy, not from understanding the physics). **Translation** — moving
+knowledge between two expert communities — requires interactional expertise in *both* communities
+as a necessary (not sufficient) condition (their Thesis 4). Their Theses 1–3 argue that only the
+party with interactional expertise in another party's domain should be responsible for combining
+contributory-expertise contributions across domains, and that a party without that interactional
+expertise should be represented by someone who has it, "to make sure the combination is done with
+integrity."
+
+A load-bearing caution from the paper's own case studies, not to be dropped in adaptation: the
+paper explicitly documents a project manager with only interactional expertise in the science he
+managed, who admitted "after two years... still didn't really know what it meant to do
+interferometric detection of gravitational waves" — offered as a *failure* case (referred
+expertise masquerading as adequate oversight), not a model to emulate. The paper also documents a
+case (crashed nuclear-fuel-flask and aircraft-fire demonstrations) where their own theory concludes
+public/non-expert participation in judgment *should have been reduced*, not increased — the
+framework is not a blanket argument for maximal inclusion; it is an argument for **assessed**
+expertise, at whatever level, over assumed expertise from role or credential alone.
+
+**Role mapping proposed and refined in this conversation, using the paper's own categories** (not
+yet built, no schema/kernel change):
+
+- **AI-doer = contributory expertise.** The doer executes `verification_payload` in the sandbox
+  (`hypothesis_runner.py`) — this is literally "doing the work," the paper's own definition of
+  contributory expertise.
+- **AI-orchestrator = interactional expertise, minimum.** Per Theses 1–4, the party responsible for
+  *combining* contributions across domains needs interactional expertise in each domain being
+  combined — this is exactly the orchestrator's existing job in the Layer-4 skill plan
+  (`communication_glossary/skill_plan.py`) and in routing across the Universal Adapter Card (§6.9).
+- **AI-auditor splits into two sub-roles, not one.** The mechanical re-derivation the auditor
+  already does (`hypothesis_checker.py`'s MC-04 discipline — re-deriving pass/fail from
+  `raw_result`'s own `exit_code`/`expected_exit_status`) needs **no expertise at all** in the
+  domain — it is rule-following, closer to the paper's "discrimination" than to interactional
+  expertise. The *judgment* sub-task (deciding whether an approval despite a failed mechanical
+  check is warranted) needs interactional expertise, at the same bar as the orchestrator. Treating
+  "auditor" as one undifferentiated expertise level would misstate what each half of its job
+  actually requires.
+- **Human-checker (MIMCG §10 Phase 2, L3+) and human-as-user (the person whose issue this is) are
+  two different roles, not one.** A human-checker at a MIMCG tier that requires HUMAN per
+  `CHECKER_TIERS_REQUIRING_HUMAN` should be held to *at least* referred, ideally contributory,
+  expertise for genuinely high-stakes domains — the interferometric-detection manager case above is
+  the documented failure mode of settling for interactional-only oversight at a tier that demands
+  more. The human-as-user, by contrast, starts every new `topic_tag` at `NO_EXPERTISE` by design
+  (see below) and is expected to move up the ladder through the act of resolving issues, not
+  expected to already have expertise as a precondition of being helped.
+
+**A proposed `principal_expertise_ledger`, tracking expertise *per topic, not per person*** — this
+directly reflects the paper's own point that expertise is a property of a person-in-a-field, not a
+global trait of a person:
+
+```
+principal_id
+topic_tag            # from the existing Universal Adapter Card (§6.9) domain-detection — the
+                      # issue's own domain, never the user's stated profession
+expertise_level: NO_EXPERTISE | INTERACTIONAL | REFERRED | CONTRIBUTORY   # discrete ordinal enum,
+                      # not a float score, per this workspace's readout-first/discrete-first floor
+evidence_for_level: [...]   # e.g. "correctly paraphrased X", "independently caught an error in
+                      # the AI's claim Y" -- assessed from interaction, never self-declared credential
+assessed_by: AI | HUMAN
+```
+
+The same user can be `CONTRIBUTORY` in one `topic_tag` and `NO_EXPERTISE` in another — this is how
+the paper itself insists expertise must be read, and it is also the direct mechanism for the
+founder's "not limited by profession or world" requirement: the ledger never asks what the user
+does for a living: it starts at `NO_EXPERTISE` for every new topic and only moves up from
+evidence produced by the interaction itself, never from a self-reported title. Asking for a
+profession/credential up front would also violate the existing Two-Question Intake Gate (§6.15)
+and `SKILLME-A5 — Minimal Sufficient Quotient`.
+
+**A proposed vocabulary contract**, extending the existing Bidirectional Translation Contract
+(§6.8): every user-facing output tags each technical term with `necessary_for_decision: bool`
+(cut jargon not needed for the decision actually in front of the user right now, per A5) and a
+one-sentence `plain_language_gloss`, with a per-turn cap on how many *new* (not-yet-in-the-user's-
+ledger) terms are introduced at once — no front-loaded jargon dump. A term only enters the user's
+`terms_acquired` list once the user demonstrably engages with it (asks a pointed question about it,
+uses it correctly in context) — this is the literal mechanism for "learning from the act of
+resolving the issue," not a separate tutorial mode bolted on afterward.
+
+**A proposed growth loop**, reusing machinery already registered rather than inventing new
+machinery: at `VALID_CHECKPOINT`/`STOP_AT_HYPOTHESIS`, before closing, the orchestrator would
+produce a reflective summary of what the user now understands that they didn't before — this is
+the `Lesson` object type already registered in the personal-epistemic-OS synthesis (above), not a
+new concept. Growth itself would be measured as **ordinal movement** on the `expertise_level`
+ladder per `topic_tag` across issues over time, using the same reuse-rate-style metric already
+registered in that same synthesis entry — applied here to expertise growth instead of knowledge
+reuse, one instrument doing two jobs rather than two separate metrics.
+
+**Explicitly not decided here**: whether/when to build any of this, exact field names/schema
+location (hypothesis card? a new top-level ledger keyed by `principal_id`? part of
+`checker_result`?), how `assessed_by: AI` self-assessment of a user's expertise level is itself
+kept honest (it is, by construction, Dr/Open tier judgment, not fact, until reviewed), and how
+this interacts with the still-unscoped expert-declaration/skill-registration direction from
+2026-08-01. This is a registered direction, not a plan — scope must be clarified with the founder
+before any schema or kernel change lands, per this session's standing practice.
+
 ### v0.5 — Formal semantics and executable kernel
 
 - ทำ typed definitions ของ `Issue`, `Agency`, `Stakeholder`, `Context`, `TranslationRecord` และ `ReadoutStatus`
