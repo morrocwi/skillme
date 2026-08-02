@@ -3895,6 +3895,99 @@ ship this week is a categorically different scope than a shipped hardware/softwa
 first review's closing question, still open). This is a registered direction, not a plan — scope
 must be clarified with the founder (`AskUserQuestion`) before any schema or kernel change lands.
 
+### Stakeholder risk-gate extraction from ARAYA Relational Event OS (2026-08-02, Dr-tier, not scoped or built)
+
+Founder handed over a separate, complete skill package — `ARAYA Relational Event OS`
+(`README.md`, `skill.md`, `tools.yaml`, `scoring_rubric.yaml`, `answer_templates.yaml`,
+`guardrails.yaml`, `case_library.yaml`, `decision_dashboard.yaml`) — a production-ready event-
+organizer intelligence skill (weddings/nikah as founding vertical, generalizing to hotels,
+seminars, tourism, corporate events, and safety-critical public events), asking that whatever in
+it "handles stakeholder risk well" be extracted into SkillMe's own core. This entry does that
+extraction honestly: most of ARAYA is a **different, domain-specific product** — not compatible
+with SkillMe's role as a domain-general protocol — and is explicitly excluded below, with the
+reasoning stated so a future session doesn't re-propose it. What survives is three structural
+mechanisms that generalize cleanly and fill real gaps in SkillMe's existing stakeholder/agency
+machinery.
+
+**What is explicitly NOT extracted, and why**:
+
+- Every wedding/nikah-specific gap reading, tool (`Couple Alignment Worksheet`, `Family
+  Expectation Map`, `Dignity Protection Protocol`, etc.), and vertical module (hotel banquet,
+  tourism/SalamXP, memorial ceremony...). These are ARAYA's own product content for a specific
+  business vertical (event organizing) — SkillMe is a universal issue-analysis protocol, not an
+  event-planning tool. Domain-specific tooling like this belongs in a SkillMe **adapter** (§6.9
+  Universal Adapter Card), the same way any other domain would register one — not folded into the
+  protocol core.
+- ARAYA's `0.00`–`1.00` continuous float scoring scale (`scoring_rubric.yaml`). This directly
+  conflicts with this workspace's standing `information-discrete-math` floor: a continuum score is
+  a non-readout injection, not something actually computed on ℚ. ARAYA's own anchors are already
+  effectively five named ordinal levels (`0.00`/`0.25`/`0.50`/`0.75`/`1.00` each carry a fixed
+  qualitative meaning and action) — if this pattern is ever built, it must be represented as a
+  finite ordinal enum (`CLEAR / MINOR / MODERATE / MAJOR / CRITICAL`), not a literal float, the
+  same discipline SkillMe already applies everywhere else (`claim_tier`, `causal_tier`, etc. are
+  all enums, never scores).
+- The maturity-level selector (`MaturityLevel = max(complexity, sensitivity, authority_risk,
+  safety_risk, meaning_level)`) as a mandatory intake mechanism. SkillMe's Two-Question Intake
+  Gate (§6.15) is deliberately minimal per `SKILLME-A5 — Minimal Sufficient Quotient` (§5); adding
+  a five-dimension pre-scored intake classifier before any analysis begins would violate that
+  axiom directly. If maturity-style depth-scaling is wanted later, it must be derived from
+  already-captured retained-difference/agency data, not a new upfront questionnaire.
+
+**What generalizes, worth carrying forward — none built**:
+
+- **A named, backtraced risk-dimension set extending §6.3–§6.6.** ARAYA's eight gaps (Core Actor
+  Alignment, Stakeholder Listening, Temporal Governance, Function-Design Fit,
+  Communication/Meaning, Organizer Authority, Repair/Recoverability, Safety-Critical) mostly
+  restate machinery SkillMe already has under other names — Core Actor Alignment and Stakeholder
+  Listening are the retained-difference/agency-role asymmetry work of §6.3–§6.4 and the invisible-
+  stakeholder guard of §6.6; Communication/Meaning is the bidirectional translation contract of
+  §6.8; Organizer Authority is `SKILLME-A7 — Agency Separation`; Safety-Critical is `SKILLME-A8 —
+  Rights and Values Declaration`. Two are genuinely **not** already named in SkillMe and are worth
+  adding as explicit dimensions: **Temporal Governance** (are dependencies between candidate
+  actions/adapters actually sequenced, or just listed?) and **Repair/Recoverability** (does a
+  named fallback/rollback path exist if a candidate action fails, distinct from whether the
+  candidate itself succeeds?). ARAYA's own backtrace discipline — every tool must trace `tool →
+  error variable → gap → event node → coherent outcome` — is structurally identical to what a
+  Universal Adapter Card (§6.9) should already require of every candidate; worth making that
+  backtrace field explicit and mandatory rather than implicit.
+- **A weakest-link readiness gate, formalizing `SKILLME-A9 — Decision-Boundary Exactness`.**
+  ARAYA's `R_E = min(1 - η_i, ρ_repair)` — readiness is capped by its single worst unresolved
+  dimension, not averaged across dimensions — is a genuinely useful operationalization that A9
+  currently states only as a principle, not a computable gate. Reframed in SkillMe's own
+  vocabulary (ordinal tiers, not floats): a candidate/hypothesis is only as ready to commit as its
+  *worst-scored* dimension, and no single strong dimension may compensate for another dimension
+  still at `CRITICAL`/`MAJOR`. This maps naturally onto SkillMe's existing three-lane candidate
+  portfolio and hypothesis checkpoints — a gate that must pass before a checkpoint may be treated
+  as ready for an irreversible action, independent of the domain.
+- **An irreversibility-commitment gate pattern.** ARAYA ties its readiness gate to a named list of
+  irreversible commitments (payment, contract lock, public announcement...) and explicitly refuses
+  to recommend any of them before the gate passes — "the event is only as ready as its weakest
+  unresolved gap," stated as an operational rule, not just a maxim. SkillMe's own thesis (§1) and
+  A9 already gesture at exactly this idea ("before commitments become irreversible") but have no
+  registered mechanism naming *which* actions in a given domain count as irreversible and blocking
+  them structurally until the gate passes. Worth generalizing: any adapter (§6.9) could declare its
+  own list of domain-specific irreversible actions, and the kernel could refuse to mark a
+  checkpoint `VALID_CHECKPOINT` for downstream execution if a declared irreversible action is
+  about to be taken while any dimension is still below threshold.
+- **A domain-boundary/authority-escalation registry pattern.** ARAYA's `guardrails.yaml`
+  structures each professional boundary (legal, religious, venue, safety, medical, financial) as
+  `rule → allowed → forbidden → handoff_trigger → required_phrase`. This is a clean, reusable,
+  already domain-agnostic *pattern* (the specific boundaries — legal/religious/medical/etc. — are
+  ARAYA's own instantiation for events) that generalizes `SKILLME-A7 — Agency Separation` and
+  `SKILLME-A8 — Rights and Values Declaration` from static axioms into an operational, per-adapter
+  registry: any SkillMe adapter could declare its own boundary domains with the same four-field
+  shape, giving every adapter a structural (not just prose) way to say "here is what I may
+  organize, here is what I must never decide, here is the exact trigger that hands this to a named
+  human authority, here is the fixed phrase I say when that happens." This is likely the single
+  most directly portable piece of the whole package, since ARAYA already built it domain-general
+  in shape even though every current instance is event-specific content.
+
+**Explicitly not decided here**: whether/when to build any of this, whether it becomes new
+required fields on the Universal Adapter Card (§6.9) or a separate optional extension, and how
+(or whether) the weakest-link gate interacts with the existing `checker_result`/MIMCG tier system
+(§10, Phase 2). This is a registered direction, not a plan — scope must be clarified with the
+founder before any schema or kernel change lands, per this session's standing practice.
+
 ### v0.5 — Formal semantics and executable kernel
 
 - ทำ typed definitions ของ `Issue`, `Agency`, `Stakeholder`, `Context`, `TranslationRecord` และ `ReadoutStatus`
