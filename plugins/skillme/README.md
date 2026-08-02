@@ -13,7 +13,12 @@ the full spec text or want to run the kernel's self-test yourself.
 
 What you get from installing this plugin: the `skillme` skill
 ([`skills/skillme/SKILL.md`](skills/skillme/SKILL.md)) — a
-self-contained operational summary an AI assistant loads before analyzing a reported issue.
+self-contained operational summary an AI assistant loads before analyzing a reported issue —
+plus a bundled fail-closed `Stop` hook (`hooks/hooks.json` + `scripts/`) that activates
+automatically once this plugin is installed, no per-project settings.json edit needed. It only
+fires for sessions that actually invoke this skill: it checks that `TaskCreate` was used to
+track the run's phases and, if a checkpoint reached `VALID_CHECKPOINT`, that
+`doc_ecosystem_bridge/bridge.py` was actually run against it, before letting the turn end.
 
 **Tier: `Dr` (design rationale)** — an architectural synthesis of established methods, not a
 proven result. See the full repo's README for the complete tier-honesty statement.

@@ -135,7 +135,9 @@ skillme/
 ├── CHANGELOG.md                          version history through v0.4.8
 ├── plugins/skillme/                      the installable Claude Code plugin (self-contained subtree)
 │   ├── README.md, LICENSE                 plugin-scoped copies (git-subdir installs pull only this dir)
-│   ├── .claude-plugin/plugin.json         plugin manifest
+│   ├── .claude-plugin/plugin.json         plugin manifest (declares hooks/hooks.json)
+│   ├── hooks/hooks.json + scripts/        fail-closed Stop hook: enforces TaskCreate usage +
+│   │                                       doc_ecosystem_bridge/bridge.py at VALID_CHECKPOINT
 │   └── skills/skillme/SKILL.md           operational summary the AI loads
 └── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-skillme)
 ```

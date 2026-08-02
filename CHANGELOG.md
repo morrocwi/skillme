@@ -5,6 +5,35 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.8**.
 
+## Plugin v0.5.0 — Bundled fail-closed Stop hook (2026-08-02)
+
+Founder request: connect the plugin's own operational contract (use `TaskCreate` to track
+phases; run `doc_ecosystem_bridge/bridge.py` at `VALID_CHECKPOINT`) to something structural,
+not just SKILL.md prose that can be skipped under pressure. Added
+`plugins/skillme/hooks/hooks.json` + `plugins/skillme/scripts/*.sh`, auto-discovered and
+activated by Claude Code for every project the plugin is installed in — no per-project
+settings.json edit required (`${CLAUDE_PLUGIN_ROOT}` resolves the bundled scripts wherever the
+plugin lands).
+
+- `PostToolUse` on the `Skill` tool: when this skill loads, marks the session active and
+  injects a reminder of the contract as `additionalContext`.
+- `PostToolUse` on `Bash`: detects the two real signals from the commands actually run —
+  `skillme_protocol_kernel.py` returning `VALID_CHECKPOINT`, and `doc_ecosystem_bridge/bridge.py`
+  actually executing — rather than guessing from conversation text.
+- `TaskCreated`: records that the assistant's own todolist was actually used.
+- `Stop`: the enforcement point. Blocks turn-end with a `reason` naming exactly what's missing
+  (untracked phases, or a checkpoint that was never bridged into doc-eco) if this session
+  invoked the skill; a silent no-op for every other session. Blocking returns control to the
+  assistant to act, not a hard session stop — the next `Stop` re-checks and passes once
+  satisfied.
+
+State lives in a per-session temp file (`$TMPDIR/skillme-hook-state/<session_id>.json`), not
+committed to any project. Pipe-tested all 4 scripts end-to-end with synthetic hook JSON (no-op
+on non-skillme skill, active-marking, block-then-clear on TaskCreate, block-then-clear on
+checkpoint+bridge.py, and the unrelated-session no-op) before merging. Plugin version bumped
+0.4.8 -> 0.5.0 (a real plugin capability change); `protocol_version` untouched at 0.4.8 since
+no kernel validation logic changed.
+
 ## v0.4.8-rebrand-internal — Protocol's internal identity renamed UIA -> SkillMe (2026-08-02)
 
 Follow-up founder decision to the entry below: the UIA internal identity that the prior rebrand
