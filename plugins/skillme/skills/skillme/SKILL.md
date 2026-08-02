@@ -1,5 +1,5 @@
 ---
-name: universal-issue-analysis
+name: skillme
 description: >
   Load before analyzing any reported issue, incident, complaint, conflict, risk, anomaly,
   policy question, or "what should we do about X" decision — software bugs, customer
@@ -31,9 +31,9 @@ verify that any domain claim, cause, or fix is actually true. Say so when you re
 This file is a self-contained operational summary shipped with the plugin. The canonical spec
 (`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`) and the standalone protocol kernel
 (`uia_protocol_kernel.py`) live in the full repo root — they are **not** installed with this
-plugin (a plugin install only pulls this `plugins/universal-issue-analysis/` subtree). Clone
+plugin (a plugin install only pulls this `plugins/skillme/` subtree). Clone
 the whole repo if you need the full spec text or want to run the kernel yourself:
-`https://github.com/morrocwi/universal-issue-analysis`. Read the full spec before disputing an
+`https://github.com/morrocwi/skillme`. Read the full spec before disputing an
 edge case or extending the protocol — this summary is not a substitute for it.
 
 ## The one commitment
