@@ -1,4 +1,4 @@
-# Communication Glossary — HYP-UIA-046-DEMO-001
+# Communication Glossary — HYP-SKILLME-046-DEMO-001
 
 **คำศัพท์นี้ผูกกับตัว *ประเด็น/โดเมน* ไม่ได้ผูกกับ role ใด role หนึ่ง** — ใครก็ตามที่เข้าร่วมคุยเรื่องนี้ (วิศวกร, พยาบาล, ผู้จัดการฝ่ายปฏิบัติการ, หรือใครก็ตาม) ต้องรู้คำชุดเดียวกันนี้ ไม่ว่าพื้นเดิมของแต่ละคนจะเป็นสายไหน รวมจาก 2 ชั้นที่มีอยู่แล้ว: ชั้น 1 (deterministic readout จาก checkpoint จริง) + ชั้น 2 (AI-interpretive framework/องค์ความรู้ Open tier, เฉพาะที่ confidence HIGH หรือ VERIFIED-VIA-SEARCH เท่านั้น — ตัดรายการที่ยังไม่มั่นใจออกเพื่อไม่ให้ glossary นี้ชวนเข้าใจผิดว่าทุกคำแน่นอนเท่ากันหมด).
 
@@ -52,6 +52,6 @@ table in kg_raw_word_fintech_v3.md) — they are this layer's interpretive contr
 - Formal state machine / Petri-net terminology (the checkpoint describes states and
   transitions structurally but never uses FSM/Petri-net vocabulary)
 
-## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล UIA เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
+## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SKILLME เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
 
 `CROSS_ADAPTIVE`, `DESIGN_HYPOTHESIS`, `GENERATIVE_TRANSFORMATIVE`, `KNOWN_DIRECT`, `MECHANISM_HYPOTHESIS`, `STRUCTURAL_HYPOTHESIS`, `TARGETED_SEARCH "Phase-2 (draft)"`

@@ -97,7 +97,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H1",
             "claim_supported_or_challenged": "H1 boundary",
             "context_country_or_region": "Thailand/synthetic",
@@ -173,7 +173,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H2",
             "claim_supported_or_challenged": "H2 boundary",
             "context_country_or_region": "Thailand/synthetic",
@@ -249,7 +249,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H3",
             "claim_supported_or_challenged": "H3 boundary",
             "context_country_or_region": "Thailand/synthetic",
@@ -320,7 +320,7 @@
       }
     ],
     "review_mode": "TARGETED_SEARCH \"Phase-2 (draft)\"",
-    "search_protocol_id": "SEARCH-UIA-046-DEMO",
+    "search_protocol_id": "SEARCH-SKILLME-046-DEMO",
     "status": "EVIDENCE_CHALLENGE_COMPLETE",
     "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
     "target_context": {
@@ -333,7 +333,7 @@
     }
   },
   "hypothesis_portfolio": {
-    "checkpoint_certificate": "HYP-UIA-046-DEMO-001",
+    "checkpoint_certificate": "HYP-SKILLME-046-DEMO-001",
     "diversity_test": "PASS",
     "evidence_linkage_test": "PASS",
     "hypothesis_cards": [
@@ -487,7 +487,7 @@
     "zero_semantics": "no attempt-id where ledger.status disagrees with acquirer response code"
   },
   "metadata": {
-    "fixture_id": "UIA-046-E2E-WEB-BOOKING-001",
+    "fixture_id": "SKILLME-046-E2E-WEB-BOOKING-001",
     "label": "[SimulatedData]",
     "simulation": true
   },
@@ -530,7 +530,7 @@
   },
   "run_control": {
     "continuation_policy": "STOP_AT_HYPOTHESIS",
-    "continuation_record": "CONT-UIA-046-HYP-DEMO-001",
+    "continuation_record": "CONT-SKILLME-046-HYP-DEMO-001",
     "requested_by": "built-in checkpoint demo"
   },
   "system_graph": {
@@ -562,7 +562,7 @@
       "idempotency-key protocol v2",
       "ISO-8583 \"field 39\" mapping"
     ],
-    "canonical_uia_mapping": "retained difference between ledger-recorded settlement status and acquirer-confirmed authorization outcome",
+    "canonical_skillme_mapping": "retained difference between ledger-recorded settlement status and acquirer-confirmed authorization outcome",
     "loss_audit": "PASS",
     "raw_user_expression": "ทีม reconciliation เจอว่า ledger เขียน \"SETTLED\" ทั้งที่ acquirer ส่ง `soft_decline` กลับมาใน retry ครั้งที่ 2 เลยทำให้ยอด settled เกินจริงทุกคืน",
     "selected_domain_projection": "booking state/readout mismatch",
@@ -570,7 +570,7 @@
     "user_facing_issue_statement": "ยอดเงินใน daily reconciliation report สูงกว่าความเป็นจริง เพราะ retry ที่ยัง [unresolved] ถูกนับเป็น \"settled\" ทั้งที่ acquirer ตอบ soft-decline"
   },
   "two_question_intake": {
-    "certificate": "J2-UIA-046-DEMO",
+    "certificate": "J2-SKILLME-046-DEMO",
     "entry_status": "INTAKE_COMPLETE",
     "q1_answer_verbatim": "ผู้ใช้บางรายกดยืนยันการจองแล้วหน้าเว็บแสดงว่ากำลังประมวลผลนานเกินเกณฑ์และไม่ทราบว่าจองสำเร็จหรือไม่",
     "q1_prompt": "Issue คืออะไร?",

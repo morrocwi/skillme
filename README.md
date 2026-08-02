@@ -2,12 +2,12 @@
 
 # skillme
 
-### Universal Issue Analysis (UIA) protocol
+### SkillMe protocol
 
 **A finite issue never gets named before it's found.** _by Yaoharee Lahtee_
 
 [![tier](https://img.shields.io/badge/claim%20tier-Dr%20(design%20rationale)-orange)](#tier-honesty)
-[![kernel](https://img.shields.io/badge/kernel-stdlib--only%2C%20run%20it%20yourself-brightgreen)](uia_protocol_kernel.py)
+[![kernel](https://img.shields.io/badge/kernel-stdlib--only%2C%20run%20it%20yourself-brightgreen)](skillme_protocol_kernel.py)
 [![self--test](https://img.shields.io/badge/self--test-14%2F14%20PASS-brightgreen)](tests/test_kernel_self_test.py)
 [![pytest](https://img.shields.io/badge/pytest-13%2F13%20PASS-brightgreen)](tests/test_kernel_self_test.py)
 [![version](https://img.shields.io/badge/protocol-v0.4.8-blue)](CHANGELOG.md)
@@ -17,7 +17,7 @@
 
 ## What this is
 
-UIA is a **philosophy-first protocol** for analyzing any reported issue — a software incident,
+SkillMe is a **philosophy-first protocol** for analyzing any reported issue — a software incident,
 a customer complaint, an organizational conflict, a policy question, a research anomaly, or an
 everyday decision — without smuggling in a name, a cause, or a fix before there's a finite,
 auditable basis for one.
@@ -54,7 +54,7 @@ transparency, systems thinking, decision analysis) held together by one shared c
 in this repo checks that a *record of a run* is internally consistent and complete against the
 spec's schema and gates — it does **not** verify that any issue, cause, or fix reported through
 the protocol is actually true. See spec §0, §13 ("What is original in this synthesis") and §9
-of this README for exactly what is and isn't checked. Do not cite this repo as proof that a UIA
+of this README for exactly what is and isn't checked. Do not cite this repo as proof that a SkillMe
 run's conclusions are correct — only that the run followed the protocol's structure.
 
 This stance is deliberate and matches the sibling projects
@@ -85,12 +85,12 @@ Clone the full repo first — the kernel and spec are repo-root files, not part 
 plugin subtree above. No dependencies beyond the Python standard library.
 
 ```bash
-python3 uia_protocol_kernel.py --self-test          # 14 structural test cases, run them yourself
-python3 uia_protocol_kernel.py --print-demo          # a full, valid, [SimulatedData]-labeled run
-python3 uia_protocol_kernel.py --demo                # validate that demo run -> VALID
-python3 uia_protocol_kernel.py --print-checkpoint-demo  # the same run, stopped at hypothesis
-python3 uia_protocol_kernel.py --checkpoint-demo     # validate the checkpoint -> VALID_CHECKPOINT
-python3 uia_protocol_kernel.py my_run.json           # validate your own run record
+python3 skillme_protocol_kernel.py --self-test          # 14 structural test cases, run them yourself
+python3 skillme_protocol_kernel.py --print-demo          # a full, valid, [SimulatedData]-labeled run
+python3 skillme_protocol_kernel.py --demo                # validate that demo run -> VALID
+python3 skillme_protocol_kernel.py --print-checkpoint-demo  # the same run, stopped at hypothesis
+python3 skillme_protocol_kernel.py --checkpoint-demo     # validate the checkpoint -> VALID_CHECKPOINT
+python3 skillme_protocol_kernel.py my_run.json           # validate your own run record
 python3 -m pytest tests/ -q                          # pytest wrapper around the above
 ```
 
@@ -112,15 +112,15 @@ reporting simulated evidence as field evidence (spec §0, invariant list §11).
 | 17–19 | Act, verify, correct | what was tried, what it showed, what changes next |
 
 Full phase-by-phase detail, all symbol definitions, and the 48 protocol invariants are in
-[`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`](UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md) — this README is an
+[`SKILLME.md`](SKILLME.md) — this README is an
 entry point, not a replacement for it.
 
 ## Repository map
 
 ```
 skillme/
-├── UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md   canonical spec — normative source of truth
-├── uia_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
+├── SKILLME.md   canonical spec — normative source of truth
+├── skillme_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
 ├── docs/FIELD_REFERENCE.md               generated field-by-field reference (tools/generate_field_reference.py)
 ├── fixtures/checkpoint_demo_alt_domain.json  a second, non-booking-app checkpoint fixture
 ├── tools/generate_field_reference.py     regenerates docs/FIELD_REFERENCE.md from the kernel's own constants
@@ -170,7 +170,7 @@ the Claude Code plugin above (clone the repo to use them):
 
 ## What the kernel actually checks (and doesn't)
 
-`uia_protocol_kernel.py` (~2,100 lines, stdlib only) implements `validate(run: dict) -> dict`
+`skillme_protocol_kernel.py` (~2,100 lines, stdlib only) implements `validate(run: dict) -> dict`
 against the schema and enums defined in the spec. It checks, among other things:
 
 - the two-question intake gate was actually satisfied before analysis fields are trusted;
@@ -202,7 +202,7 @@ is necessary, not sufficient — see [Tier honesty](#tier-honesty) above.
 
 ## Attribution
 
-Universal Issue Analysis — the thesis, the entity definitions (retained difference, agency,
+SkillMe — the thesis, the entity definitions (retained difference, agency,
 issue, problem, cause), the axioms, and the full 20-phase protocol — is Yaoharee Lahtee's work,
 building on the Readout Genesis / Information Discrete Mathematics foundation from the same
 author. This repository's packaging (marketplace listing, SKILL.md operational summary, README,

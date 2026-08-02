@@ -1,4 +1,4 @@
-# kg_expert_layer — HYP-UIA-BILLING-ACCT-DEMO-001 (AI-INTERPRETIVE, OPEN TIER)
+# kg_expert_layer — HYP-SKILLME-BILLING-ACCT-DEMO-001 (AI-INTERPRETIVE, OPEN TIER)
 
 **This is NOT a readout.** Unlike kg_raw_word.md (a deterministic extraction — every
 node is a literal fact about what text appeared where), everything below is an AI's

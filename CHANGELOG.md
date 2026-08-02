@@ -1,9 +1,43 @@
 # Changelog
 
-All notable changes to Universal Issue Analysis (UIA) are recorded here. This repo starts its
+All notable changes to SkillMe are recorded here. This repo starts its
 public history at v0.4.6; the version history from v0.4.6 down through v0.3 is carried over
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.8**.
+
+## v0.4.8-rebrand-internal — Protocol's internal identity renamed UIA -> SkillMe (2026-08-02)
+
+Follow-up founder decision to the entry below: the UIA internal identity that the prior rebrand
+deliberately left untouched is now renamed too. Scope:
+
+- `uia_protocol_kernel.py` -> `skillme_protocol_kernel.py` (module rename; every import/
+  subprocess call across `tests/`, `run_pipeline.py`, `communication_glossary/*.py`,
+  `doc_ecosystem_bridge/bridge.py`, `tools/generate_field_reference.py` updated in lockstep).
+- `UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md` -> `SKILLME.md` (canonical spec filename; chosen with no
+  version number embedded, on purpose, to stop this exact class of stale-filename drift from
+  recurring — the old frozen-filename convention this reverses is itself why the file said
+  "v0.4.6" in its name while its own content had already moved to v0.4.8).
+- Every `UIA` acronym, `Universal Issue Analysis` phrase, and `UIA-*` formal ID (axioms `UIA-A0`
+  .. `UIA-A12`, `UIA-CORE`, `UIA-RGM`) renamed to `SkillMe`/`SKILLME-*` throughout the kernel,
+  the spec, and every subsystem README/docstring — live/current text only, historical dated
+  status entries describing what a past commit did are left untouched on purpose (they're
+  accurate history, not stale current claims).
+- One schema-adjacent field, `canonical_uia_mapping` (documented in spec §6.9, present in the
+  alt-domain fixture and 3 communication_glossary examples, but confirmed **not** actually
+  read/enforced by `validate()`), renamed to `canonical_skillme_mapping`. Called out separately
+  from pure branding because it's a documented contract field name, even though inert today.
+  Several other spec-only illustrative field names in the same family
+  (`uia_input_mapping`/`uia_output_mapping`/`uia_entry_gate`/`uia_exit_mapping`/
+  `uia_analysis_sheet`, the `uia_run`/`uia_rgm` YAML example keys) were confirmed the same way
+  (grepped for real fixture usage and kernel `.get()`/subscript access — none found) before
+  renaming.
+- Also fixed, while in the area: the spec's own "Standalone execution contract" section
+  (§ near the end) had referenced a companion filename `uia_protocol_kernel_v0_4_6.py` that
+  never actually matched the real file in this repo (`uia_protocol_kernel.py`, no version
+  suffix) even before this rename — a pre-existing bug, now corrected to the real filename.
+
+`protocol_version` stays `0.4.8` — no kernel validation logic changed, only names.
+pytest 67/67, kernel `--self-test` 14/14 after the rename.
 
 ## v0.4.8-rebrand — Repo/plugin/marketplace renamed to `skillme` (2026-08-02)
 
@@ -147,7 +181,7 @@ own README for its own status history.
 - Added the graph–matrix kernel and query-relative minimal-quotient gate.
 - Status at this stage: `finite_diagnostic`/`Dr` only, not field-validated.
 
-See [`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`](UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md) §14 for the
+See [`SKILLME.md`](SKILLME.md) §14 for the
 full roadmap prose, including the planned v0.5–v0.7 formal-semantics, adversarial-fixture, and
 cross-domain field-evaluation milestones — none of those are complete yet; do not cite them as
 done. Same section also registers a founder-stated next direction (an expert-declaration system

@@ -1,10 +1,10 @@
-# Skill Plan — HYP-UIA-GUT-NURSE-DEMO-001
+# Skill Plan — HYP-SKILLME-GUT-NURSE-DEMO-001
 
 **Tier: `Dr`** (declared recommendation, same as Layer 2 — a judgment call, not a proven-optimal staffing plan). Who needs to know/do what to actually work this checkpoint, split into 4 roles. The Human section's "what to check" is mechanical (pulled straight from this checkpoint's own already-validated `falsifier`/`discriminating_information`/`uncertainties` fields, per §11 invariants ~39-41 — nothing invented). The AI role sections are curated: real skills installed in this workspace, mapped to what each role actually does, not benchmarked against alternatives — treat as a starting point to confirm or correct, same discipline as Layer 2's expert-framework suggestions.
 
 ## 1. Human
 
-**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `HYP-UIA-GUT-NURSE-DEMO-001`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
+**คำศัพท์ที่ต้องรู้เพื่อสั่งงาน AI** — ดูที่ `HYP-SKILLME-GUT-NURSE-DEMO-001`'s communication glossary (Section 1-2) ทั้งหมด — ผูกกับ *ประเด็นนี้โดยเฉพาะ* ไม่ใช่รายการทั่วไป: ต้องรู้คำศัพท์แกน (raw vocabulary จาก checkpoint จริง) บวกกับ framework ผู้เชี่ยวชาญที่ verified แล้ว (ถ้ามี) ก่อนจะสั่งงาน AI ให้ทำอะไรต่อได้อย่างแม่นยำ
 
 **ผู้มีอำนาจตัดสินใจตาม checkpoint นี้:** patient safety officer
 

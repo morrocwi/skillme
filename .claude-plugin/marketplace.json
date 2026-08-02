@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "yaoharee-lahtee-skillme",
-  "description": "Universal Issue Analysis — a readout-first, agency-and-rights-aware protocol for turning any reported issue (software incident, policy question, organizational conflict, research anomaly, everyday decision) into a finite, auditable analysis: retained difference, stakeholder/agency map, evidence-challenged hypotheses, and a three-lane candidate portfolio. Developed by Yaoharee Lahtee.",
+  "description": "SkillMe — a readout-first, agency-and-rights-aware protocol for turning any reported issue (software incident, policy question, organizational conflict, research anomaly, everyday decision) into a finite, auditable analysis: retained difference, stakeholder/agency map, evidence-challenged hypotheses, and a three-lane candidate portfolio. Developed by Yaoharee Lahtee.",
   "owner": {
     "name": "Yaoharee Lahtee"
   },
   "plugins": [
     {
       "name": "skillme",
-      "description": "Load before analyzing any reported issue, incident, complaint, conflict, risk, or decision request. Gives the philosophy-first UIA protocol: a mandatory two-question intake gate, retained-difference framing (issue = agency-context-query-relative retained difference, not a name), stakeholder/agency mapping that separates who is affected from who has power, a bidirectional global/local evidence-challenge protocol for every hypothesis, and a three-lane (Known-Direct / Cross-Adaptive / Generative-Transformative) candidate generator with rights and diversity gates. Carries a standard-library-only Python kernel that validates protocol-structure compliance (not domain truth) with a runnable self-test.",
+      "description": "Load before analyzing any reported issue, incident, complaint, conflict, risk, or decision request. Gives the philosophy-first SkillMe protocol: a mandatory two-question intake gate, retained-difference framing (issue = agency-context-query-relative retained difference, not a name), stakeholder/agency mapping that separates who is affected from who has power, a bidirectional global/local evidence-challenge protocol for every hypothesis, and a three-lane (Known-Direct / Cross-Adaptive / Generative-Transformative) candidate generator with rights and diversity gates. Carries a standard-library-only Python kernel that validates protocol-structure compliance (not domain truth) with a runnable self-test.",
       "author": {
         "name": "Yaoharee Lahtee"
       },

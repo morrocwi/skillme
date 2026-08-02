@@ -5,10 +5,10 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-KERNEL = REPO_ROOT / "uia_protocol_kernel.py"
+KERNEL = REPO_ROOT / "skillme_protocol_kernel.py"
 
 sys.path.insert(0, str(REPO_ROOT))
-import uia_protocol_kernel as k  # noqa: E402
+import skillme_protocol_kernel as k  # noqa: E402
 
 
 def test_self_test_passes():

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """PROTOTYPE — not committed to any repo yet.
 
-Takes one UIA hypothesis checkpoint (a VALID_CHECKPOINT run record, same shape
+Takes one SkillMe hypothesis checkpoint (a VALID_CHECKPOINT run record, same shape
 `bridge.py` consumes) and emits `kg_raw_word.md`: a typed, deterministic,
 fully-traceable word graph — the RAW material for a future knowledge graph, not
 a semantic KG itself. No LLM, no NLP guessing, no invented relations — every

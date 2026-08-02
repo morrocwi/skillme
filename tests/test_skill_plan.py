@@ -243,7 +243,7 @@ def test_cli_refuses_invalid_checkpoint_before_writing_output(tmp_path):
 def test_end_to_end_build_against_real_fintech_fixture():
     run, glossary_md, expert_md = _load_fixture()
     out = sp.build(run, glossary_md, expert_md)
-    assert "HYP-UIA-046-DEMO-001" in out
+    assert "HYP-SKILLME-046-DEMO-001" in out
     assert "unknown-checkpoint" not in out
     for heading in (
         "## 1. Human",
@@ -274,7 +274,7 @@ def test_cli_end_to_end_against_real_fintech_fixture(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
     assert out_path.exists()
     content = out_path.read_text(encoding="utf-8")
-    assert "HYP-UIA-046-DEMO-001" in content
+    assert "HYP-SKILLME-046-DEMO-001" in content
     assert "unknown-checkpoint" not in content
     for heading in (
         "## 1. Human",

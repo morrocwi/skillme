@@ -99,7 +99,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H1",
             "claim_supported_or_challenged": "SIM-CIT-H1 boundary",
             "context_country_or_region": "synthetic/finance",
@@ -175,7 +175,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H2",
             "claim_supported_or_challenged": "SIM-CIT-H2 boundary",
             "context_country_or_region": "synthetic/finance",
@@ -251,7 +251,7 @@
         "citation_audit": "PASS",
         "citation_cards": [
           {
-            "authors_or_issuer": "UIA fixture",
+            "authors_or_issuer": "SKILLME fixture",
             "citation_id": "SIM-CIT-H3",
             "claim_supported_or_challenged": "SIM-CIT-H3 boundary",
             "context_country_or_region": "synthetic/finance",
@@ -322,7 +322,7 @@
       }
     ],
     "review_mode": "TARGETED_SEARCH",
-    "search_protocol_id": "SEARCH-UIA-BILLING-ACCT-DEMO",
+    "search_protocol_id": "SEARCH-SKILLME-BILLING-ACCT-DEMO",
     "status": "EVIDENCE_CHALLENGE_COMPLETE",
     "synthesis_method": "QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT",
     "target_context": {
@@ -334,7 +334,7 @@
     }
   },
   "hypothesis_portfolio": {
-    "checkpoint_certificate": "HYP-UIA-BILLING-ACCT-DEMO-001",
+    "checkpoint_certificate": "HYP-SKILLME-BILLING-ACCT-DEMO-001",
     "diversity_test": "PASS",
     "evidence_linkage_test": "PASS",
     "hypothesis_cards": [
@@ -490,7 +490,7 @@
     "zero_semantics": "no upgrade event under frozen readout that lacks a distinguishable revenue-recognition schedule"
   },
   "metadata": {
-    "fixture_id": "UIA-saas-billing-revenue-recognition-accountant-001",
+    "fixture_id": "SKILLME-saas-billing-revenue-recognition-accountant-001",
     "label": "[SimulatedData]",
     "simulation": true
   },
@@ -533,7 +533,7 @@
   },
   "run_control": {
     "continuation_policy": "STOP_AT_HYPOTHESIS",
-    "continuation_record": "CONT-UIA-BILLING-ACCT-HYP-DEMO-001",
+    "continuation_record": "CONT-SKILLME-BILLING-ACCT-HYP-DEMO-001",
     "requested_by": "engineer-accountant billing checkpoint (founder-requested worked example)"
   },
   "system_graph": {
@@ -567,7 +567,7 @@
       "proration-method redesign",
       "cash-vs-accrual data-model separation"
     ],
-    "canonical_uia_mapping": "retained difference between the billing engine's cash-collected-at-invoice readout and the revenue-recognition schedule accounting actually needs",
+    "canonical_skillme_mapping": "retained difference between the billing engine's cash-collected-at-invoice readout and the revenue-recognition schedule accounting actually needs",
     "loss_audit": "PASS",
     "raw_user_expression": "every month we spend two extra days manually fixing upgrade entries because the ledger and the MRR dashboard never match",
     "selected_domain_projection": "SaaS billing event granularity vs. accrual revenue-recognition schedule granularity",
@@ -575,7 +575,7 @@
     "user_facing_issue_statement": "The billing engine books the full upgrade amount as revenue on the upgrade date instead of spreading it across the remaining service period, forcing manual reconciliation every close."
   },
   "two_question_intake": {
-    "certificate": "J2-UIA-BILLING-ACCT-001",
+    "certificate": "J2-SKILLME-BILLING-ACCT-001",
     "entry_status": "INTAKE_COMPLETE",
     "q1_answer_verbatim": "Every time a customer upgrades their subscription mid-billing-cycle, the billing engine immediately books the full new-plan amount as revenue on the upgrade date, instead of spreading it across the remaining service period. The monthly close team has to manually adjust dozens of entries by hand every month because the general ledger and the engineering team's MRR dashboard never agree.",
     "q1_prompt": "What is the issue?",

@@ -61,9 +61,9 @@ template) before trusting downstream glossary/skill_plan output.
 
 def load_kernel(uia_repo: Path):
     sys.path.insert(0, str(uia_repo))
-    import uia_protocol_kernel  # type: ignore
+    import skillme_protocol_kernel  # type: ignore
 
-    return uia_protocol_kernel
+    return skillme_protocol_kernel
 
 
 def validate_checkpoint_or_refuse(checkpoint_path: Path) -> dict:
@@ -99,7 +99,7 @@ def run_subprocess(cmd: list) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("checkpoint", type=Path, help="UIA hypothesis checkpoint JSON file")
+    p.add_argument("checkpoint", type=Path, help="SkillMe hypothesis checkpoint JSON file")
     p.add_argument("--out-dir", type=Path, required=True, help="output directory for the 4 layer files")
     layer2 = p.add_mutually_exclusive_group()
     layer2.add_argument(

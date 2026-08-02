@@ -1,7 +1,7 @@
 # AI_START_HERE.md — read this before touching any single file
 
 > [!WARNING]
-> Do not infer this project's maturity from its size. The spec (`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`,
+> Do not infer this project's maturity from its size. The spec (`SKILLME.md`,
 > ~3,700 lines) is large and detailed, but the whole project self-declares tier `Dr`
 > (design rationale) — an architectural synthesis of established methods, not a proven result.
 > The kernel validates *protocol structure*, not domain truth. Read
@@ -10,7 +10,7 @@
 
 ## What this project is
 
-**Universal Issue Analysis (UIA)** — a philosophy-first protocol for analyzing any reported
+**SkillMe** — a philosophy-first protocol for analyzing any reported
 issue (software incident, complaint, conflict, policy question, research anomaly, everyday
 decision) as a finite, auditable retained difference instead of a guessed name/cause/fix. It
 shares its readout-first foundation with `information-discrete-math` and `readout_genesis`
@@ -34,12 +34,12 @@ neither changes what the kernel validates.
    operational summary an AI assistant actually loads and follows: the two-question intake
    gate, the core protocol moves in order, the hard invariants, the output shape. This is the
    file to read if you're about to *use* the protocol, not just describe it.
-3. **`UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md`** — the canonical, normative spec. §0 states the
+3. **`SKILLME.md`** — the canonical, normative spec. §0 states the
    authority order (protocol invariants §11 > canonical 20-phase workflow §6.14 >
    machine-readable contract §10 > glossary/enums §3 > everything else is a view/checklist).
    Read this in full before disputing an edge case, extending the protocol, or claiming a
    section contradicts another.
-4. **`python3 uia_protocol_kernel.py --self-test`** — run this yourself (stdlib only, no
+4. **`python3 skillme_protocol_kernel.py --self-test`** — run this yourself (stdlib only, no
    network, no install) before repeating any pass/fail claim about the kernel. At the time this
    file was written it reported `14/14 PASS`; re-run it on your checkout rather than trusting
    this number.
@@ -56,8 +56,8 @@ neither changes what the kernel validates.
 
 ## The one thing not to do
 
-Do not summarize UIA as "just root-cause analysis" or "just a chatbot intake form" — both miss
-what's actually load-bearing: the zero/unresolved separation (spec §UIA-A6), the
+Do not summarize SkillMe as "just root-cause analysis" or "just a chatbot intake form" — both miss
+what's actually load-bearing: the zero/unresolved separation (spec §SKILLME-A6), the
 stakeholder-vs-agency split with 12 named conceptual agency roles (spec §4.3 — but only 5 of the
 13 corresponding schema fields are actually kernel-enforced non-empty; see
 `docs/FIELD_REFERENCE.md`, don't assume all 12/13 are mandatory), the mandatory

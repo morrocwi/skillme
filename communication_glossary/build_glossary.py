@@ -18,11 +18,11 @@ produced and verified):
     frameworks/methodologies a world-class expert would bring, verified where
     marked VERIFIED-VIA-SEARCH.
 
-One deliberate curation choice, stated not hidden: UIA-protocol-internal
+One deliberate curation choice, stated not hidden: SkillMe-protocol-internal
 vocabulary (lane names like KNOWN_DIRECT, causal_tier names like
 MECHANISM_HYPOTHESIS, review_mode like TARGETED_SEARCH) is EXCLUDED from the
 domain-vocabulary section and listed separately — these are machinery of the
-UIA analysis method itself, not vocabulary either an engineer or a nurse needs
+SkillMe analysis method itself, not vocabulary either an engineer or a nurse needs
 to discuss gut health. Detected mechanically: any Layer-1 entry whose every
 source ends in ":lane", ":causal_tier", or is exactly "checkpoint:review_mode".
 
@@ -180,7 +180,7 @@ def build(raw_md: str, expert_md: str) -> str:
     lines.append("")
 
     if protocol_internal_terms:
-        lines.append("## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล UIA เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)")
+        lines.append("## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SkillMe เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)")
         lines.append("")
         lines.append(", ".join(f"`{w}`" for w in sorted(set(protocol_internal_terms))))
         lines.append("")
