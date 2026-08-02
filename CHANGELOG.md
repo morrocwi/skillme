@@ -5,6 +5,30 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.10**.
 
+## communication_glossary Layer 1 — `kg_accumulate.py`: cross-checkpoint word-graph accumulation (2026-08-02, no protocol_version bump)
+
+Founder read Collins & Evans (2002) with this session, then asked to design and build the one
+genuinely new gap that reading surfaced (registered in `SKILLME.md` §14's "Expertise-typed roles +
+user-growth loop" entry): `kg_extract.py`'s word/phrase graph only ever sees one checkpoint at a
+time, with no mechanism to merge it across checkpoints for the same person and topic over time —
+the "growing word map" the founder's user-growth requirement needs. Design registered first
+(`communication_glossary/README.md`), reviewed independently, then built the same day.
+
+- New `kg_accumulate.py`: merges `kg_extract.py`'s per-checkpoint `word_index` into a persistent,
+  growing graph scoped to `(--principal-id, --topic-tag)`. No new node-ID scheme needed —
+  `mermaid_id(wtype, word)` already hashes only `(wtype, word)`, confirmed by two independent
+  reviews reading the code directly, so cross-checkpoint node collisions already work correctly.
+  Idempotent (mirrors `bridge.py`'s `already_ingested()` pattern) and returns the mechanical
+  "new vocabulary this checkpoint" set the vocabulary contract needs, without judging whether the
+  user actually learned anything — that stays an orchestrator judgment call, out of scope here.
+- Storage: `communication_glossary/accumulated/<principal_id>/<topic_tag>/` (JSON state + rendered
+  Markdown), gitignored — real per-user runtime state, not a source file.
+- `--principal-id`/`--topic-tag` are required CLI args in this pass; the design's proposed
+  `registration.principal_id` checkpoint field was not added to the kernel schema — not yet scoped.
+- 11 new tests (`tests/test_kg_accumulate.py`), all real invocations against this repo's actual
+  example checkpoints, no mocking. `pytest` 140/140 (was 129). `protocol_version` stays `0.4.10` —
+  new sibling script, kernel/schema untouched.
+
 ## v0.4.10 — Phase 2: checker_result (MC-02 principal separation + MIMCG tier enforcement, 2026-08-02)
 
 Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an

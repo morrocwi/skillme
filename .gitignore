@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
+
+# kg_accumulate.py's runtime per-principal state -- real user data, not a
+# source file or example fixture; never meant to be committed.
+communication_glossary/accumulated/
