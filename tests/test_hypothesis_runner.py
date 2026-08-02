@@ -24,6 +24,19 @@ import skillme_protocol_kernel as k  # noqa: E402
 RUNNER = REPO_ROOT / "hypothesis_runner.py"
 PAYLOADS_DIR = REPO_ROOT / "fixtures" / "hyp_payloads"
 
+# Git only tracks the executable bit (100644/100755), never "other read" --
+# a fresh checkout under a restrictive umask (verified on this host: fresh
+# `git checkout`/merge leaves fixture files at mode 660, no o+r at all) will
+# silently fail every test here with the world-readable preflight refusal,
+# even though the actual code being tested is correct. This is checkout
+# hygiene for OUR OWN committed test fixtures, not a workaround of the
+# feature under test (the preflight check itself is still exercised for
+# real, on a dedicated scratch dir, by test_non_world_readable_payload_*).
+for _p in [PAYLOADS_DIR, *PAYLOADS_DIR.rglob("*")]:
+    if _p.exists():
+        mode = _p.stat().st_mode
+        _p.chmod(mode | 0o004 | (0o001 if _p.is_dir() else 0))
+
 needs_docker = pytest.mark.skipif(
     shutil.which("docker") is None, reason="requires docker"
 )
