@@ -30,7 +30,7 @@ cat <<'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
-    "additionalContext": "skillme was just loaded. Its operational contract for this session: (1) use TaskCreate to track each UIA phase (intake, agency/stakeholder map, hypothesis evidence challenge, hypothesis portfolio) as you go through it, not after the fact; (2) once a run reaches STOP_AT_HYPOTHESIS / VALID_CHECKPOINT, run doc_ecosystem_bridge/bridge.py against that checkpoint before ending the turn, so the analysis is bridged into the target project's doc ecosystem. A Stop hook will block the turn end and tell you exactly what's missing if either of these was skipped."
+    "additionalContext": "skillme was just loaded. Its operational contract for this session: (1) use TaskCreate to track each SkillMe phase (intake, agency/stakeholder map, hypothesis evidence challenge, hypothesis portfolio) as you go through it, not after the fact; (2) once a run reaches STOP_AT_HYPOTHESIS / VALID_CHECKPOINT, run doc_ecosystem_bridge/bridge.py against that checkpoint before ending the turn, so the analysis is bridged into the target project's doc ecosystem. A Stop hook will block the turn end and tell you exactly what's missing if either of these was skipped."
   }
 }
 EOF

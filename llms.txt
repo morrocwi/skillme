@@ -37,7 +37,7 @@ follow its discovery order before making any capability or correctness claim.
   and role/skill plan two people from different fields need to discuss and act on one issue.
 - [run_pipeline.py](/run_pipeline.py): One-command orchestrator over the 4-layer pipeline and
   doc_ecosystem_bridge/bridge.py — shells out to each script, does not reimplement their logic.
-- [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.8; states which later roadmap
+- [CHANGELOG.md](/CHANGELOG.md): Version history through v0.4.10; states which later roadmap
   milestones are not yet complete.
 
 ## Verification (run this yourself — do not take claims on trust)

@@ -9,8 +9,8 @@
 [![tier](https://img.shields.io/badge/claim%20tier-Dr%20(design%20rationale)-orange)](#tier-honesty)
 [![kernel](https://img.shields.io/badge/kernel-stdlib--only%2C%20run%20it%20yourself-brightgreen)](skillme_protocol_kernel.py)
 [![self--test](https://img.shields.io/badge/self--test-14%2F14%20PASS-brightgreen)](tests/test_kernel_self_test.py)
-[![pytest](https://img.shields.io/badge/pytest-13%2F13%20PASS-brightgreen)](tests/test_kernel_self_test.py)
-[![version](https://img.shields.io/badge/protocol-v0.4.8-blue)](CHANGELOG.md)
+[![pytest](https://img.shields.io/badge/pytest-129%2F129%20PASS-brightgreen)](tests/)
+[![version](https://img.shields.io/badge/protocol-v0.4.10-blue)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 </div>
@@ -138,7 +138,7 @@ skillme/
 │   └── README.md                          Layer 1-4 design, worked examples in examples/
 ├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
 ├── llms.txt                              machine-readable doc index
-├── CHANGELOG.md                          version history through v0.4.8
+├── CHANGELOG.md                          version history through v0.4.10
 ├── plugins/skillme/                      the installable Claude Code plugin (self-contained subtree)
 │   ├── README.md, LICENSE                 plugin-scoped copies (git-subdir installs pull only this dir)
 │   ├── .claude-plugin/plugin.json         plugin manifest (declares hooks/hooks.json)
