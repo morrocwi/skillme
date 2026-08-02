@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UIA v0.4.6 standalone protocol kernel.
+"""UIA v0.4.8 standalone protocol kernel.
 
 This standard-library-only reference implementation validates protocol
 structure and state transitions. It does not establish the truth, causal
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.4.6"
+VERSION = "0.4.8"
 ABSENT_PROPOSAL_TERMS = {
     "ไม่มี",
     "ไม่มีข้อเสนอ",
@@ -1834,8 +1834,8 @@ def checkpoint_demo_run_alt_domain() -> dict[str, Any]:
 def schema_summary() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/uia/0.4.6/run.schema.json",
-        "title": "UIA v0.4.6 finite issue protocol with resumable checkpoint",
+        "$id": "https://example.invalid/uia/0.4.8/run.schema.json",
+        "title": "UIA v0.4.8 finite issue protocol with resumable checkpoint",
         "type": "object",
         "required": [
             "protocol_version",
@@ -2143,7 +2143,7 @@ def emit(data: Any) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate UIA v0.4.6 resumable protocol records."
+        description="Validate UIA v0.4.8 resumable protocol records."
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--demo", action="store_true")

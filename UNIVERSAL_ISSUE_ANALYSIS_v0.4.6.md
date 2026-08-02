@@ -2,7 +2,7 @@
 ## ปรัชญาการวิเคราะห์ประเด็นสากลบนฐาน Readout Genesis และ Information Discrete Mathematics
 
 **Document ID:** `UIA-CORE`  
-**Version:** `0.4.6`  
+**Version:** `0.4.8`  
 **Status:** `STANDALONE_REFERENCE_SPECIFICATION_WITH_EXECUTABLE_PROTOCOL_KERNEL`  
 **Authorial lineage:** Yaoharee Lahtee — Readout Genesis → Information Discrete Mathematics → Universal Issue Analysis  
 **Intended use:** human reasoning, AI reasoning, organizational analysis, policy analysis, research, software incidents, social issues, and everyday decisions  
@@ -3079,7 +3079,7 @@ uia_rgm:
 
 ```yaml
 uia_run:
-  protocol_version: "0.4.6"
+  protocol_version: "0.4.8"
 
   run_control:
     continuation_policy:
@@ -3604,6 +3604,7 @@ Documentation-only — ไม่แตะ `uia_protocol_kernel.py`, schema, ห�
 - ยืนยันด้วยการทดสอบจริง (ไม่ใช่แค่อ่านโค้ด) ว่า agency's 8 field ที่ไม่ใช่ 5 field หลัก ไม่เคยถูก kernel บังคับเลย — เพิ่ม permanent regression test + เอกสารใน `docs/FIELD_REFERENCE.md` (§6.9.4)
 - เพิ่มคำเตือน false-precision ท้าย §2 สำหรับกรณี reader เป็นประสาทสัมผัสมนุษย์ (ไม่ใช่ sensor) — คำว่า "retained difference" ต้องไม่ทำให้ readout ที่ reproducibility ต่ำดูน่าเชื่อถือเกินจริง
 - `pytest` 13/13 (เพิ่ม 4 test จาก 9 เดิม), kernel `--self-test` ไม่กระทบ (ไม่แตะ demo/checkpoint-demo fixture)
+- **แก้ไขภายหลัง (2026-08-02):** commit ที่แตะ `uia_protocol_kernel.py` ข้างต้นลืม bump `VERSION` constant (ยังเขียน `"0.4.6"` แม้ schema เปลี่ยนจริง) — เจอตอนตรวจสอบ "สถานะตรงกับออนไลน์ครบถ้วนหรือยัง" ก่อน tag release แก้เป็น `"0.4.8"` พร้อม sync `protocol_version` ใน fixture/example ทุกไฟล์ที่ hardcode ค่านี้ไว้ (`fixtures/checkpoint_demo_alt_domain.json` + 3 ไฟล์ใน `communication_glossary/examples/`) และ header เอกสารนี้ (§ ด้านบน, §10) ให้ตรงกัน; `pytest` 67/67, kernel `--self-test` 14/14 ผ่านหลังแก้
 
 ### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
 

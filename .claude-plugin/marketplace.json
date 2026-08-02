@@ -17,7 +17,7 @@
         "source": "git-subdir",
         "url": "https://github.com/morrocwi/universal-issue-analysis.git",
         "path": "plugins/universal-issue-analysis",
-        "ref": "v0.4.6"
+        "ref": "v0.4.8"
       }
     }
   ]

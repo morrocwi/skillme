@@ -1,7 +1,7 @@
 {
   "name": "universal-issue-analysis",
   "description": "Universal Issue Analysis — a readout-first, agency-and-rights-aware protocol for turning any reported issue into a finite, auditable analysis. Loads before analyzing an incident, complaint, conflict, risk, or decision request: mandatory two-question intake gate, retained-difference issue framing, stakeholder/agency mapping, global/local evidence-challenged hypotheses, and a three-lane candidate portfolio with rights and diversity gates.",
-  "version": "0.4.6",
+  "version": "0.4.8",
   "author": {
     "name": "Yaoharee Lahtee"
   }
