@@ -341,6 +341,16 @@ def nonblank(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def normalize_principal_id(value: Any) -> str:
+    # MC-02 same-principal comparisons must not be defeated by whitespace or
+    # case alone -- "M1" vs "M1 " vs "m1" are the same declared principal.
+    # This is still a DECLARATION check, not identity verification (see
+    # hypothesis_checker.py's module docstring): normalizing does not make
+    # the comparison cryptographically sound, it only closes the trivial
+    # bypass a real reviewer found.
+    return str(value).strip().casefold()
+
+
 def get_path(data: dict[str, Any], path: str, default: Any = None) -> Any:
     current: Any = data
     for part in path.split("."):
@@ -1142,7 +1152,8 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
                 if (
                     nonblank(maker_pid)
                     and nonblank(checker_pid)
-                    and str(maker_pid) == str(checker_pid)
+                    and normalize_principal_id(maker_pid)
+                    == normalize_principal_id(checker_pid)
                 ):
                     errors.append(
                         f"CHECKER_RESULT_SAME_PRINCIPAL:{hypothesis_id}"

@@ -144,7 +144,9 @@ def main() -> None:
     card = find_hypothesis_card(run, args.hypothesis_id)
     raw_result = load_raw_result_or_refuse(args.raw_result, args.hypothesis_id)
 
-    if args.checker_principal_id == raw_result["maker_principal_id"]:
+    if kernel.normalize_principal_id(
+        args.checker_principal_id
+    ) == kernel.normalize_principal_id(raw_result["maker_principal_id"]):
         raise SystemExit(
             "REFUSED: --checker-principal-id matches the raw_result's own "
             f"maker_principal_id ({raw_result['maker_principal_id']!r}) -- "

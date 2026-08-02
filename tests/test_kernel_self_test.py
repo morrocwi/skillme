@@ -400,6 +400,35 @@ def test_checker_result_same_principal_rejected():
     assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
 
 
+def test_checker_result_same_principal_with_whitespace_rejected():
+    # Real bug found by independent review: a raw string-equality comparison
+    # let "agent-x" vs "agent-x " (trailing space) through as different
+    # principals. normalize_principal_id() (strip + casefold) closes this.
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_principal_id"] = checker["maker_principal_id"] + " "
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
+
+
+def test_checker_result_same_principal_with_different_case_rejected():
+    run = copy.deepcopy(_demo_checkpoint())
+    checker = _valid_checker_result()
+    checker["checker_principal_id"] = checker["maker_principal_id"].upper()
+    run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = checker
+    report = k.validate(run)
+    assert report["protocol_status"] != "VALID_CHECKPOINT"
+    assert any("CHECKER_RESULT_SAME_PRINCIPAL" in e for e in report["errors"])
+
+
+def test_normalize_principal_id_strips_and_casefolds():
+    assert k.normalize_principal_id("M1") == k.normalize_principal_id("m1")
+    assert k.normalize_principal_id("M1") == k.normalize_principal_id(" M1 ")
+    assert k.normalize_principal_id("agent-a") != k.normalize_principal_id("agent-b")
+
+
 def test_checker_result_not_object_rejected():
     run = copy.deepcopy(_demo_checkpoint())
     run["hypothesis_portfolio"]["hypothesis_cards"][0]["checker_result"] = "nope"

@@ -116,6 +116,52 @@ def test_same_principal_as_maker_refused(tmp_path):
     assert "checker_result" not in untouched["hypothesis_portfolio"]["hypothesis_cards"][0]
 
 
+def test_same_principal_with_trailing_whitespace_refused(tmp_path):
+    # Real bug found by independent review of this PR: the original MC-02
+    # comparison was a raw string equality, so "same-session" vs
+    # "same-session " (trailing space) silently passed as different
+    # principals. Now normalized (strip + casefold) before comparing.
+    checkpoint_path = tmp_path / "checkpoint.json"
+    checkpoint_path.write_text(json.dumps(_checkpoint_with_verification_payload()))
+    raw_result_path = _raw_result(tmp_path, maker_principal_id="same-session")
+
+    result = _run_checker(
+        checkpoint_path, raw_result_path, checker_principal_id="same-session "
+    )
+    assert result.returncode != 0
+    assert "REFUSED" in result.stderr
+    assert "MC-02" in result.stderr
+    untouched = json.loads(checkpoint_path.read_text())
+    assert "checker_result" not in untouched["hypothesis_portfolio"]["hypothesis_cards"][0]
+
+
+def test_same_principal_with_different_case_refused(tmp_path):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    checkpoint_path.write_text(json.dumps(_checkpoint_with_verification_payload()))
+    raw_result_path = _raw_result(tmp_path, maker_principal_id="Same-Session")
+
+    result = _run_checker(
+        checkpoint_path, raw_result_path, checker_principal_id="same-session"
+    )
+    assert result.returncode != 0
+    assert "REFUSED" in result.stderr
+    assert "MC-02" in result.stderr
+    untouched = json.loads(checkpoint_path.read_text())
+    assert "checker_result" not in untouched["hypothesis_portfolio"]["hypothesis_cards"][0]
+
+
+def test_genuinely_different_principals_still_accepted(tmp_path):
+    # Guard against over-normalizing into false refusals.
+    checkpoint_path = tmp_path / "checkpoint.json"
+    checkpoint_path.write_text(json.dumps(_checkpoint_with_verification_payload()))
+    raw_result_path = _raw_result(tmp_path, maker_principal_id="maker-session-1")
+
+    result = _run_checker(
+        checkpoint_path, raw_result_path, checker_principal_id="checker-session-2"
+    )
+    assert result.returncode == 0, result.stderr
+
+
 def test_l3_with_ai_checker_refused(tmp_path):
     checkpoint_path = tmp_path / "checkpoint.json"
     checkpoint_path.write_text(json.dumps(_checkpoint_with_verification_payload()))

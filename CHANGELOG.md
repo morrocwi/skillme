@@ -24,6 +24,16 @@ step Phase 1b's `raw_result` explicitly refused to be.
   bug class the Phase 1b review caught (moved after `**execution`, assert extended).
 - 30 new tests (19 kernel + 11 checker), all real invocations, no mocking. `pytest` 119/119 (was
   89). `protocol_version` `0.4.9` -> `0.4.10`.
+- **Fixed after independent PR review** (2026-08-02): the MC-02 same-principal comparison in both
+  the kernel's `validate()` and `hypothesis_checker.py`'s own preflight check was raw string
+  equality, so `"agent-x"` vs `"agent-x "` (trailing whitespace) or `"AGENT-X"` (different case)
+  silently passed as two different principals, defeating the guarantee this entry's own text
+  above claims. Added `normalize_principal_id()` (strip + casefold) to `skillme_protocol_kernel.py`
+  and applied it in both enforcement points -- still a DECLARATION check, not identity
+  verification, per the existing scope note above; normalizing closes the trivial bypass, it does
+  not add cryptographic identity. 6 new regression tests (2 kernel MC-02 case/whitespace, 1 kernel
+  unit test for the normalizer itself, 2 checker-script case/whitespace, 1 checker
+  genuinely-different-principals guard against over-normalizing). `pytest` 129/129.
 
 ## v0.5.2 — on-stop.sh: fix plugin-only install permanent-block gap (2026-08-02, no protocol_version bump)
 
