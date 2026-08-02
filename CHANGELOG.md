@@ -26,6 +26,17 @@ protocol version: **v0.4.8**.
 - `pytest` 13/13 (was 9), kernel `--self-test` 14/14 unaffected (demo/checkpoint-demo fixtures
   untouched).
 
+## v0.4.8 patch — protocol_version drift fix (2026-08-02)
+
+The commit above changed `uia_protocol_kernel.py`'s validation logic (new `review_mode`) but
+left `VERSION = "0.4.6"` unbumped, so every run the kernel produced kept declaring
+`protocol_version: "0.4.6"` — a real spec/runtime drift, not a docs typo. Found while verifying
+local state against GitHub before tagging this release. Fixed: `VERSION` constant, schema
+`$id`/`title`, CLI description, the spec doc's header `Version:` field and §10 example, and
+every fixture/example `checkpoint.json` that hardcoded `"protocol_version": "0.4.6"`
+(`fixtures/checkpoint_demo_alt_domain.json` + 3 files under `communication_glossary/examples/`)
+now consistently read `0.4.8`. `pytest` 67/67, kernel `--self-test` 14/14 after the fix.
+
 ## v0.4.7 — External lineage consolidation (Philosophy-Logic-Mapping core)
 
 Documentation-only — no change to `uia_protocol_kernel.py`, schema, or `protocol_version`.
