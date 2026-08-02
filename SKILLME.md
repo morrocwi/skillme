@@ -4085,14 +4085,33 @@ evidence produced by the interaction itself, never from a self-reported title. A
 profession/credential up front would also violate the existing Two-Question Intake Gate (§6.15)
 and `SKILLME-A5 — Minimal Sufficient Quotient`.
 
+**Correction (2026-08-02, same day, caught in conversation before this entry's `terms_acquired`
+list was ever built): the "vocabulary the user has acquired" should be the existing Layer 1 KG,
+not a new flat list.** The first draft of this entry proposed `terms_acquired` as an invented flat
+array. That duplicates machinery that already exists and already does this better:
+`communication_glossary`'s **Layer 1 (`kg_extract.py` → `kg_raw_word.md`)** already extracts a
+typed, deduplicated word/phrase **graph** (a Mermaid DAG + word table) from a checkpoint,
+zero-interpretation, every node tagged with every schema field it came from — this is a literal
+readout of "this word appeared here," not an invented relation (per this workspace's readout-not-
+truth discipline, already enforced in that layer). A "word map that grows" is exactly what
+re-running Layer 1 across repeated checkpoints in the *same* `topic_tag` and merging the resulting
+graphs would produce, for free, using a mechanism the repo already ships and already tests — not a
+new schema field to design from scratch.
+
 **A proposed vocabulary contract**, extending the existing Bidirectional Translation Contract
-(§6.8): every user-facing output tags each technical term with `necessary_for_decision: bool`
-(cut jargon not needed for the decision actually in front of the user right now, per A5) and a
-one-sentence `plain_language_gloss`, with a per-turn cap on how many *new* (not-yet-in-the-user's-
-ledger) terms are introduced at once — no front-loaded jargon dump. A term only enters the user's
-`terms_acquired` list once the user demonstrably engages with it (asks a pointed question about it,
-uses it correctly in context) — this is the literal mechanism for "learning from the act of
-resolving the issue," not a separate tutorial mode bolted on afterward.
+(§6.8) and now explicitly grounded in Layer 1 rather than inventing a parallel list: every
+user-facing output tags each technical term with `necessary_for_decision: bool` (cut jargon not
+needed for the decision actually in front of the user right now, per A5) and a one-sentence
+`plain_language_gloss`, with a per-turn cap on how many *new* (not-yet-appearing-in-the-user's
+accumulated Layer 1 graph-for-that-`topic_tag`) terms are introduced at once — no front-loaded
+jargon dump. A term is only counted as "acquired" once the user demonstrably engages with it (asks
+a pointed question about it, uses it correctly in context) — at which point it is a node the user's
+own accumulated Layer 1 graph for that `topic_tag` already contains (from a prior checkpoint), not
+a new field being written to a separate ledger. The `principal_expertise_ledger`'s `evidence_for_level`
+(above) can then cite specific Layer 1 node IDs as evidence, instead of free text — this is the
+literal mechanism for "learning from the act of resolving the issue, through a word map that keeps
+growing across repeated conversation in the topic," not a separate tutorial mode bolted on
+afterward.
 
 **A proposed growth loop**, reusing machinery already registered rather than inventing new
 machinery: at `VALID_CHECKPOINT`/`STOP_AT_HYPOTHESIS`, before closing, the orchestrator would
@@ -4108,8 +4127,14 @@ location (hypothesis card? a new top-level ledger keyed by `principal_id`? part 
 `checker_result`?), how `assessed_by: AI` self-assessment of a user's expertise level is itself
 kept honest (it is, by construction, Dr/Open tier judgment, not fact, until reviewed), and how
 this interacts with the still-unscoped expert-declaration/skill-registration direction from
-2026-08-01. This is a registered direction, not a plan — scope must be clarified with the founder
-before any schema or kernel change lands, per this session's standing practice.
+2026-08-01. **One genuinely new piece, not already solved by reuse**: `kg_extract.py` as it exists
+today builds its word/phrase graph fresh from a single checkpoint (`extract(run: dict)` takes one
+`run`, not a history) — it does not currently merge or accumulate a graph across multiple
+checkpoints over time for the same `principal_id`+`topic_tag`. That cross-checkpoint accumulation
+is the one actual gap this direction would need to close, not something already shipped; everything
+else in this entry reuses existing Layer 1/personal-epistemic-OS machinery as-is. This is a
+registered direction, not a plan — scope must be clarified with the founder before any schema or
+kernel change lands, per this session's standing practice.
 
 ### v0.5 — Formal semantics and executable kernel
 
