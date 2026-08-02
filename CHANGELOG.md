@@ -26,8 +26,17 @@ this host's overlay2 driver (a `--storage-opt size=10m` container wrote 50MB wit
 - Real bug found by actually running this against a mode-660 fixture file: the sandbox's fixed
   UID can't read files it doesn't own/share a group with -- was a cryptic Docker permission
   error, now a clean preflight refusal with a `chmod` fix in the message.
-- 10 new tests against real Docker (no mocking). `pytest` 87/87 (was 77). `protocol_version`
-  stays `0.4.9` -- new sibling script, kernel/schema untouched.
+- **Fixed after independent review** (reviewer actually ran real Docker commands, not just read
+  code): (1) `docker` missing from `PATH` raised a raw unhandled `FileNotFoundError` traceback
+  instead of a clean refusal -- now caught and refused; (2) `record = {..., "status": ...,
+  **execution}` placed the hardcoded `status`/`tier` fields *before* `**execution` in the dict
+  literal, so a future field added to `run_in_container()`'s return value named `status` or
+  `tier` would silently win Python's last-key-wins merge and defeat the "never writes APPROVED"
+  guarantee -- reordered (`**execution` first, hardcoded fields last) plus an explicit `assert`
+  that fails loudly if this is ever violated. Both fixes have dedicated regression tests.
+- 12 new tests against real Docker (no mocking; 2 of the 12 are the review-driven fixes above).
+  `pytest` 89/89 (was 77). `protocol_version` stays `0.4.9` -- new sibling script, kernel/schema
+  untouched.
 
 ## v0.4.9 — Phase 1a: hypothesis verification-payload schema (2026-08-02)
 

@@ -3713,13 +3713,23 @@ who owns a payload directory, so a normal-looking `mode 660` fixture file produc
 preflight `check_payload_world_readable_or_refuse()` that catches this before spawning Docker at
 all, with a `chmod` fix listed in the refusal message.
 
-10 new tests (`tests/test_hypothesis_runner.py`), all against real Docker (2 skipped if `docker`
-is absent) — no mocking, matching this repo's own convention: passing payload, failing payload,
-missing-payload refusal, invalid-checkpoint refusal, unknown-hypothesis-id refusal, unsupported-
-language refusal, path-escape refusal, missing-declared-input refusal, non-world-readable
-refusal (the bug above, now locked in as a regression test), concurrency-lock refusal. `pytest`
-87/87 (was 77). `protocol_version` stays `0.4.9` — this entry adds a new sibling script, it does
-not touch the kernel or its schema.
+**Fixed after independent review** (reviewer actually ran real Docker commands against the code,
+not just read it): (1) `docker` missing from `PATH` raised a raw unhandled `FileNotFoundError`
+traceback instead of a clean refusal — now caught explicitly; (2) the result-record dict literal
+placed hardcoded `status`/`tier` fields *before* `**execution`, so a future field added to
+`run_in_container()`'s return value named `status` or `tier` would silently win Python's
+last-key-wins dict-merge and defeat the "never writes APPROVED" guarantee — reordered
+(`**execution` first, hardcoded fields last) plus an explicit `assert` that fails loudly if this
+is ever violated again.
+
+12 new tests (`tests/test_hypothesis_runner.py`, 2 of the 12 are the review-driven fixes above),
+all against real Docker (some skipped if `docker` is absent) — no mocking, matching this repo's
+own convention: passing payload, failing payload, missing-payload refusal, invalid-checkpoint
+refusal, unknown-hypothesis-id refusal, unsupported-language refusal, path-escape refusal,
+missing-declared-input refusal, non-world-readable refusal (the bug above, now locked in as a
+regression test), concurrency-lock refusal, missing-docker-binary refusal, status/tier-override
+protection. `pytest` 89/89 (was 77). `protocol_version` stays `0.4.9` — this entry adds a new
+sibling script, it does not touch the kernel or its schema.
 
 ### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
 

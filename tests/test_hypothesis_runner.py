@@ -3,11 +3,13 @@
 Follows this repo's convention: no mocking, real subprocess calls, real
 Docker containers actually run. Guarded with skipif when docker isn't
 available. Every case here was manually verified against a live run before
-being locked in as a test (see CHANGELOG.md v0.4.10 entry) -- including the
-world-readable permission bug, which a mocked test would never have caught.
+being locked in as a test (see CHANGELOG.md's Phase 1b entry) -- including
+the world-readable permission bug, which a mocked test would never have
+caught.
 """
 import copy
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -46,12 +48,12 @@ def _passing_payload() -> dict:
     }
 
 
-def _run_runner(checkpoint: dict, hypothesis_id: str, out_dir: Path):
+def _run_runner(checkpoint: dict, hypothesis_id: str, out_dir: Path, env=None):
     cp_path = out_dir / "checkpoint.json"
     cp_path.write_text(json.dumps(checkpoint), encoding="utf-8")
     return subprocess.run(
         [sys.executable, str(RUNNER), str(cp_path), hypothesis_id, "--out-dir", str(out_dir)],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, timeout=120, env=env,
     )
 
 
@@ -188,3 +190,39 @@ def test_concurrency_lock_refuses_second_invocation(tmp_path):
     finally:
         fcntl.flock(held, fcntl.LOCK_UN)
         held.close()
+
+
+def test_missing_docker_binary_refuses_cleanly(tmp_path):
+    # Independent review finding: subprocess.run(["docker", ...]) raised a raw
+    # unhandled FileNotFoundError with a full traceback when docker isn't on
+    # PATH, instead of a clean REFUSED message. Reproduced live with a PATH
+    # containing no docker binary, then fixed with a try/except around the
+    # subprocess.run call in run_in_container().
+    fake_path_dir = tmp_path / "fake_path_no_docker"
+    fake_path_dir.mkdir()
+    env = dict(os.environ)
+    env["PATH"] = str(fake_path_dir)
+    result = _run_runner(
+        _checkpoint_with_payload(_passing_payload()), "H1", tmp_path, env=env
+    )
+    assert result.returncode != 0
+    assert "REFUSED" in result.stderr
+    assert "docker" in result.stderr.lower()
+    assert "Traceback" not in result.stderr
+
+
+@needs_docker
+def test_execution_result_cannot_override_status_or_tier(tmp_path):
+    # Independent review finding: record = {..., "status": ..., "tier": ...,
+    # **execution} would let any future key named "status"/"tier" in
+    # run_in_container()'s return value silently win the dict-literal merge
+    # and defeat the "never writes APPROVED" guarantee. Fixed by reordering
+    # (**execution first, hardcoded fields last) plus an explicit assert.
+    # This test locks in the *current* record's actual field values -- if the
+    # ordering regresses, the assert in main() fails loudly before this test
+    # would even get a chance to check the JSON.
+    result = _run_runner(_checkpoint_with_payload(_passing_payload()), "H1", tmp_path)
+    assert result.returncode == 0, result.stderr
+    record = json.loads((tmp_path / "raw_result_H1.json").read_text())
+    assert record["status"] == "PENDING_INDEPENDENT_CHECK"
+    assert record["tier"] == "finite_diagnostic"

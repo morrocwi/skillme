@@ -230,6 +230,11 @@ def run_in_container(payload_dir: Path, payload: dict) -> dict:
         timed_out = False
         exit_code = proc.returncode
         stdout, stderr = proc.stdout, proc.stderr
+    except FileNotFoundError:
+        raise SystemExit(
+            "REFUSED: 'docker' is not installed or not on PATH -- "
+            "hypothesis_runner.py requires Docker to sandbox execution."
+        )
     except subprocess.TimeoutExpired as e:
         timed_out = True
         exit_code = None
@@ -286,12 +291,23 @@ def main() -> None:
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     out_path = args.out_dir / f"raw_result_{args.hypothesis_id}.json"
+    # Structural guarantee (independent review finding): status/tier/
+    # claim_boundary are placed AFTER **execution in this dict literal, so
+    # they always win Python's last-key-wins merge semantics even if a future
+    # edit adds a same-named key to run_in_container()'s return value.
+    # Asserted explicitly too, so that scenario fails loudly instead of
+    # silently overriding the one guarantee this whole design rests on.
+    assert not {"status", "tier", "claim_boundary"} & set(execution), (
+        "run_in_container() must never return a 'status'/'tier'/'claim_boundary' "
+        "key -- those are hardcoded below and must not be payload-influenceable"
+    )
     record = {
         "schema": "skillme_verification_raw_result_v1",
         "hypothesis_id": args.hypothesis_id,
         "checkpoint_certificate": (
             (run.get("hypothesis_portfolio") or {}).get("checkpoint_certificate")
         ),
+        **execution,
         "tier": "finite_diagnostic",
         "status": "PENDING_INDEPENDENT_CHECK",
         "claim_boundary": (
@@ -302,7 +318,6 @@ def main() -> None:
             "also authored this record), and is NOT self-promotable to "
             "APPROVED by anything in this codebase."
         ),
-        **execution,
     }
     out_path.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(f"wrote {out_path} (status={record['status']}, exit_code={execution['exit_code']})")
