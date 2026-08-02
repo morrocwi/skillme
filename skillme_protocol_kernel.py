@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SkillMe v0.4.9 standalone protocol kernel.
+"""SkillMe v0.4.10 standalone protocol kernel.
 
 This standard-library-only reference implementation validates protocol
 structure and state transitions. It does not establish the truth, causal
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.4.9"
+VERSION = "0.4.10"
 ABSENT_PROPOSAL_TERMS = {
     "ไม่มี",
     "ไม่มีข้อเสนอ",
@@ -209,6 +209,50 @@ VERIFICATION_PAYLOAD_REQUIRED = {
     "network_required",
     "resource_class",
     "expected_exit_status",
+}
+
+# Phase 2 (2026-08-02, MC-02/MC-01 -- ratified via cpg/AGENTS.md step 6.5,
+# cpg PR #113): the actual "check" step Phase 1b's raw_result explicitly
+# refused to be -- hypothesis_runner.py's output is always
+# PENDING_INDEPENDENT_CHECK and never writes APPROVED. checker_result is
+# where a SEPARATE, later act declares that verdict. The kernel validates
+# SHAPE and the two structural MC-02/MC-05 rules below ONLY -- it cannot
+# verify that maker_principal_id/checker_principal_id are truthful (that
+# would need real identity infrastructure this workspace doesn't have wired
+# to skillme -- see CHANGELOG.md for what was and wasn't built). This is a
+# declaration check, not an identity-verification system: finite_diagnostic
+# tier, same as everything else in this kernel.
+CHECKER_TYPES = {
+    "AI",
+    "HUMAN",
+}
+
+CHECKER_TIERS = {
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+}
+
+CHECKER_VERDICTS = {
+    "APPROVED",
+    "REJECTED",
+}
+
+# MIMCG L3+ requires a human final owner (cpg/AGENTS.md step 6.5, ratified
+# 2026-08-02) -- an AI checker is only eligible for L0-L2.
+CHECKER_TIERS_REQUIRING_HUMAN = {"L3", "L4", "L5"}
+
+CHECKER_RESULT_REQUIRED = {
+    "maker_principal_id",
+    "checker_principal_id",
+    "checker_type",
+    "tier",
+    "verdict",
+    "rationale",
+    "checked_at",
 }
 
 CANONICAL_PHASES = [
@@ -1056,6 +1100,84 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
                     errors.append(
                         f"VERIFICATION_PAYLOAD_EXPECTED_EXIT_STATUS_NOT_INT:"
                         f"{hypothesis_id}"
+                    )
+        # checker_result is fully optional, same as verification_payload --
+        # most hypothesis cards have neither. A card CAN have a
+        # checker_result without a verification_payload (e.g. a purely
+        # analytical hypothesis that a human reviewed and approved by
+        # judgment, no mechanical run involved) -- so this is intentionally
+        # its own top-level "if", not nested inside the verification_payload
+        # branch above.
+        if "checker_result" in card:
+            checker = card.get("checker_result")
+            if not isinstance(checker, dict):
+                errors.append(
+                    f"CHECKER_RESULT_NOT_OBJECT:{hypothesis_id}"
+                )
+            else:
+                checker_missing = sorted(
+                    field
+                    for field in CHECKER_RESULT_REQUIRED
+                    if field not in checker
+                )
+                if checker_missing:
+                    errors.append(
+                        f"CHECKER_RESULT_MISSING:{hypothesis_id}:"
+                        + ",".join(checker_missing)
+                    )
+                maker_pid = checker.get("maker_principal_id")
+                checker_pid = checker.get("checker_principal_id")
+                if not nonblank(maker_pid):
+                    errors.append(
+                        f"CHECKER_RESULT_BLANK:{hypothesis_id}:maker_principal_id"
+                    )
+                if not nonblank(checker_pid):
+                    errors.append(
+                        f"CHECKER_RESULT_BLANK:{hypothesis_id}:checker_principal_id"
+                    )
+                # MC-02, enforced structurally: the same principal cannot be
+                # both maker and checker. This is a declaration check, not an
+                # identity-verification system -- see the module-level
+                # comment on CHECKER_RESULT_REQUIRED.
+                if (
+                    nonblank(maker_pid)
+                    and nonblank(checker_pid)
+                    and str(maker_pid) == str(checker_pid)
+                ):
+                    errors.append(
+                        f"CHECKER_RESULT_SAME_PRINCIPAL:{hypothesis_id}"
+                    )
+                checker_type = checker.get("checker_type")
+                if checker_type not in CHECKER_TYPES:
+                    errors.append(
+                        f"INVALID_CHECKER_TYPE:{hypothesis_id}:{checker_type}"
+                    )
+                tier = checker.get("tier")
+                if tier not in CHECKER_TIERS:
+                    errors.append(
+                        f"INVALID_CHECKER_TIER:{hypothesis_id}:{tier}"
+                    )
+                # MIMCG L3+ requires a human final owner (cpg/AGENTS.md step
+                # 6.5, ratified 2026-08-02) -- structurally enforced here.
+                elif (
+                    tier in CHECKER_TIERS_REQUIRING_HUMAN
+                    and checker_type == "AI"
+                ):
+                    errors.append(
+                        f"CHECKER_TIER_REQUIRES_HUMAN:{hypothesis_id}:{tier}"
+                    )
+                verdict = checker.get("verdict")
+                if verdict not in CHECKER_VERDICTS:
+                    errors.append(
+                        f"INVALID_CHECKER_VERDICT:{hypothesis_id}:{verdict}"
+                    )
+                if not nonblank(checker.get("rationale")):
+                    errors.append(
+                        f"CHECKER_RESULT_BLANK:{hypothesis_id}:rationale"
+                    )
+                if not nonblank(checker.get("checked_at")):
+                    errors.append(
+                        f"CHECKER_RESULT_BLANK:{hypothesis_id}:checked_at"
                     )
 
     if len(hypothesis_mechanisms) != len(set(hypothesis_mechanisms)):
@@ -1922,8 +2044,8 @@ def checkpoint_demo_run_alt_domain() -> dict[str, Any]:
 def schema_summary() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/skillme/0.4.9/run.schema.json",
-        "title": "SkillMe v0.4.9 finite issue protocol with resumable checkpoint",
+        "$id": "https://example.invalid/skillme/0.4.10/run.schema.json",
+        "title": "SkillMe v0.4.10 finite issue protocol with resumable checkpoint",
         "type": "object",
         "required": [
             "protocol_version",
@@ -2231,7 +2353,7 @@ def emit(data: Any) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate SkillMe v0.4.9 resumable protocol records."
+        description="Validate SkillMe v0.4.10 resumable protocol records."
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--demo", action="store_true")

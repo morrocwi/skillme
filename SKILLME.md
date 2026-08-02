@@ -2,7 +2,7 @@
 ## ปรัชญาการวิเคราะห์ประเด็นสากลบนฐาน Readout Genesis และ Information Discrete Mathematics
 
 **Document ID:** `SKILLME-CORE`  
-**Version:** `0.4.9`  
+**Version:** `0.4.10`  
 **Status:** `STANDALONE_REFERENCE_SPECIFICATION_WITH_EXECUTABLE_PROTOCOL_KERNEL`  
 **Authorial lineage:** Yaoharee Lahtee — Readout Genesis → Information Discrete Mathematics → SkillMe  
 **Intended use:** human reasoning, AI reasoning, organizational analysis, policy analysis, research, software incidents, social issues, and everyday decisions  
@@ -3079,7 +3079,7 @@ skillme_rgm:
 
 ```yaml
 skillme_run:
-  protocol_version: "0.4.9"
+  protocol_version: "0.4.10"
 
   run_control:
     continuation_policy:
@@ -3290,9 +3290,10 @@ skillme_run:
           # never resolves payload_ref, never executes entrypoint, and this
           # declaration alone proves NOTHING about the hypothesis being true
           # -- claim_boundary stays FINITE_DIAGNOSTIC_ONLY / STRUCTURE_ONLY
-          # exactly as for every other field. No runner that actually
-          # executes this payload exists yet (that is a separate, not-yet-
-          # built Phase 1b).
+          # exactly as for every other field. Phase 1b (hypothesis_runner.py,
+          # 2026-08-02) is the runner that actually executes this payload, in
+          # a hardened Docker container -- its output is never written back
+          # into this field; it produces a separate raw_result_<id>.json.
           payload_ref: REQUIRED        # pointer/hash to the code, never inline
           entrypoint: REQUIRED         # relative path within the payload to run
           language: PYTHON3_OR_BASH_OR_COQC
@@ -3300,6 +3301,29 @@ skillme_run:
           network_required: REQUIRED_BOOL
           resource_class: LIGHT_OR_HEAVY
           expected_exit_status: REQUIRED_INT
+        checker_result: OPTIONAL
+          # Phase 2 (2026-08-02, MC-01/MC-02 -- ratified via cpg/AGENTS.md
+          # step 6.5, cpg PR #113). Fully independent of verification_payload
+          # -- a card can have checker_result without ever having had a
+          # mechanical payload (a human reviewed and approved by judgment),
+          # or a verification_payload whose raw_result was never checked yet.
+          # Written by hypothesis_checker.py, a SEPARATE program from
+          # hypothesis_runner.py, invoked separately, on purpose: the maker
+          # cannot also be the one that writes this field via any code path
+          # in this repo. The kernel enforces two structural rules -- MC-02
+          # (maker_principal_id != checker_principal_id, hard reject on
+          # match) and MIMCG's L3+-requires-human rule -- but CANNOT verify
+          # that either principal_id is truthful; this is a declaration
+          # check, not an identity-verification system (no identity
+          # infrastructure is wired to this repo -- see hypothesis_checker.py
+          # module docstring).
+          maker_principal_id: REQUIRED   # copied from the raw_result, not re-typed
+          checker_principal_id: REQUIRED # MUST differ from maker_principal_id
+          checker_type: AI_OR_HUMAN
+          tier: L0_THROUGH_L5            # L3/L4/L5 REQUIRE checker_type=HUMAN
+          verdict: APPROVED_OR_REJECTED
+          rationale: REQUIRED
+          checked_at: REQUIRED
     diversity_test: PASS_REQUIRED_IF_READY
     evidence_linkage_test: PASS_REQUIRED_IF_READY
     proposal_comparison_status: COMPLETE_OR_NOT_APPLICABLE
@@ -3728,8 +3752,47 @@ own convention: passing payload, failing payload, missing-payload refusal, inval
 refusal, unknown-hypothesis-id refusal, unsupported-language refusal, path-escape refusal,
 missing-declared-input refusal, non-world-readable refusal (the bug above, now locked in as a
 regression test), concurrency-lock refusal, missing-docker-binary refusal, status/tier-override
-protection. `pytest` 89/89 (was 77). `protocol_version` stays `0.4.9` — this entry adds a new
-sibling script, it does not touch the kernel or its schema.
+protection. `pytest` 89/89 (was 77). `protocol_version` stayed `0.4.9` — that entry added a new
+sibling script, it did not touch the kernel or its schema.
+
+### Phase 2 — checker_result: MC-02 principal separation + MIMCG tier enforcement (2026-08-02, v0.4.10)
+
+Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an
+explicit `human_pi` act (the decision's own notes named this "a human_pi act, MC-01" — an AI
+ratifying its own governance escalation would defeat the exact principle being enforced). With
+a real, non-advisory MIMCG gate now in force workspace-wide, this entry builds the actual
+"check" step Phase 1b's `raw_result` explicitly refused to be — it is always
+`PENDING_INDEPENDENT_CHECK`, never `APPROVED`, and nothing in Phase 1b writes that verdict.
+
+- New optional `checker_result` (§10 above) on hypothesis cards: `maker_principal_id`,
+  `checker_principal_id`, `checker_type` (`AI`/`HUMAN`), `tier` (`L0`-`L5`), `verdict`
+  (`APPROVED`/`REJECTED`), `rationale`, `checked_at`. Kernel enforces two structural rules —
+  MC-02 (`maker_principal_id != checker_principal_id`, hard reject on match, live-verified) and
+  MIMCG's L3+-requires-`HUMAN` rule (live-verified both directions: AI rejected at L3, human
+  accepted at L3/L4/L5, AI accepted at L0-L2). **Both are declaration checks, not identity
+  verification** — this repo has no identity infrastructure wired to it; anyone can declare any
+  `principal_id` string. What's guaranteed is only that the *declared* maker and checker differ.
+- Fully optional and independent of `verification_payload` — a card can carry `checker_result`
+  from a purely human-judgment review with no mechanical payload at all.
+- New `hypothesis_checker.py`: the counterpart script to `hypothesis_runner.py`. A genuinely
+  separate program, invoked separately — there is no flag that lets one invocation both
+  generate a `raw_result` and check it. Re-derives the mechanical pass/fail from the
+  `raw_result`'s own `exit_code`/`expected_exit_status` fields rather than trusting its `passed`
+  field at face value (MC-04: "don't trust a log you could have fabricated"). Refuses to write a
+  result that would make the checkpoint invalid, refuses a `raw_result` from before this schema
+  existed (missing `maker_principal_id`), refuses a `raw_result` for the wrong `hypothesis_id`,
+  and warns (but permits, since a human may have out-of-band reasons) when approving a
+  mechanically-failed result.
+- `hypothesis_runner.py` gained a required `--maker-principal-id` flag, stamped into
+  `raw_result`. Fixed the same dict-ordering class of bug the independent review caught in
+  Phase 1b: `maker_principal_id` is placed *after* `**execution` in the result dict literal (not
+  before, which would have let a future execution-derived field silently override it) — the
+  existing structural assert was extended to cover this key too.
+- 19 new kernel tests (`tests/test_kernel_self_test.py`) and 11 new `hypothesis_checker.py`
+  tests (`tests/test_hypothesis_checker.py`), all against real invocations, no mocking. Every
+  refusal path and both tier-enforcement directions were manually verified live before being
+  locked in as tests. `pytest` 119/119 (was 89). `protocol_version` `0.4.9` -> `0.4.10` — real
+  kernel schema addition.
 
 ### Founder-stated next direction (registered 2026-08-01, not yet scoped or built)
 

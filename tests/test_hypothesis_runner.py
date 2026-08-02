@@ -61,11 +61,18 @@ def _passing_payload() -> dict:
     }
 
 
-def _run_runner(checkpoint: dict, hypothesis_id: str, out_dir: Path, env=None):
+def _run_runner(
+    checkpoint: dict, hypothesis_id: str, out_dir: Path, env=None,
+    maker_principal_id="test-maker-session",
+):
     cp_path = out_dir / "checkpoint.json"
     cp_path.write_text(json.dumps(checkpoint), encoding="utf-8")
     return subprocess.run(
-        [sys.executable, str(RUNNER), str(cp_path), hypothesis_id, "--out-dir", str(out_dir)],
+        [
+            sys.executable, str(RUNNER), str(cp_path), hypothesis_id,
+            "--out-dir", str(out_dir),
+            "--maker-principal-id", maker_principal_id,
+        ],
         capture_output=True, text=True, timeout=120, env=env,
     )
 

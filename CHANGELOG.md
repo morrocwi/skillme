@@ -3,7 +3,27 @@
 All notable changes to SkillMe are recorded here. This repo starts its
 public history at v0.4.6; the version history from v0.4.6 down through v0.3 is carried over
 from the standalone spec document's own §14 Development roadmap for continuity. Current
-protocol version: **v0.4.9**.
+protocol version: **v0.4.10**.
+
+## v0.4.10 — Phase 2: checker_result (MC-02 principal separation + MIMCG tier enforcement, 2026-08-02)
+
+Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an
+explicit `human_pi` act -- an AI ratifying its own governance escalation would have defeated the
+principle being enforced. With a real MIMCG gate now in force, this builds the actual "check"
+step Phase 1b's `raw_result` explicitly refused to be.
+
+- New optional `checker_result` on hypothesis cards (§10). Kernel enforces MC-02
+  (`maker_principal_id != checker_principal_id`, hard reject on match) and MIMCG's
+  L3+-requires-`HUMAN` rule, both live-verified in both directions. Declaration checks, not
+  identity verification -- no identity infrastructure is wired to this repo.
+- New `hypothesis_checker.py`: a genuinely separate program from `hypothesis_runner.py`, invoked
+  separately -- no flag lets one invocation both generate and check a result. Re-derives
+  pass/fail from `raw_result`'s own fields (MC-04), refuses invalid/mismatched/pre-Phase-2
+  inputs, warns on mechanically-failed-but-approved.
+- `hypothesis_runner.py` gained required `--maker-principal-id`; fixed the same dict-ordering
+  bug class the Phase 1b review caught (moved after `**execution`, assert extended).
+- 30 new tests (19 kernel + 11 checker), all real invocations, no mocking. `pytest` 119/119 (was
+  89). `protocol_version` `0.4.9` -> `0.4.10`.
 
 ## Phase 1b — hypothesis_runner.py: real sandboxed execution (2026-08-02, no protocol_version bump)
 
