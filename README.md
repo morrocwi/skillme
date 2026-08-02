@@ -1,6 +1,8 @@
 <div align="center">
 
-# Universal Issue Analysis (UIA)
+# skillme
+
+### Universal Issue Analysis (UIA) protocol
 
 **A finite issue never gets named before it's found.** _by Yaoharee Lahtee_
 
@@ -63,17 +65,17 @@ labeled honestly rather than rounded up.
 ## Quickstart — as a Claude Code skill
 
 ```
-/plugin marketplace add morrocwi/universal-issue-analysis
-/plugin install universal-issue-analysis@yaoharee-lahtee-uia
+/plugin marketplace add morrocwi/skillme
+/plugin install skillme@yaoharee-lahtee-skillme
 ```
 
-Once installed, an AI assistant loads the `universal-issue-analysis` skill before analyzing a
+Once installed, an AI assistant loads the `skillme` skill before analyzing a
 reported issue — see
-[`plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md`](plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md)
+[`plugins/skillme/skills/skillme/SKILL.md`](plugins/skillme/skills/skillme/SKILL.md)
 for the operational summary it follows (the two-question intake gate, the agency/stakeholder
 map, the evidence-challenge protocol, the three-lane candidate generator, and the 48 hard
 invariants it will not violate). **Note:** `git-subdir` plugin installs only pull
-`plugins/universal-issue-analysis/` — the canonical spec and the standalone kernel below are
+`plugins/skillme/` — the canonical spec and the standalone kernel below are
 not installed with the skill; the SKILL.md is self-contained on its own, but running the
 kernel or reading the full spec text requires cloning this repo.
 
@@ -116,7 +118,7 @@ entry point, not a replacement for it.
 ## Repository map
 
 ```
-universal-issue-analysis/
+skillme/
 ├── UNIVERSAL_ISSUE_ANALYSIS_v0.4.6.md   canonical spec — normative source of truth
 ├── uia_protocol_kernel.py                stdlib-only protocol-structure validator + fixtures
 ├── docs/FIELD_REFERENCE.md               generated field-by-field reference (tools/generate_field_reference.py)
@@ -131,11 +133,11 @@ universal-issue-analysis/
 ├── AI_START_HERE.md                      discovery order for AI assistants / reviewers
 ├── llms.txt                              machine-readable doc index
 ├── CHANGELOG.md                          version history through v0.4.8
-├── plugins/universal-issue-analysis/     the installable Claude Code plugin (self-contained subtree)
+├── plugins/skillme/                      the installable Claude Code plugin (self-contained subtree)
 │   ├── README.md, LICENSE                 plugin-scoped copies (git-subdir installs pull only this dir)
 │   ├── .claude-plugin/plugin.json         plugin manifest
-│   └── skills/universal-issue-analysis/SKILL.md   operational summary the AI loads
-└── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-uia)
+│   └── skills/skillme/SKILL.md           operational summary the AI loads
+└── .claude-plugin/marketplace.json       marketplace listing (yaoharee-lahtee-skillme)
 ```
 
 ## Downstream tooling built on a checkpoint

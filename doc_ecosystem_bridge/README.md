@@ -1,6 +1,6 @@
 # doc_ecosystem_bridge
 
-Wires this repo (**universal-issue-analysis** / UIA) to Yaoharee Lahtee's
+Wires this repo (**skillme**, protocol codename UIA / Universal Issue Analysis) to Yaoharee Lahtee's
 `human-ai-doc-ecosystem` (doc-eco) repo, per founder request (2026-08-01). Originally
 built and smoke-tested as a standalone `uia-doc-ecosystem-bridge` repo, then absorbed
 into UIA itself (same day, founder request: "ดูดกลืนเข้าไปเป็นงานเดียวกัน") so the
@@ -378,7 +378,7 @@ Everything else (`ensure_scaffold`, `append_logbook`, `append_decisions_open`,
 ## Usage
 
 ```bash
-cd universal-issue-analysis/doc_ecosystem_bridge
+cd skillme/doc_ecosystem_bridge
 python3 bridge.py <uia_run.json> <target_project_dir>
 # --uia-repo and --doc-eco-repo default to this repo and the sibling
 # ANSE.ASIA/human-ai-doc-ecosystem respectively; pass them explicitly to override.

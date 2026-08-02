@@ -244,7 +244,7 @@ def link_communication_in_readme(target: Path, attached: list[str]) -> bool:
     note = (
         f"\n\n{COMMUNICATION_LINK_MARKER}\n\n"
         "This project's checkpoint has a `communication_glossary` pipeline output "
-        "attached (see `universal-issue-analysis/communication_glossary/`):\n\n"
+        "attached (see `skillme/communication_glossary/`):\n\n"
         f"{bullets}\n\n"
         "Start with `skill_plan.md` if you're deciding who needs to know/do what; "
         "start with `kg_raw_word.md` if you need the literal vocabulary this "

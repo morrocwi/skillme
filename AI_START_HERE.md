@@ -30,7 +30,7 @@ neither changes what the kernel validates.
 ## Discovery order — do these in sequence, don't skip ahead
 
 1. **`README.md`** — framing, tier-honesty statement, quickstart, repo map.
-2. **`plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md`** — the
+2. **`plugins/skillme/skills/skillme/SKILL.md`** — the
    operational summary an AI assistant actually loads and follows: the two-question intake
    gate, the core protocol moves in order, the hard invariants, the output shape. This is the
    file to read if you're about to *use* the protocol, not just describe it.

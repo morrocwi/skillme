@@ -26,7 +26,7 @@ follow its discovery order before making any capability or correctness claim.
   constructing a new checkpoint — which fields are actually kernel-enforced (not all of them),
   the 3 `review_mode` evidence vocabularies. Regenerate via `tools/generate_field_reference.py`
   after any kernel schema change; never hand-edit it.
-- [plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md](/plugins/universal-issue-analysis/skills/universal-issue-analysis/SKILL.md):
+- [plugins/skillme/skills/skillme/SKILL.md](/plugins/skillme/skills/skillme/SKILL.md):
   The operational summary an AI assistant loads and follows when actually applying the
   protocol to a reported issue.
 - [doc_ecosystem_bridge/README.md](/doc_ecosystem_bridge/README.md): Bridges a checkpoint into a
@@ -52,8 +52,8 @@ follow its discovery order before making any capability or correctness claim.
 ## Install as a Claude Code skill
 
 ```
-/plugin marketplace add morrocwi/universal-issue-analysis
-/plugin install universal-issue-analysis@yaoharee-lahtee-uia
+/plugin marketplace add morrocwi/skillme
+/plugin install skillme@yaoharee-lahtee-skillme
 ```
 
 ## Scope note
