@@ -38,11 +38,32 @@ fi
 checkpoint="$(jq -r '.checkpoint_reached // false' "$state_file" 2>/dev/null || echo false)"
 doc_eco="$(jq -r '.doc_eco_done // false' "$state_file" 2>/dev/null || echo false)"
 
+# Confirmed real gap (external review, 2026-08-02): marketplace.json's
+# git-subdir install pulls ONLY plugins/skillme/ -- doc_ecosystem_bridge/
+# lives at the repo root and is never fetched by a plugin-only install.
+# Demanding it unconditionally means a plugin-only user can NEVER satisfy
+# this gate; it would block every session forever with no way out. Only
+# require it when it's actually reachable on disk -- check the user's
+# project dir and the plugin root's siblings (a full repo clone would put
+# it there); if genuinely absent, this requirement is not applicable to
+# this install and is skipped rather than blocking indefinitely.
+bridge_reachable="false"
+for candidate in \
+  "${CLAUDE_PROJECT_DIR:-}/doc_ecosystem_bridge/bridge.py" \
+  "$(pwd)/doc_ecosystem_bridge/bridge.py" \
+  "${CLAUDE_PLUGIN_ROOT:-}/../../doc_ecosystem_bridge/bridge.py"
+do
+  if [[ -n "$candidate" && -f "$candidate" ]]; then
+    bridge_reachable="true"
+    break
+  fi
+done
+
 missing=""
 if [[ "$task_created" != "true" ]]; then
   missing="${missing}TaskCreate was never called this session to track the UIA phases. "
 fi
-if [[ "$checkpoint" == "true" && "$doc_eco" != "true" ]]; then
+if [[ "$checkpoint" == "true" && "$doc_eco" != "true" && "$bridge_reachable" == "true" ]]; then
   missing="${missing}A hypothesis portfolio reached VALID_CHECKPOINT but doc_ecosystem_bridge/bridge.py was never run against it. "
 fi
 
