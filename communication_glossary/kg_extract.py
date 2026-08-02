@@ -68,7 +68,7 @@ a domain expert — see that run's synthesis report for full evidence):
      sourced per the citation's own `hypothesis_id`.
 
 Usage:
-    python3 kg_extract.py <uia_checkpoint.json> <out_kg_raw_word.md>
+    python3 kg_extract.py <skillme_checkpoint.json> <out_kg_raw_word.md>
 """
 from __future__ import annotations
 
@@ -368,7 +368,7 @@ def render_markdown(run: dict, word_index: dict, card_ids: list) -> str:
 
 def main() -> None:
     if len(sys.argv) != 3:
-        print(f"usage: {sys.argv[0]} <uia_checkpoint.json> <out_kg_raw_word.md>", file=sys.stderr)
+        print(f"usage: {sys.argv[0]} <skillme_checkpoint.json> <out_kg_raw_word.md>", file=sys.stderr)
         raise SystemExit(2)
     run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
     word_index, card_ids = extract(run)

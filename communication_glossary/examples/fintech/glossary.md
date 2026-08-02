@@ -52,6 +52,6 @@ table in kg_raw_word_fintech_v3.md) — they are this layer's interpretive contr
 - Formal state machine / Petri-net terminology (the checkpoint describes states and
   transitions structurally but never uses FSM/Petri-net vocabulary)
 
-## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SKILLME เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
+## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SkillMe เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
 
 `CROSS_ADAPTIVE`, `DESIGN_HYPOTHESIS`, `GENERATIVE_TRANSFORMATIVE`, `KNOWN_DIRECT`, `MECHANISM_HYPOTHESIS`, `STRUCTURAL_HYPOTHESIS`, `TARGETED_SEARCH "Phase-2 (draft)"`

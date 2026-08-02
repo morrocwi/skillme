@@ -51,6 +51,6 @@ interpretive contribution:
   auditors ever operate outside a pure US-GAAP context — not mentioned anywhere
   in the checkpoint)
 
-## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SKILLME เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
+## ภาคผนวก: คำเฉพาะของกลไกโปรโตคอล SkillMe เอง (ไม่ใช่คำศัพท์ของประเด็น — ตัดออกจาก glossary หลักโดยตั้งใจ)
 
 `CROSS_ADAPTIVE`, `DESIGN_HYPOTHESIS`, `GENERATIVE_TRANSFORMATIVE`, `KNOWN_DIRECT`, `MECHANISM_HYPOTHESIS`, `STRUCTURAL_HYPOTHESIS`, `TARGETED_SEARCH`
