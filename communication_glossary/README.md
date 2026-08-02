@@ -152,68 +152,58 @@ each produces a real `skill_plan.md` with exactly the hypothesis cards that
 checkpoint actually has (3 each), confirming Layer 4 reads real checkpoint
 content rather than templating generic advice.
 
-### Planned — Layer 1 cross-checkpoint accumulation (`kg_accumulate.py`, 2026-08-02, Dr-tier, not built)
+### Layer 1 extension — `kg_accumulate.py` (cross-checkpoint accumulation, built 2026-08-02)
 
-Registered here, not in `SKILLME.md`, because this is implementation-level design for this
-specific subsystem, not a protocol-level direction. Grew out of a founder requirement (recorded in
-`SKILLME.md` §14's "Expertise-typed roles + user-growth loop" entry): the user's accumulated
-vocabulary should be a real, growing word map anchored in Layer 1's own graph, not an invented flat
-list living somewhere else. Layer 1 as it exists today (`kg_extract.py`) only ever sees **one**
-checkpoint at a time — there is no mechanism that merges its word/phrase graph across multiple
-checkpoints for the same person and topic over time. This entry designs that mechanism. Nothing
-below is built.
+Built from the design registered the same day (git history has the design-only commit before this
+one). Grew out of a founder requirement (recorded in `SKILLME.md` §14's "Expertise-typed roles +
+user-growth loop" entry): the user's accumulated vocabulary should be a real, growing word map
+anchored in Layer 1's own graph, not an invented flat list living somewhere else. `kg_extract.py`
+only ever sees one checkpoint at a time; `kg_accumulate.py` merges its word/phrase graph across as
+many checkpoints as have been ingested so far, scoped to one `(principal_id, topic_tag)` pair.
 
-**Two real gaps found while designing this, disclosed honestly rather than assumed away**:
-- There is no stable `principal_id` at the top level of a checkpoint today. `registration.requester`
-  (already required, non-blank) is free text — e.g. `"product team"` in the demo fixture — not a
-  normalized identifier suitable for keying accumulation across separate checkpoint files.
-- There is no checkpoint-history/index anywhere in this repo that answers "which past checkpoints
-  belong to principal X" — accumulation has nothing to iterate over yet.
+```bash
+python3 kg_accumulate.py <checkpoint.json> --principal-id <id> --topic-tag <tag> \
+    [--accumulated-dir <dir>]   # default: communication_glossary/accumulated/
+```
 
-**Proposed minimal schema addition**: an OPTIONAL new field, `registration.principal_id`,
-normalized through the same `normalize_principal_id()` (strip + casefold) already built for MC-02
-in `skillme_protocol_kernel.py` — reused, not reinvented. Absent on a checkpoint simply means that
-checkpoint can't participate in accumulation; existing checkpoints and `VALID_CHECKPOINT` behavior
-are unaffected (backward compatible, same discipline as every optional field added this session).
-`topic_tag` is **not** a new taxonomy — it reuses `context.location_or_domain` plus the existing
-adapter match from the Universal Adapter Card (`SKILLME.md` §6.9).
+- **`--principal-id`/`--topic-tag` are required CLI arguments in this version** — the design's
+  proposed `registration.principal_id` checkpoint field was **not** added to the kernel schema in
+  this pass (scope not yet confirmed); the script works today by taking both explicitly, which also
+  keeps it usable against every existing example checkpoint (none of which declare that field).
+  Wiring an automatic default read from the checkpoint itself, once/if that field is scoped and
+  added, is a follow-up, not done here.
+- **No new node-ID scheme was needed**, confirmed by two independent PR reviews reading
+  `kg_extract.py` directly: `mermaid_id(wtype, word)` already hashes only `(wtype, word)`, never
+  the checkpoint, so the same word/phrase from two different checkpoints already collides to the
+  identical node id. Accumulation is a **union by key** over each checkpoint's `word_index`,
+  extending each node's `sources` list with `<checkpoint_certificate>:<original_source>` entries.
+- **Idempotent** — mirrors `doc_ecosystem_bridge/bridge.py`'s `already_ingested()` pattern exactly:
+  a checkpoint whose `checkpoint_certificate` is already recorded in the accumulated state is
+  skipped (printed as `SKIPPED`, state file untouched, verified byte-for-byte in tests), not
+  re-merged, on a repeat run.
+- **Storage**: one JSON state file (`kg_accumulated.json`, the merge source of truth — a list of
+  `[word, type, sources]` triples plus `ingested_checkpoints`) and one regenerated Markdown file
+  (`kg_accumulated.md`, same Mermaid-DAG-plus-word-table shape as `kg_raw_word.md`) per
+  `(principal_id, topic_tag)`, under `communication_glossary/accumulated/<principal_id>/<topic_tag>/`.
+  File-based and human-readable, matching Layer 1's own zero-interpretation-readout ethos — no
+  database.
+- **"New vocabulary this checkpoint" is returned as a mechanical, not guessed, computation** — the
+  set of `(word, type)` keys absent from the accumulated state *before* this checkpoint was merged
+  in. This is the concrete signal the vocabulary contract in `SKILLME.md` §14 needs; nothing in this
+  script decides whether the user actually *learned* a term — that stays the orchestrator's own
+  Open/Dr-tier judgment, feeding the already-registered `evidence_for_level` field.
+- 11 new tests (`tests/test_kg_accumulate.py`), all real invocations against this repo's actual
+  example checkpoints, no mocking or synthetic fixtures: first-ingest, idempotent re-run (byte-for-
+  byte state equality asserted), cross-checkpoint merge growing the total, per-principal/per-topic
+  scope isolation, blank-principal/blank-topic/missing-file/invalid-JSON refusals, checkpoint-
+  qualified source labeling, and Markdown ingested-checkpoint listing. `pytest` 140/140 (was 129).
+  `protocol_version` unaffected (`0.4.10`) — new sibling script, kernel/schema untouched.
 
-**Merge algorithm — verified to need no new ID scheme.** An independent review of the prior PR
-(#32, merging the KG-Layer-1 correction into `SKILLME.md`) actually read `kg_extract.py` and found
-that `mermaid_id(wtype, word)` already hashes only `(wtype, word)` — never the checkpoint itself.
-Two separate checkpoints that both mention the same word/phrase of the same type already produce
-the identical, stable node ID today, with zero code changes. Accumulation is therefore a **union by
-key** over each checkpoint's `word_index`, extending each node's `sources` list with
-`<checkpoint_certificate>:<hypothesis_id>:<field>` entries from every contributing checkpoint —
-not a new ID or dedup scheme.
-
-**Idempotency** — re-running accumulation against a checkpoint already merged in must not
-double-count it. Reuses the exact pattern `doc_ecosystem_bridge/bridge.py`'s `already_ingested()`
-already established: track `checkpoint_certificate` values already folded into the accumulated
-file, skip on repeat.
-
-**Proposed storage** — one file per `(principal_id, topic_tag)`, e.g.
-`communication_glossary/accumulated/<principal_id>/<topic_tag>/kg_accumulated.md`. Stays file-based
-and human-readable, matching Layer 1's own zero-interpretation-readout ethos — no database, no new
-storage layer.
-
-**"New vocabulary this turn" becomes a mechanical, not guessed, computation**: a `(word, type)`
-counts as new to the user iff it is absent from the accumulated file *before* the current
-checkpoint is merged in. This is the concrete mechanism the vocabulary contract in `SKILLME.md`
-§14 needs, computed the same zero-interpretation way Layer 1 already computes everything else.
-
-**Explicitly out of scope for this script, on purpose**: judging whether the user has actually
-*engaged with* (not merely been shown) a term — that stays the orchestrator's own Open/Dr-tier
-judgment call, feeding the already-registered `evidence_for_level` field. This script only produces
-the accumulated graph and the new-vs-already-seen distinction; it does not decide what counts as
-"learned."
-
-**Explicitly not decided here**: whether `registration.principal_id` should carry the same
-declaration-only caveat as `maker_principal_id`/`checker_principal_id` (no identity infrastructure
-verifies it — anyone can declare any string, same as MC-02's existing scope note), whether per-file
-storage is sufficient long-term or should later be promoted into a real index, and whether/when any
-of this gets built at all. This is a registered design, not a plan — scope must be clarified with
-the founder before any schema or kernel change lands, per this session's standing practice.
+**Still not decided**: whether `registration.principal_id` gets added to the kernel schema (and if
+so, whether it carries the same declaration-only caveat as `maker_principal_id`/`checker_principal_id`
+— no identity infrastructure verifies it, same as MC-02's existing scope note), and whether per-file
+storage is sufficient long-term or should later be promoted into a real index. Scope for those two
+questions must still be clarified with the founder before either lands.
 
 ## Status — 2026-08-01, v0.7 — one-command orchestrator + automated test coverage
 
