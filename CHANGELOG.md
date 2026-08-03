@@ -5,6 +5,20 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.10**.
 
+## 🗂️ Kanban readout — as-of `54946b4`, 2026-08-03
+
+> **Readout, not truth** — a snapshot at the commit above, not a live scoreboard.
+> Full board (Done/Backlog cards, evidence tiers) lives in
+> `communication_glossary/README.md`'s own Kanban section — kept there as the single
+> source so this summary never drifts out of sync with it. Only **Blocked** items
+> (waiting on a founder decision, same meaning as `cpg`'s 🔴 OPEN HUMAN-GATES) are
+> mirrored here for quick scanning:
+
+| card | tier | blocked-by |
+|---|---|---|
+| `registration.principal_id` → kernel schema | `[Open]` | scope not yet confirmed |
+| per-`(principal_id, topic_tag)` file storage vs. a real index | `[Open]` | scope not yet confirmed |
+
 ## communication_glossary Layer 1 — `kg_accumulate.py`: cross-checkpoint word-graph accumulation (2026-08-02, no protocol_version bump)
 
 Founder read Collins & Evans (2002) with this session, then asked to design and build the one

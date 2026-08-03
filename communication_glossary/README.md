@@ -9,6 +9,49 @@ if an engineer needs to discuss a gut-health issue with a nurse, this pipeline
 should surface the shared vocabulary both of them need — not a vocabulary split by
 "what the engineer already knows" vs "what the nurse already knows."
 
+## 🗂️ Kanban readout — as-of `54946b4`, 2026-08-03
+
+> **Readout, not truth.** This board is a snapshot at the commit above, hand-updated —
+> not a live scoreboard. Every card carries an evidence tier, same discipline as the
+> prose sections below: `[verified]` (real execution / tests passing) · `[Dr]`
+> (narrative judgment or known limitation, not yet tested) · `[Open]` (blocked or
+> unresolved). **Blocked** is reserved for items waiting on a founder decision — same
+> meaning as `cpg`'s own 🔴 OPEN HUMAN-GATES — never a loose label for "hard."
+
+**Done**
+
+| card | tier | witness |
+|---|---|---|
+| Layer 1 `kg_extract.py` — zero-interpretation word/phrase graph | `[verified]` | real checkpoints, full test suite |
+| Layer 2 expert-framework reasoning contract | `[Dr]` (Open-tier by design) | deliberately not a script — LLM reasoning procedure, see below |
+| Layer 3 `build_glossary.py` bridge | `[verified]` | real checkpoints |
+| Layer 4 `skill_plan.py` hypothesis-card generation | `[verified]` | 20 pytest functions, PR #11/#12 regressions covered |
+| `run_pipeline.py` one-command orchestrator | `[verified]` | 3/4 worked examples + end-to-end `doc_ecosystem_bridge` run |
+| `kg_accumulate.py` cross-checkpoint accumulation | `[verified]` | 11/11 new tests, idempotency asserted byte-for-byte, 140/140 suite |
+
+**Blocked — waiting on founder scope decision**
+
+| card | tier | blocked-by |
+|---|---|---|
+| `registration.principal_id` → kernel schema | `[Open]` | scope not yet confirmed (see Layer 1 extension section below) |
+| per-`(principal_id, topic_tag)` file storage vs. a real index | `[Open]` | scope not yet confirmed |
+
+**Backlog — known, not started**
+
+| card | tier | note |
+|---|---|---|
+| Thai/CJK tokenizer under-segmentation in `kg_extract.py` | `[Dr]` | needs a `pythainlp` dependency decision |
+| Layer 2 → Layer 3 prose-heading/`"Confidence: X"` substring matching | `[Dr]` | not yet stress-tested against phrasing deviation |
+| `TYPE_ORDER` fixed 6-value allowlist, no fallback bucket | `[Dr]` | not triggered by any fixture so far |
+| `## Domain(s) identified` parsed by `build_glossary.py` but never rendered | `[Dr]` | wire it in or drop the parsing |
+| `docs/FIELD_REFERENCE.md` missing `international_track`/`local_context_track.result_status` contract | `[Dr]` | |
+| cross-process locking for concurrent `bridge.py` invocations | `[Dr]` | accepted, documented limit since v0.5 |
+| no real human-entered issue has run the pipeline end-to-end yet | `[Open]` | every worked example so far is AI-constructed |
+
+**Retained progress** (`Done[verified]` − `Blocked`, not raw card count): **5 − 2 = 3** net
+forward since the pipeline existed. The Backlog items are named honestly, not silently
+deferred, but don't count toward this line until moved.
+
 ## The four layers
 
 ### Layer 1 — `kg_extract.py` (deterministic readout)
