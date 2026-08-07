@@ -5,6 +5,29 @@ public history at v0.4.6; the version history from v0.4.6 down through v0.3 is c
 from the standalone spec document's own §14 Development roadmap for continuity. Current
 protocol version: **v0.4.10**.
 
+## SKILLME.md — inline schema-fragment drift reconciled (2026-08-07, no protocol_version bump)
+
+`SKILLME.md` §0 had carried a "known drift" note since 2026-08-01 admitting that its inline
+`review_mode`/`authority_assumptions` schema fragments (§6.17.8, §7, §10) hadn't been updated to
+show two runtime-only kernel extensions — flagged as a documented gap, never actually closed
+inline. Closed now, docs-only:
+
+- All three inline occurrences of `review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED` (§6.17.8, §7,
+  §10) now carry an inline `#` comment noting the runtime also accepts `INTERNAL_DATA_AUDIT` and
+  `FIELD_OBSERVATION_LOG` (the latter added in v0.4.8 but never folded into this drift note until
+  now — an omission caught during this reconciliation, not present in the original 2026-08-01
+  note).
+- Both inline occurrences of `authority_assumptions: [REQUIRED_NONEMPTY]` (§6.17.8, §10) now carry
+  a comment stating the one documented exception (empty list allowed only when
+  `legal_relevance: NONE` and `legal_status: NOT_REQUIRED` on the same card).
+- §0's drift note itself rewritten as a resolved correction record (kept, not deleted, per
+  `SKILLME-A11`) rather than an open item.
+- `docs/FIELD_REFERENCE.md` re-generated from the live kernel and diffed against the committed
+  copy — already in sync, no changes needed. `protocol_version` cross-checked across the kernel
+  (`VERSION`), the spec header, and every fixture/example `checkpoint.json` — all consistently
+  `0.4.10`, no drift found there this time.
+- `pytest` 140/140, kernel `--self-test` 14/14, both unaffected (no runtime code touched).
+
 ## 🗂️ Kanban readout — as-of `54946b4`, 2026-08-03
 
 > **Readout, not truth** — a snapshot at the commit above, not a live scoreboard.

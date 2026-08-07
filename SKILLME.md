@@ -30,17 +30,24 @@
 - `[SimulatedData]` ใช้เฉพาะ fixture หรือ benchmark สังเคราะห์ ห้ามรายงานเป็น field evidence
 - หากเอกสารกับ runtime ไม่ตรงกัน ให้หยุดที่ `SPEC_RUNTIME_DRIFT` และเปิด correction record
 
-**2026-08-01 known drift (documented, not yet reconciled inline in this narrative
-spec):** `skillme_protocol_kernel.py`'s `validate()` gained two runtime-only extensions
-that this document's inline schema fragments (e.g. §ที่มี `authority_assumptions:
-[REQUIRED_NONEMPTY]` และ `review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED`) do not
-yet reflect — per the drift rule above, the **runtime is authoritative**:
-1. `hypothesis_evidence_challenge.review_mode` accepts a new value
-   `"INTERNAL_DATA_AUDIT"` (alongside the existing `TARGETED_SEARCH`/etc.), which
-   swaps each `citation_cards[*]` entry's required fields from the
-   literature-citation vocabulary to an internal-system-of-record vocabulary
-   (`source_system`, `query_or_filter`, `record_id_or_url`) — all other rigor is
-   unchanged.
+**2026-08-01 known drift, reconciled inline 2026-08-07 (kept here as a correction
+record, per `SKILLME-A11` — not silently deleted):** `skillme_protocol_kernel.py`'s
+`validate()` had gained runtime-only extensions that this document's inline schema
+fragments (§6.17.8, §7's 8b-numbered walkthrough, §10) did not yet reflect. Per the
+drift rule above, the **runtime is authoritative**; every inline fragment now carries
+an inline `#` comment pointing to this note instead of silently showing the pre-drift
+shape:
+1. `hypothesis_evidence_challenge.review_mode` accepts two values beyond the original
+   `TARGETED_SEARCH`/`SYSTEMATIC_REVIEW`/`RAPID_EVIDENCE_CHALLENGE`/`SCOPING_SEARCH`
+   set: `"INTERNAL_DATA_AUDIT"`, which swaps each `citation_cards[*]` entry's required
+   fields from the literature-citation vocabulary to an internal-system-of-record
+   vocabulary (`source_system`, `query_or_filter`, `record_id_or_url`); and
+   `"FIELD_OBSERVATION_LOG"` (added v0.4.8, §14 below — omitted from this note's
+   original 2026-08-01 wording, added here on reconciliation), which swaps the same
+   fields for a fresh-field-observation vocabulary (`observer`, `observation_method`,
+   `observed_at`, `location_or_context`). All other rigor (falsifier,
+   `source_classes_searched`, `citation_audit == "PASS"`, etc.) is unchanged across all
+   four modes.
 2. `hypothesis_portfolio.hypothesis_cards[*].authority_assumptions` may be an
    empty list, but only when that same card has `legal_relevance: "NONE"` AND
    `legal_status: "NOT_REQUIRED"` — otherwise `REQUIRED_NONEMPTY` still applies
@@ -1578,7 +1585,7 @@ hypothesis_evidence_challenge:
     region: OPTIONAL
     languages: []
     institutions_and_population: REQUIRED
-  review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED
+  review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED  # runtime also accepts INTERNAL_DATA_AUDIT and FIELD_OBSERVATION_LOG (v0.4.8+), each swapping citation_cards[*]'s required-field vocabulary; see docs/FIELD_REFERENCE.md
   synthesis_method: QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT
   hypotheses:
     - hypothesis_id: REQUIRED
@@ -1673,7 +1680,7 @@ hypothesis_card:
 
   legal_relevance: NONE_OR_CONTEXTUAL_OR_LOAD_BEARING
   legal_status: NOT_REQUIRED_OR_NOT_REVIEWED_OR_PRELIMINARY_OR_VERIFIED_FOR_DECLARED_SCOPE_OR_UNRESOLVED
-  authority_assumptions: [REQUIRED_NONEMPTY]
+  authority_assumptions: [REQUIRED_NONEMPTY]  # may be [] only when this same card has legal_relevance: NONE AND legal_status: NOT_REQUIRED — otherwise REQUIRED_NONEMPTY applies exactly as written
 
   representation_status:
     direct_voice: []
@@ -2317,7 +2324,7 @@ skillme_analysis_sheet:
     frozen_at: REQUIRED
     target_country_or_context: REQUIRED
     local_languages: []
-    review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED
+    review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED  # runtime also accepts INTERNAL_DATA_AUDIT and FIELD_OBSERVATION_LOG (v0.4.8+); see docs/FIELD_REFERENCE.md
     synthesis_method: QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT
     hypothesis_ledgers: []
     international_support_and_challenge_search: REQUIRED
@@ -3242,7 +3249,7 @@ skillme_run:
     search_protocol_id: REQUIRED
     frozen_at: REQUIRED
     target_context: REQUIRED
-    review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED
+    review_mode: SYSTEMATIC_RAPID_SCOPING_TARGETED  # runtime also accepts INTERNAL_DATA_AUDIT and FIELD_OBSERVATION_LOG (v0.4.8+); see docs/FIELD_REFERENCE.md
     synthesis_method: QUALITY_DIRECTNESS_CONTEXT_NOT_VOTE_COUNT
     hypotheses: []
     status:
@@ -3272,7 +3279,7 @@ skillme_run:
         causal_tier: REQUIRED
         legal_relevance: NONE_CONTEXTUAL_LOAD_BEARING
         legal_status: REQUIRED
-        authority_assumptions: [REQUIRED_NONEMPTY]
+        authority_assumptions: [REQUIRED_NONEMPTY]  # may be [] only when legal_relevance: NONE AND legal_status: NOT_REQUIRED on this same card
         representation_status:
           direct_voice: []
           authorized_proxy: []
