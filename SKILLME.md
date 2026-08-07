@@ -4136,6 +4136,179 @@ else in this entry reuses existing Layer 1/personal-epistemic-OS machinery as-is
 registered direction, not a plan — scope must be clarified with the founder before any schema or
 kernel change lands, per this session's standing practice.
 
+### TencentDB Agent Memory synthesis (2026-08-06, Dr/Open-tier direction, nothing built)
+
+Founder asked to study `github.com/TencentCloud/TencentDB-Agent-Memory` (MIT, TypeScript, ~15.5k
+stars — a team-level memory hub for AI agents: Chat Memory / Skill / Wiki / CodeGraph "memory
+assets," ACL-bound, L0→L3 chat-memory layering) in depth and bring forward whatever genuinely fits
+SkillMe's readout-genesis philosophy. Studied via an ultracode Workflow, two rounds: round 1 fetched
+and read actual source files (not just the README) across `MemoryCore/`, `MemoryKnowledge/`,
+`MemoryProxy/` — `l1-extractor.ts`, `l1-dedup.ts`, `persona-trigger.ts`, `pipeline-worker.ts`,
+`timer-scanner.ts`, `SKILL.md`, `SKILL-MIGRATION.md`, `core-client.ts`, `skill-bridge.ts`,
+`handler-glue.ts`, `openapi.yaml`, `CHANGELOG.md`, then filtered 52 found mechanisms through
+`SKILLME-A0/A1/A4/A5/A6/A8/A11/A12` with an adversarial-verify pass on every survivor (35 survived,
+17 rejected — full list below); round 2 text-simulated the 5 survivors with a real, existing
+attachment point in this repo's actual code today against a real fixture
+(`communication_glossary/examples/fintech/`), re-verifying every cited file/line/field against the
+live code a second time and correcting three inaccuracies the first pass had introduced (below).
+
+**SkillMe is not memory-less going into this.** `communication_glossary/` already runs a comparable
+four-layer system: `kg_extract.py` (L1, deterministic, no LLM) → expert-framework reasoning (L2,
+AI-interpretive, Open tier, deliberately no `kg_expert_layer.py` script — confirmed by grep, zero
+LLM-API calls anywhere in this repo) → `build_glossary.py` (L3, mechanical merge) → `skill_plan.py`
+(L4, Dr-tier role/skill plan) → `kg_accumulate.py` (cross-checkpoint accumulation, scoped per
+`principal_id`+`topic_tag`). This independently converges with TencentDB's L0→L3 chat-memory
+layering and its Skill-asset lifecycle (versioned artifact, private-by-default, explicit
+promote-to-shared step) — recorded as confirming prior art, not something imported. Where they
+diverge every time checked: TencentDB is a live, multi-tenant, network-served system (HTTP API,
+ACL resolved at call time, background job workers); SkillMe is a synchronous, single-operator,
+file-based CLI pipeline with no live service and no concurrent-writer problem. Most rejected items
+below are excluded specifically because they solve a live-service problem SkillMe does not have
+today, not because the pattern itself is bad.
+
+**Explicitly excluded / rejected (17), with reasons:**
+
+- L1 extraction as a single fused LLM call (scene-segmentation + classification together) —
+  conflicts with SkillMe's own L1 definition (deterministic, no-LLM, raw readout).
+- Hybrid FTS5+vector search fused by RRF — SkillMe has no query/retrieval surface today (A5).
+- Storage/runtime substrate (SQLite+FTS5, bound port, mandatory LLM-API dependency) — would collapse
+  L1's deliberate LLM-free separation, not just add infra.
+- "Fully automated memory routing still under iteration" — vendor's own admitted limitation about
+  their repo; informative about their maturity only.
+- PersonaMem 48%→76% benchmark — **unverified external vendor-reported number, no independent
+  reproduction or methodology located. Never repeated as settled fact about anything.** Two of
+  TencentDB's own open GitHub issues (#73, #106, both 2.5+ months open) dispute other benchmark
+  figures in the same repo — extra reason for skepticism toward any of their self-reported numbers.
+- SWE-bench token-reduction claim disputed by an open, unresolved recomputation issue — same
+  unresolved-external-dispute treatment.
+- Currently-open correctness bugs in TencentDB's own pipeline (silent-no-op delete, ignored filter
+  arg, wrong-field search bug) — maturity signal only; the general caution already follows from
+  SkillMe's own A0/A6.
+- Deploy-script cross-platform instability, repo maturity/issue-volume metadata,
+  benchmark-reproducibility-as-recurring-thread — source-repo maturity signal, not mechanisms.
+- Version-pinning/optimistic-locking for concurrent skill edits — `bridge.py`
+  (`doc_ecosystem_bridge/`) already examined this exact adjacent problem and explicitly declined
+  full locking (atomic write-to-temp + `os.replace()`) as unnecessary complexity for a
+  single-operator CLI tool, with a named revisit trigger that hasn't fired (A11 — respecting a
+  standing decision, not reopening it because a new example looked more sophisticated).
+- Knowledge Service as a standalone HTTP microservice, dual-protocol memory-proxy gateway, "28
+  endpoints" framing, a discovery-target-mismatch finding — vendor-prose-only or no checkable
+  attachment point in SkillMe's file-based architecture.
+- Wiki idempotent-shell/decoupled-trigger claim — SkillMe already has this
+  (`kg_accumulate.py`'s `ingested_checkpoints` skip-check); not new direction.
+
+**Surviving as Dr/Open-tier direction only — nothing built, no schema/kernel/protocol_version
+change (14 groups, 35 mechanisms; full original list of all 14 groups kept in session record, the 5
+with a real "exists-today" attachment point were further text-simulated in round 2 and are given
+corrected wording below; the remaining 9 are conditional on infrastructure SkillMe does not have —
+a live LLM-API call, a network service, an async job runner, a query/retrieval surface — and stay
+`Open`-tier "IF ever" direction only):**
+
+1. **Defensive LLM-call parsing discipline (conceptual seam only, no code today).** Layer 2 is a
+   fixed prompt template run by a human/AI conversation (`communication_glossary/README.md:79`,
+   corrected in round 2 from an earlier misattribution to the repo-root `README.md`) — no
+   `kg_expert_layer.py` exists. If one is ever written, it would need: a pre-call
+   injection/quality gate on untrusted checkpoint free-text, an explicit context-size cap, a hard
+   post-hoc cap on domain/framework counts (not trusting the prompt's self-limit), the same
+   fence-strip → regex-extract → sanitize → single-repair-retry discipline `build_glossary.py`
+   already applies to Layer 1 output, and an explicit `extraction_failed` vs `zero_found` status
+   split grounded in `SKILLME-A6` (`0 ≠ ⊥`).
+2. **L1 pipeline instrumentation (Dr).** Live-verified against `kg_extract.py`'s `extract()`
+   (190–255) and `kg_accumulate.py`'s `accumulate()` (186–249): today's output is a plain summary
+   line + per-type breakdown, no counts/timing captured as structured data. Proposal: exact
+   discrete integer/ratio fields (input/extracted/decision-distribution counts, phase latency) at
+   the same print boundaries, plus an explicit `telemetry_status` marker so emission failure never
+   silently reads as zero (A6). Round-2 verification found no inaccuracies in this item.
+3. **Migration-script pattern for a future protocol_version bump (Dr).** IF a breaking format
+   change to L1–L4 artifacts ever ships: a standalone migration script, mandatory `--dry-run`
+   producing a finite inspectable diff before mutation, mandatory pre-run backup.
+4. **Uniform response envelope, reframed (Dr) — corrected in round 2.** `hypothesis_runner.py`
+   already builds a 20-field `raw_result` record (corrected from an earlier miscount of 21) with a
+   hardcoded `status` literal that `hypothesis_checker.py` never actually reads (its verdict logic
+   runs entirely off `exit_code`). Proposal: add an explicit `scope` field (A0), and type the
+   existing `tier` literal against the closed `{Th_coqc, exact, finite_diagnostic, Dr, Open}` enum
+   (`SKILLME-A12`). **Round-2 simulation surfaced a real axiom conflict in the original proposal**:
+   the previously-proposed three-way status names `checked_found`/`checked_absent` collide with
+   `SKILLME-A4` (efficacy ≠ truth) and the maker–checker firewall `SKILLME-A10` — `hypothesis_runner.py`
+   is the maker side only, so a name containing "checked" would misrepresent an unaudited maker
+   output as an audited verdict. **Corrected naming: `maker_found` / `maker_absent` / `not_yet_run`.**
+   Renaming the existing `status` field breaks no runtime logic (verified: `hypothesis_checker.py`
+   never reads it) but requires updating one docstring (`hypothesis_runner.py:11`) and four test
+   assertions.
+5. **Delete-never-blocks, abort-at-next-checkpoint semantics (Dr).** IF SkillMe's pipeline ever
+   becomes a live/async job: cancellation should signal a poll-point abort, batch operations should
+   return a finite itemized record (`succeeded[]`/`failed[{id,reason}]`), not a boolean. Note:
+   SkillMe's existing "checkpoint" (a static, hash-identified input artifact) is not prior art for
+   this — the vendor's "checkpoint" is a live control-flow poll-point, a different concept sharing
+   only the English word.
+6. **Async job idempotent-create + finite terminal status enum (Dr) — corrected in round 2.**
+   `kg_accumulate.py`'s `checkpoint_certificate_of()` (97–100) and its synchronous
+   `ingested_checkpoints` skip-check are confirmed, independent prior art for idempotent-create — not
+   something borrowed from TencentDB. **Correction**: the earlier claim that
+   `checkpoint_certificate` "is presumed to already be a stable content-hash-derived certificate" is
+   unsupported — live-verified against `skillme_protocol_kernel.py:1222-1225` (non-blank check only)
+   and real fixtures (human-assigned labels like `HYP-SKILLME-046-DEMO-001`, not hash output); it is
+   a non-blank identity string of unverified provenance/uniqueness, not a content hash. IF a live
+   async wrapper is ever built around `accumulate()`: it would need a `pending`/`processing`/
+   `ready`/`failed` status vocabulary the current fully-synchronous function has no representation
+   for at all (there is no "in-flight" state today — the function call is the entire unit of work).
+7. **Structural query surface over an accumulated graph (Open).** No query/retrieval surface exists
+   in this repo today (confirmed: `grep -rn "def.*search"` finds nothing in any `.py` file) — IF one
+   is ever built over `kg_accumulate.py`'s word-graph: exact-node lookup only (never fuzzy without
+   an explicit exact-vs-inferred tier tag, A1), bounded-integer-depth traversal, and a mandatory
+   separate indexing-status endpoint so "zero results" and "not yet accumulated" are never the same
+   observable (A6).
+8. **Authorization-as-separate-control-plane pattern (Open, for SkillMe or an adjacent ANSE.ASIA
+   service such as ARAYA).** Keep "who may read record X" as a separate resolver call from "what
+   does the query return," never folded into ranking. Structurally analogous to, not an instance of,
+   A4/A8.
+9. **Ownership-key vs audit-only writer-id separation (Open).** Keep "who last wrote this" (audit)
+   structurally separate from "who/what scope owns this" (ACL, enforced) — analogous to A4's
+   non-identity spirit, not an instance of it.
+10. **Discrete four-level visibility enum on the `principal_id`+`topic_tag` partition (Open, register
+    cautiously) — corrected in round 2.** `kg_accumulate.py`'s `state_dir()` (55–56) builds
+    `accumulated/<principal_id>/<topic_tag>/` from unvalidated `argparse` strings; live-verified
+    across `build_glossary.py`, `skill_plan.py`, `hypothesis_runner.py`, `hypothesis_checker.py` —
+    zero access-control reads of this path anywhere (`tests/test_kg_accumulate.py` does reference
+    `state_dir()` directly, but only to assert storage-scope isolation, never access control — an
+    earlier "zero references anywhere" phrasing was corrected to this precise scope). A discrete
+    `private`/`team`/`restricted_acl`/`agent_targeted` field is mechanically trivial to add to the
+    state JSON, but **round-2 simulation surfaced a real risk**: adding the field without also
+    building the enforcement layer (no caller-identity concept exists in this repo at all) would
+    create a field that *looks* like a security control while doing nothing. If ever registered, it
+    must be schema-only with an explicit companion note that enforcement is unbuilt, per
+    `SKILLME-A4`/`A6` — never presented as a completed access-control feature.
+11. **Skill data-model reference fields for a future versioned-artifact store (Open).** `skill_id`,
+    monotonic-integer `version`, `is_head` boolean pointer, `owner_*` fields explicitly declared as
+    normative ACL data (A8, not empirical fact). Explicitly excluded: the vendor's
+    `SearchHit.score:number` — an unbounded continuum relevance float that would need ordinal
+    reframing (same move already applied to ARAYA's 0.00–1.00 scale) before any adoption.
+12. **BM25-backed search with a three-way status split (Open).** No search command exists in this
+    repo today (confirmed by grep — the `cli.py search "<th/en>"` referenced elsewhere in this
+    workspace belongs to the separate `cpg` repo, not SkillMe). IF one is ever built: malformed-query
+    and scope-not-found must stay distinct from zero-hits (A6); relevance surfaced only as ordinal
+    rank, never a raw float (discrete-first floor); a top hit never presented as correct, only as
+    relevance-to-query-terms (A4).
+13. **Skill artifact regeneration trigger, decoupled from "persona" framing (Open).**
+    `build_glossary.py`/`skill_plan.py` have no documented regeneration trigger today — not even a
+    live automation problem yet. Worth keeping on file as design inspiration only: a
+    content-emptiness check (a regenerated artifact that only echoes scaffolding must not count as
+    "already built") and explicit-request-always-wins as a declared override.
+14. **Open-tier footnotes**, each narrowed to a single reusable idea, explicitly excluded from
+    anything built now: `service_url` self-description (if SkillMe ever exposes a network-facing
+    surface), write-protecting a synthesized artifact until independently cleared (if SkillMe ever
+    gains mutable interpretive-layer storage), resolve-then-scope identity verification (if
+    SkillMe/ARAYA ever crosses an untrusted network boundary), safer-default-plus-explicit-legacy
+    versioning discipline (if a future protocol_version bump tightens a scoping invariant),
+    self-verify-before-declaring-ready bootstrap discipline (no bootstrap script exists today).
+
+**Explicitly not decided here**: whether/when to build any of this, exact field names/schema
+placement beyond what's specified above, or which item (if any) gets picked up first. This is a
+registered direction from a two-round ultracode study (fetch+filter+adversarial-verify, then a
+second adversarial-verify pass against live code and a real fixture), not a plan — scope must be
+clarified with the founder before any schema or kernel change lands, per this session's standing
+practice.
+
 ### v0.5 — Formal semantics and executable kernel
 
 - ทำ typed definitions ของ `Issue`, `Agency`, `Stakeholder`, `Context`, `TranslationRecord` และ `ReadoutStatus`
