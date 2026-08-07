@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest + kernel self-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install test dependencies
+        run: pip install pytest
+
+      - name: pytest
+        run: python3 -m pytest -q
+
+      - name: kernel self-test
+        run: python3 skillme_protocol_kernel.py --self-test
+
+      - name: field reference in sync
+        run: |
+          python3 tools/generate_field_reference.py
+          git diff --exit-code docs/FIELD_REFERENCE.md
