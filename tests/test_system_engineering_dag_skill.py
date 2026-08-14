@@ -43,13 +43,13 @@ def test_engineering_dag_keeps_core_architecture_and_recovery_surfaces():
         "observability_sre:",
         "backup_restore_dr:",
         "release_recovery:",
-        "rollback.architecture" if False else "rollback",
+        "rollback",
         "rollforward",
         "disaster_recovery_test",
         "backup_restore_test",
         "chaos_test",
         "migration_test",
-        "ai.eval" if False else "ai_evaluation",
+        "ai_evaluation",
     ]
     for token in required:
         assert token in text, token
