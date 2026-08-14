@@ -19,7 +19,9 @@ What you get from installing this plugin:
   [`skills/system-engineering-dag/SKILL.md`](skills/system-engineering-dag/SKILL.md).
 - The engineering companion ships its own machine source of truth
   (`system_engineering_dag.json`), stdlib-only validator/obligation compiler
-  (`system_engineering_dag_kernel.py`), and deep on-demand reference (`REFERENCE.md`).
+  (`system_engineering_dag_kernel.py`), deep on-demand reference (`REFERENCE.md`), plus an
+  issue-first UI contract (`WIREFRAME.md`) and research-grounded attention profile
+  (`ux_attention_profile.json` + `ux_attention_kernel.py`).
 - A bundled fail-closed `Stop` hook (`hooks/hooks.json` + `scripts/`) for the SkillMe run
   tracking rules already documented in the main skill.
 
@@ -47,7 +49,12 @@ backup/restore, disaster recovery, or production operations:
 5. High-complexity architecture choices such as sharding, microservices, multi-region, KG, and
    vector retrieval have machine-readable `activate_if` and `forbid_if` conditions. Security
    assurance is likewise tiered (`BASELINE`, `SENSITIVE`, `HIGH_ASSURANCE`).
-6. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
+6. If a screen's primary job is to understand/triage/act on an Issue, **the first viewport must
+   answer the Issue**: issue statement, state, risk/scope, confirmed vs unknown, next action,
+   owner, and freshness. The UX profile uses the research prior 57% / 17% / 7% for the first
+   three screenfuls (19% aggregate long tail below), explicitly as a heuristic rather than a
+   universal law.
+7. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
    release strategy → production verification**. Never edit `main` directly.
 
 A GitHub Issue is the active work-item adapter for this repository, not proof of root cause.
@@ -60,15 +67,12 @@ From the repository root:
 ```bash
 python3 plugins/skillme/skills/system-engineering-dag/system_engineering_dag_kernel.py
 python3 plugins/skillme/skills/system-engineering-dag/system_engineering_dag_kernel.py --self-test
-python3 -m pytest -q tests/test_system_engineering_dag_skill.py
+python3 plugins/skillme/skills/system-engineering-dag/ux_attention_kernel.py --self-test
+python3 -m pytest -q tests/test_system_engineering_dag_skill.py tests/test_issue_first_wireframe.py
 ```
 
-The engineering kernel verifies graph structure and behavioral protocol invariants — node
-uniqueness, dependency existence, acyclicity, required release ancestry, typed SkillMe handoff,
-risk routing, impact-derived obligations, critical unknown blocking, time-bounded waivers,
-destructive-change recovery paths, decision-rule shape, security-assurance tiers, and release
-evidence requirements. It does **not** verify that a domain hypothesis or chosen engineering
-intervention is true.
+The kernels verify graph/protocol behavior plus issue-first wireframe invariants; they do
+**not** verify that a domain hypothesis or chosen engineering intervention is true.
 
 **Tier: `Dr` (design rationale)** — an architectural synthesis of established methods, not a
 proven result. See the full repo's README for the complete tier-honesty statement.
