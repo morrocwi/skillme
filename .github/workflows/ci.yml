@@ -26,8 +26,11 @@ jobs:
       - name: pytest
         run: python3 -m pytest -q
 
-      - name: kernel self-test
+      - name: SkillMe kernel self-test
         run: python3 skillme_protocol_kernel.py --self-test
+
+      - name: System engineering DAG kernel self-test
+        run: python3 plugins/skillme/skills/system-engineering-dag/system_engineering_dag_kernel.py --self-test
 
       - name: field reference in sync
         run: |
