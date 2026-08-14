@@ -12,7 +12,9 @@ description: >
   and a three-lane (Known-Direct / Cross-Adaptive / Generative-Transformative) solution
   candidate generator with rights and diversity gates. Use it whenever you are about to say
   "the root cause is X", "the fix is Y", jump straight to a solution, or aggregate
-  stakeholder opinions into one verdict.
+  stakeholder opinions into one verdict. For software/system engineering issues, preserve
+  this SkillMe lineage and then invoke the companion `system-engineering-dag` skill before
+  proposing or implementing an architecture-impacting fix.
 ---
 
 # SkillMe — readout-first issue analysis protocol
@@ -89,6 +91,58 @@ absence, mode is `AI_INDEPENDENT`.
 6. **Detect domain + topology**, route to adapters (RCA/FMEA/DMAIC/stakeholder-map/DAG/
    systems-dynamics/MCDA/etc. — see full spec §6.10 for the registry) without letting an
    adapter promote its own evidence tier.
+
+### Mandatory software/system engineering adapter
+
+If step 6 detects a software, web, application, API, data, database/schema, cache, search,
+knowledge-graph, AI, security/privacy/IAM, network, infrastructure, reliability, performance,
+deployment, backup/restore, disaster-recovery, incident-response, or production-operations
+Issue, **MUST invoke the companion `system-engineering-dag` skill** before proposing or
+implementing an architecture-impacting fix.
+
+```yaml
+system_engineering_issue_route:
+  first: skillme
+  preserve:
+    - Q1_issue
+    - Q2_user_proposal
+    - retained_difference
+    - agency_context_query
+    - issue_admission_state
+    - hypotheses_and_evidence
+    - rights_gate
+    - continuation_record
+    - VALID_CHECKPOINT_semantics
+  then:
+    invoke: system-engineering-dag
+    before:
+      - architecture_fix
+      - schema_migration
+      - cache_strategy_change
+      - security_change
+      - infrastructure_change
+      - production_release
+  git_lineage:
+    - GitHub_Issue
+    - branch
+    - tests_checker
+    - Pull_Request
+    - required_review
+    - merge
+    - progressive_release
+    - production_verification
+  forbid:
+    - direct_main_edit
+    - symptom_to_fix_jump
+    - treating_issue_as_root_cause_proof
+    - treating_test_pass_as_domain_truth_proof
+```
+
+If the current run already has a SkillMe checkpoint, reuse the same lineage. Do **not** create
+a second intake/hypothesis lineage merely to call the engineering adapter. The companion skill
+must inherit confirmed facts, hypotheses, unknowns, affected agencies, and claim boundaries;
+its architecture/test/recovery gates cannot promote a SkillMe hypothesis into fact.
+
 7. **Generate competing hypotheses**, then run the **Hypothesis Evidence Challenge**: for
    every load-bearing hypothesis, search *and* record both support and challenge queries, in
    both an international track and a local-context track (for Thailand: ThaiJO, TNRR,
@@ -122,6 +176,8 @@ absence, mode is `AI_INDEPENDENT`.
 - Never resume a `STOP_AT_HYPOTHESIS` checkpoint by silently starting a new lineage — reuse
   `continuation_record`, open a correction record if anything changed.
 - Never treat `VALID_CHECKPOINT` as a decision, success, or closure — it's a resumable pause.
+- For qualifying software/system Issues, never bypass `system-engineering-dag` before an
+  architecture-impacting fix, migration, recovery plan, or production release.
 
 ## Output shape (what the human should see, plain language, in this order)
 
@@ -130,6 +186,11 @@ voiceless) → immediate containment if any → what's confirmed vs. hypothesis 
 evidence for/against each hypothesis (global + local) → the user's proposal and what happened
 to it → three-lane candidates with trade-offs → recommended first (smallest reversible) test →
 who decides/acts/checks → how you'll know it worked → what would make you revise this.
+
+For a qualifying software/system Issue, append the companion skill's engineering projection:
+architecture impact → failure model → selected test ecosystem → migration/compatibility →
+backup/restore/DR → rollback versus roll-forward → Issue/branch/PR traceability → release and
+production verification → observability/SLO → residual risk → correction back into SkillMe.
 
 Internal SkillMe vocabulary (`retained difference`, `agency readout`, `quotient`) stays in the
 technical/audit trail — don't force the user to learn it unless they ask.
