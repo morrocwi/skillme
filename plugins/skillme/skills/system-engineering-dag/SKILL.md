@@ -16,12 +16,14 @@ description: >
 **Parent protocol:** `skillme`.  
 **Machine source of truth:** `system_engineering_dag.json`.  
 **Executable validator/compiler:** `system_engineering_dag_kernel.py`.  
+**Issue-UI attention profile:** `ux_attention_profile.json` + `ux_attention_kernel.py`.  
+**Issue-first wireframe contract:** `WIREFRAME.md`.  
 **Detailed on-demand reference:** `REFERENCE.md`.
 
 This file is intentionally short. Do not load the entire engineering reference unless the
-impact map says a surface is affected or unknown. The JSON spec and kernel are authoritative
+impact map says a surface is affected or unknown. The JSON specs and kernels are authoritative
 for graph shape, risk routing, typed handoff, obligations, waivers, decision rules, security
-assurance, and release invariants.
+assurance, issue-first wireframe rules, and release invariants.
 
 ## 1. Mandatory SkillMe handshake
 
@@ -174,7 +176,8 @@ Mark every relevant surface:
 Core surfaces include product/domain/state, data/KG, DB/transactions/storage/cache, API/events,
 search/vector/AI, frontend/UX, authn/authz/privacy/secrets, multi-tenancy, network/infra/config/
 supply-chain, performance/reliability, external side effects, data integrity, backup/restore/DR,
-CI/CD/release, observability, SLOs, and incident runbooks.
+CI/CD/release, observability, SLOs, incident runbooks, and — for issue-analysis/work-item
+products — `issue_management_ui`.
 
 For a critical surface, `UNKNOWN` creates an investigation obligation and blocks release unless
 an explicit, time-bounded waiver is valid.
@@ -198,10 +201,50 @@ Examples:
   invariant reconciliation.
 - `payment_or_external_side_effects=AFFECTED` ⇒ idempotency, side-effect ledger,
   reconciliation, replay/duplicate policy.
+- `issue_management_ui=AFFECTED` ⇒ load `ux_attention_profile.json` and compile the issue-first
+  wireframe obligations before approving the wireframe.
 
-Use the kernel to compile exact obligations. Do not manually invent a “complete” checklist.
+Use the kernels to compile exact obligations. Do not manually invent a “complete” checklist.
 
-## 7. Architecture decisions are evidence-gated
+## 7. Issue-first wireframe is mandatory for Issue/Work-Item screens
+
+If the primary screen task is `understand_issue`, `act_on_issue`, `incident_response`,
+`work_item_triage`, or `issue_analysis`, **MUST load `WIREFRAME.md` and
+`ux_attention_profile.json`**.
+
+The first viewport must answer, without scrolling:
+
+1. what the issue is;
+2. current issue state;
+3. risk/severity and affected scope;
+4. confirmed vs unknown;
+5. primary next action;
+6. owner;
+7. freshness / last evidence time.
+
+This is the **Issue Capsule**. Decorative hero, branding-only blocks, generic KPI dashboards,
+large nonessential images, and navigation chrome must not outrank it.
+
+Research-informed vertical attention prior used by the profile:
+
+```text
+Screen 1: 57% of observed page-viewing time  → attention index 100
+Screen 2: 17%                                → index ~30; ~70% drop vs Screen 1
+Screen 3:  7%                                → index ~12; ~59% drop vs Screen 2
+Below 3: 19% aggregate long tail             → NOT 19% per later screen
+```
+
+The figures are an aggregate research prior, **not a universal behavioral law**. The design
+contract is therefore: prioritize Issue comprehension in the first viewport, then verify with
+actual usability measures (`time_to_identify_issue`, `time_to_identify_status`,
+`time_to_identify_next_action`, `scroll_before_issue_comprehension_rate`,
+`critical_unknown_missed_rate`).
+
+Hard fail if the Issue statement or required next action is hidden below the first viewport,
+unknowns are visually collapsed into certainty, a false floor hides continuation, or mobile
+requires horizontal scrolling to understand the core Issue.
+
+## 8. Architecture decisions are evidence-gated
 
 Listing a technology does not justify using it. The canonical spec defines `activate_if` and
 `forbid_if` rules for high-complexity decisions including sharding, microservices, multi-region,
@@ -217,7 +260,7 @@ Examples:
 
 World-class engineering includes knowing what **not** to build.
 
-## 8. Security assurance is proportional
+## 9. Security assurance is proportional
 
 The canonical spec defines:
 
@@ -229,7 +272,7 @@ Higher levels add independent review/adversarial testing, hardened build provena
 drills, and explicit residual-risk acceptance. Do not apply identical security ceremony to all
 changes, and do not downgrade a high-impact surface merely to simplify delivery.
 
-## 9. Cache security invariants
+## 10. Cache security invariants
 
 When cache is affected:
 
@@ -239,13 +282,13 @@ When cache is affected:
 - secrets/credentials must not be cached;
 - stale private data behavior must be explicit.
 
-## 10. Multi-tenancy
+## 11. Multi-tenancy
 
 If multi-tenancy is present, treat it as an explicit affected surface and cover tenant identity,
 data isolation, cache isolation, quota/noisy-neighbor behavior, tenant-scoped audit,
 tenant deletion, migration, and tenant-scoped restore.
 
-## 11. Recovery is business correctness, not infrastructure boot
+## 12. Recovery is business correctness, not infrastructure boot
 
 Hard invariants:
 
@@ -259,7 +302,7 @@ Hard invariants:
 Never write merely `rollback available`. State what changes, target version/state, data
 compatibility assumptions, validation, and failure-of-rollback behavior.
 
-## 12. SLO/RPO/RTO precede architecture where relevant
+## 13. SLO/RPO/RTO precede architecture where relevant
 
 Criticality targets feed architecture:
 
@@ -267,13 +310,13 @@ Criticality targets feed architecture:
 
 Do not invent expensive multi-region/redundancy patterns before targets justify them.
 
-## 13. Observability is a design surface
+## 14. Observability is a design surface
 
 Do not stop at “logs, metrics, traces”. For affected production paths define telemetry schema,
 semantic naming, cardinality budget, sampling, PII redaction, ownership, retention/cost, trace
 propagation, and actionable alerts.
 
-## 14. Waivers, ownership, and freshness
+## 15. Waivers, ownership, and freshness
 
 A `MUST` may be waived only through an auditable exception:
 
@@ -291,7 +334,7 @@ waiver:
 Critical artifacts/nodes carry owner/evidence/status and verification freshness. A stale DR
 test, threat model, capacity model, or dependency map is not silently treated as current.
 
-## 15. Release contract
+## 16. Release contract
 
 A production candidate records, as applicable:
 
@@ -307,38 +350,31 @@ A production candidate records, as applicable:
 `deploy != release`. Select direct/rolling/canary/blue-green/shadow/progressive strategy by
 risk/blast radius/reversibility, not ideology.
 
-## 16. Machine verification
+## 17. Machine verification
 
 From this directory:
 
 ```bash
 python3 system_engineering_dag_kernel.py
 python3 system_engineering_dag_kernel.py --self-test
+python3 ux_attention_kernel.py
+python3 ux_attention_kernel.py --self-test
 ```
 
-The validator proves protocol structure such as node uniqueness, dependency existence,
-acyclicity, release-gate ancestry, destructive-change recovery paths, typed handoff, risk
-routing, impact-derived obligations, decision-rule shape, security-assurance tiers, waiver
-shape, and release-record requirements.
+The engineering validator proves graph/protocol structure. The UX attention validator protects
+the research labeling, vertical attention bands, Issue Capsule fields, first-view hard fails,
+and conditional issue-UI obligations. Neither proves a causal/domain hypothesis is true.
 
-It does **not** prove that the user's causal hypothesis or engineering decision is true.
+## 18. On-demand reference loading
 
-## 17. On-demand reference loading
+- Load `WIREFRAME.md` for issue/work-item/incident screens.
+- Load `REFERENCE.md` only for affected/unknown engineering surfaces.
 
-Read `REFERENCE.md` only for affected/unknown surfaces. Use its sections for:
+The deep reference covers domain/data/KG; DB/storage/cache; API/events/search/AI; security;
+network/infra; UX/frontend/design; test/performance/resilience; backup/DR; release/recovery;
+observability/SRE/incidents/governance/decommission.
 
-- domain/data/KG
-- DB/storage/cache
-- API/events/search/AI
-- security/privacy/IAM/supply-chain
-- network/infrastructure
-- UX/frontend/design
-- test ecosystem/performance/resilience
-- backup/restore/DR
-- release/rollback/roll-forward
-- observability/SRE/incidents/governance/decommission
-
-## 18. Output order
+## 19. Output order
 
 For a qualifying Issue:
 
@@ -347,15 +383,16 @@ For a qualifying Issue:
 3. Affected/unknown architecture surfaces.
 4. Investigation obligations for unknowns.
 5. Derived engineering obligations.
-6. Smallest justified change.
-7. Migration/data/cache/security consequences.
-8. Test evidence required.
-9. Recovery: rollback vs roll-forward vs restore.
-10. Work item → branch → PR traceability.
-11. Release strategy and production verification.
-12. Observability/SLO signals.
-13. Waivers, residual risk, freshness.
-14. Outcome/correction back to SkillMe.
+6. If UI is involved: Issue Capsule + attention-band wireframe placement.
+7. Smallest justified change.
+8. Migration/data/cache/security consequences.
+9. Test evidence required.
+10. Recovery: rollback vs roll-forward vs restore.
+11. Work item → branch → PR traceability.
+12. Release strategy and production verification.
+13. Observability/SLO signals.
+14. Waivers, residual risk, freshness.
+15. Outcome/correction back to SkillMe.
 
 ## Hard invariants
 
@@ -363,6 +400,8 @@ For a qualifying Issue:
 - Issue/work item is traceability, not root-cause proof.
 - Test pass is not domain-truth proof.
 - `UNKNOWN != NOT_AFFECTED`.
+- Issue-management UI must answer the Issue in the first viewport.
+- Attention percentages are research priors, not universal laws.
 - No direct `main` edits.
 - No destructive migration without compatibility and recovery design.
 - No cache change without invalidation and security behavior.
