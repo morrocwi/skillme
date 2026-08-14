@@ -4,17 +4,11 @@ description: >
   Load before analyzing any reported issue, incident, complaint, conflict, risk, anomaly,
   policy question, or "what should we do about X" decision — software bugs, customer
   complaints, organizational conflicts, research anomalies, social/policy issues, and
-  everyday decisions all qualify. Gives the SkillMe protocol: a
-  mandatory two-question intake gate before any analysis starts, retained-difference issue
-  framing (an issue is not a name, it is a difference that survives under a declared
-  agency/context/query), a stakeholder-agency map that separates who is affected from who
-  holds power, a bidirectional global+local evidence-challenge for every causal hypothesis,
-  and a three-lane (Known-Direct / Cross-Adaptive / Generative-Transformative) solution
-  candidate generator with rights and diversity gates. Use it whenever you are about to say
-  "the root cause is X", "the fix is Y", jump straight to a solution, or aggregate
-  stakeholder opinions into one verdict. For software/system engineering issues, preserve
-  this SkillMe lineage and then invoke the companion `system-engineering-dag` skill before
-  proposing or implementing an architecture-impacting fix.
+  everyday decisions all qualify. Gives the SkillMe protocol: a mandatory two-question intake
+  gate, retained-difference issue framing, stakeholder-agency mapping, bidirectional evidence
+  challenge, and three-lane solution generation. For software/system engineering issues,
+  preserve this SkillMe lineage and invoke the companion `system-engineering-dag` skill before
+  an architecture-impacting fix.
 ---
 
 # SkillMe — readout-first issue analysis protocol
@@ -31,12 +25,9 @@ structure** (required fields, enum validity, cross-references, gate order) — i
 verify that any domain claim, cause, or fix is actually true. Say so when you report results.
 
 This file is a self-contained operational summary shipped with the plugin. The canonical spec
-(`SKILLME.md`) and the standalone protocol kernel
-(`skillme_protocol_kernel.py`) live in the full repo root — they are **not** installed with this
-plugin (a plugin install only pulls this `plugins/skillme/` subtree). Clone
-the whole repo if you need the full spec text or want to run the kernel yourself:
-`https://github.com/morrocwi/skillme`. Read the full spec before disputing an
-edge case or extending the protocol — this summary is not a substitute for it.
+(`SKILLME.md`) and the standalone protocol kernel (`skillme_protocol_kernel.py`) live in the
+full repo root — they are **not** installed with this plugin. Clone the whole repo if you need
+the full spec or want to run the root kernel yourself: `https://github.com/morrocwi/skillme`.
 
 ## The one commitment
 
@@ -59,8 +50,7 @@ stakeholder mapping, causal analysis, or candidate generation happens:
 
 Rules:
 - Q1 must be non-blank. Q2 **must be answered**, but "none" / "ไม่มี" / "skip" is a complete,
-  valid answer (`PROPOSAL_ABSENT_DECLARED`) — never a missing value, never silently inferred
-  from silence.
+  valid answer (`PROPOSAL_ABSENT_DECLARED`) — never a missing value, never silently inferred.
 - The only exception is an **emergency containment bypass**: if there's ongoing harm, you may
   do the minimum reversible containment action (stop, isolate, preserve evidence) with a
   recorded `reason/scope/rights_check/owner/stop_rule/rollback_rule/evidence_preservation/
@@ -68,29 +58,23 @@ Rules:
   bypass. After containment, go back to waiting for Q1/Q2.
 - Never add a third mandatory intake question before analysis is allowed to start.
 
-Once both are answered: if Q2 has content, mode defaults to `HYBRID_BLIND_COMPARE` (AI
-generates candidates blind, then compares against the user's proposal); if Q2 declares
-absence, mode is `AI_INDEPENDENT`.
+Once both are answered: if Q2 has content, mode defaults to `HYBRID_BLIND_COMPARE`; if Q2
+declares absence, mode is `AI_INDEPENDENT`.
 
 ## Core moves, in order
 
 1. **Protect** — only if there's ongoing harm; minimal, reversible, no causal claims.
-2. **Read philosophically** — separate: what difference is retained, from what state, under
-   what context/query/resolution. Ask only for what's missing.
-3. **Map agencies** — don't start from the meeting attendee list. Run all 10 discovery scans
-   (named / impact / dependency / rights / power / knowledge / representation / horizon /
-   adversarial / boundary) and stop expanding only when new agencies stop changing the query,
-   rights gate, graph, or intervention. Distinguish 12 agency roles (affected, observing,
+2. **Read philosophically** — separate the retained difference, prior state, context/query, and
+   readout resolution. Ask only for what's missing.
+3. **Map agencies** — run named / impact / dependency / rights / power / knowledge /
+   representation / horizon / adversarial / boundary scans. Distinguish affected, observing,
    knowledge, voice, decision, intervention, resource, veto, accountable, oversight,
-   represented, future/latent) — **stakeholder ≠ agency**: someone can be affected with zero
-   voice, or have decision power with zero exposure.
-4. **Compile perspectives** — keep a dissent ledger; never silently pick the powerful party's
-   framing as "the overview".
-5. **Admit the issue** — `ISSUE_ADMITTED` / `NO_ISSUE_UNDER_DECLARED_READOUT` / `UNRESOLVED`,
-   never fudge zero vs. unresolved.
-6. **Detect domain + topology**, route to adapters (RCA/FMEA/DMAIC/stakeholder-map/DAG/
-   systems-dynamics/MCDA/etc. — see full spec §6.10 for the registry) without letting an
-   adapter promote its own evidence tier.
+   represented, future/latent roles. **Stakeholder ≠ agency**.
+4. **Compile perspectives** — keep a dissent ledger; never silently choose the powerful party's
+   framing as the overview.
+5. **Admit the issue** — `ISSUE_ADMITTED` / `NO_ISSUE_UNDER_DECLARED_READOUT` / `UNRESOLVED`.
+6. **Detect domain + topology**, route to adapters without letting an adapter promote its own
+   evidence tier.
 
 ### Mandatory software/system engineering adapter
 
@@ -100,20 +84,29 @@ deployment, backup/restore, disaster-recovery, incident-response, or production-
 Issue, **MUST invoke the companion `system-engineering-dag` skill** before proposing or
 implementing an architecture-impacting fix.
 
+Do not pass prose loosely. Compile this typed handoff from the **same SkillMe lineage**:
+
+```yaml
+skillme_engineering_handoff:
+  skillme_run_id: REQUIRED
+  work_item_id: REQUIRED
+  issue_state: ISSUE_ADMITTED | UNRESOLVED | NO_ISSUE_UNDER_DECLARED_READOUT
+  confirmed: []
+  hypotheses: []
+  unknowns: []
+  affected_agencies: []
+  rights_constraints: []
+  evidence_refs: []
+  continuation_record: REQUIRED
+```
+
+Routing rules:
+
 ```yaml
 system_engineering_issue_route:
   first: skillme
-  preserve:
-    - Q1_issue
-    - Q2_user_proposal
-    - retained_difference
-    - agency_context_query
-    - issue_admission_state
-    - hypotheses_and_evidence
-    - rights_gate
-    - continuation_record
-    - VALID_CHECKPOINT_semantics
   then:
+    typed_handoff: skillme_engineering_handoff
     invoke: system-engineering-dag
     before:
       - architecture_fix
@@ -122,6 +115,9 @@ system_engineering_issue_route:
       - security_change
       - infrastructure_change
       - production_release
+  work_item_adapter:
+    canonical: WORK_ITEM
+    github: Issue
   git_lineage:
     - GitHub_Issue
     - branch
@@ -129,7 +125,7 @@ system_engineering_issue_route:
     - Pull_Request
     - required_review
     - merge
-    - progressive_release
+    - release_strategy
     - production_verification
   forbid:
     - direct_main_edit
@@ -138,129 +134,80 @@ system_engineering_issue_route:
     - treating_test_pass_as_domain_truth_proof
 ```
 
-If the current run already has a SkillMe checkpoint, reuse the same lineage. Do **not** create
-a second intake/hypothesis lineage merely to call the engineering adapter. The companion skill
-must inherit confirmed facts, hypotheses, unknowns, affected agencies, and claim boundaries;
-its architecture/test/recovery gates cannot promote a SkillMe hypothesis into fact.
+If the current run already has a SkillMe checkpoint, **reuse the same lineage**. Do not create a
+second intake/hypothesis lineage merely to call the engineering adapter. The companion's
+architecture/test/recovery gates cannot promote a SkillMe hypothesis into fact. If SkillMe's
+state is `NO_ISSUE_UNDER_DECLARED_READOUT`, the engineering companion must not silently turn
+that into an intervention.
 
-7. **Generate competing hypotheses**, then run the **Hypothesis Evidence Challenge**: for
-   every load-bearing hypothesis, search *and* record both support and challenge queries, in
-   both an international track and a local-context track (for Thailand: ThaiJO, TNRR,
-   government open data, Thai + English terms). Citations need separate
-   `metadata_verification` and `scope_verification` — matching metadata is not the same as the
-   source actually supporting the claim. Never write `LOCAL_EVIDENCE_NOT_FOUND` as
-   `NO_LOCAL_EVIDENCE_EXISTS`. Never count citations as a vote — quality, directness, and
-   context-fit decide, not `#support − #challenge`.
-8. **Certify the hypothesis portfolio** (checkpoint) — three lanes
-   (Known-Direct / Cross-Adaptive / Generative-Transformative), each with a mechanism,
-   falsifier, legal-relevance annotation, and representation-lineage record (direct voice /
-   authorized proxy / inferred-only / absent-or-unreached — never let power speak for an
-   absent party without flagging it). You may **stop here** (`STOP_AT_HYPOTHESIS`) without
-   having made any decision, intervention, or field-truth claim — this is a valid, resumable
-   checkpoint, not an incomplete run.
-9. **Generate candidates** — three lanes again, genuinely different (not the same fix under
-   three names): Known-Direct (proven method in-domain), Cross-Adaptive (borrowed mechanism
-   from another domain), Generative-Transformative (new hypothesis / redesign). If you can
-   only find one or two admissible lanes, say `CANDIDATE_SET_PARTIAL_1/2` — do not fabricate
-   a third to hit the count.
-10. **Decide / Act / Verify / Correct** — freeze the decision criteria before you see the
-    outcome (maker-checker firewall), state stop/rollback rules, and treat correction/
-    withdrawal as a sign of reliability, not failure.
+7. **Generate competing hypotheses**, then run the **Hypothesis Evidence Challenge**: for every
+   load-bearing hypothesis, record support and challenge searches in both international and
+   local-context tracks. Separate metadata verification from scope verification. Never write
+   `LOCAL_EVIDENCE_NOT_FOUND` as `NO_LOCAL_EVIDENCE_EXISTS`. Never count citations as votes.
+8. **Certify the hypothesis portfolio** — three lanes (Known-Direct / Cross-Adaptive /
+   Generative-Transformative), each with mechanism, falsifier, legal relevance, and
+   representation lineage. `STOP_AT_HYPOTHESIS` creates a valid resumable checkpoint, not a
+   decision or closure.
+9. **Generate candidates** — genuinely different three-lane candidates. If only one or two
+   admissible lanes exist, report `CANDIDATE_SET_PARTIAL_1/2`; do not fabricate a third.
+10. **Decide / Act / Verify / Correct** — freeze decision criteria before outcome, state
+    stop/rollback rules, and treat correction/withdrawal as reliability rather than failure.
 
-## Hard invariants (do not violate — see full spec §11 for all 48)
+## Hard invariants
 
-- Never let authority substitute for evidence, or correlation substitute for
-  intervention-supported cause.
-- Never let a stakeholder-utility score override a rights gate.
-- Never call consultation "co-decision" when participants can't actually change the outcome.
-- Never resume a `STOP_AT_HYPOTHESIS` checkpoint by silently starting a new lineage — reuse
-  `continuation_record`, open a correction record if anything changed.
-- Never treat `VALID_CHECKPOINT` as a decision, success, or closure — it's a resumable pause.
+- Never let authority substitute for evidence, or correlation substitute for intervention-
+  supported cause.
+- Never let stakeholder utility override a rights gate.
+- Never call consultation co-decision when participants cannot change the outcome.
+- Never resume `STOP_AT_HYPOTHESIS` by silently starting a new lineage; reuse
+  `continuation_record`, opening a correction record when information changed.
+- Never treat `VALID_CHECKPOINT` as a decision, success, or closure.
 - For qualifying software/system Issues, never bypass `system-engineering-dag` before an
   architecture-impacting fix, migration, recovery plan, or production release.
+- Never let the engineering companion collapse `UNKNOWN` into `NOT_AFFECTED`.
 
-## Output shape (what the human should see, plain language, in this order)
+## Output shape
 
-Intake confirmation → issue in plain language → who's affected/involved (including the
-voiceless) → immediate containment if any → what's confirmed vs. hypothesis vs. unknown →
-evidence for/against each hypothesis (global + local) → the user's proposal and what happened
-to it → three-lane candidates with trade-offs → recommended first (smallest reversible) test →
-who decides/acts/checks → how you'll know it worked → what would make you revise this.
+Intake confirmation → issue in plain language → affected/involved agencies (including the
+voiceless) → immediate containment if any → confirmed vs hypothesis vs unknown → evidence
+for/against hypotheses (global + local) → user's proposal and its treatment → three-lane
+candidates → smallest reversible test → who decides/acts/checks → success/falsification rule →
+what would make you revise this.
 
-For a qualifying software/system Issue, append the companion skill's engineering projection:
-architecture impact → failure model → selected test ecosystem → migration/compatibility →
-backup/restore/DR → rollback versus roll-forward → Issue/branch/PR traceability → release and
-production verification → observability/SLO → residual risk → correction back into SkillMe.
+For qualifying software/system Issues, append the companion projection: typed handoff → risk
+level/change mode → architecture impact → investigation/test obligations → migration/
+compatibility → backup/restore/DR → rollback/roll-forward → work-item/branch/PR traceability →
+release/production verification → observability/SLO → waiver/freshness/residual risk →
+correction back into SkillMe.
 
-Internal SkillMe vocabulary (`retained difference`, `agency readout`, `quotient`) stays in the
-technical/audit trail — don't force the user to learn it unless they ask.
+Internal SkillMe vocabulary stays in the technical/audit trail; do not force the user to learn
+it unless they ask.
 
-## Downstream: turning a checkpoint into shared vocabulary + a project doc trail
+## Downstream checkpoint tooling
 
-Reaching `STOP_AT_HYPOTHESIS` (a `VALID_CHECKPOINT`) is not the end of what this repo can do
-with it. Two downstream tools (full repo only, not in this plugin subtree — clone the repo)
-turn a checkpoint into artifacts the people in step 3's agency map actually need:
+Reaching `STOP_AT_HYPOTHESIS` is not closure. In the full repo:
 
-- **`communication_glossary/`** — a 4-layer pipeline that turns one checkpoint into a shared
-  vocabulary for anyone discussing the issue, anchored to the issue/domain itself, not to any
-  one stakeholder's prior knowledge. Layer 1 (`kg_extract.py`) is a deterministic word-graph
-  readout; Layer 2 is an AI-interpretive expert-framework reasoning step (Agent + WebSearch,
-  deliberately not a script — see that folder's README for the exact prompt template); Layer 3
-  (`build_glossary.py`) mechanically merges the two into an issue-anchored glossary; Layer 4
-  (`skill_plan.py`) turns the checkpoint into a `Dr`-tier role/skill plan split into Human /
-  AI-orchestrator / AI-doer / AI-auditor — what vocabulary the human needs to command the work,
-  what to verify before trusting AI output, and what skills each AI role needs.
-- **`doc_ecosystem_bridge/bridge.py`** — bridges the checkpoint (and, optionally, the
-  `communication_glossary` output above) into a `human-ai-doc-ecosystem` project: one
-  `hypothesis`-kind logbook entry and one open `DECISIONS.md` row per hypothesis card — never
-  an `ADR`, because a hypothesis isn't settled until phase 16 (`DECIDE`) picks a lane.
-- **`run_pipeline.py`** (repo root) — a thin one-command orchestrator over all of the above. It
-  shells out to each script rather than reimplementing any of their logic:
-  ```
-  python3 run_pipeline.py <checkpoint.json> --out-dir <dir> \
-      --kg-expert-layer <already-authored kg_expert_layer.md> \
-      [--doc-eco-target <dir> [--seed-docs]]
-  ```
-  Layer 2 still can't be scripted (it needs an actual Agent/WebSearch call) — author
-  `kg_expert_layer.md` yourself first and pass it in, or pass `--skip-layer2` to get an
-  honestly-labeled stub (clearly marked as unenriched, never silently treated as real Layer 2
-  output) so you can still exercise Layers 1/3/4 without it.
+- `communication_glossary/` turns the checkpoint into shared vocabulary and Human/AI role/skill
+  plans.
+- `doc_ecosystem_bridge/bridge.py` bridges the checkpoint into project hypothesis/decision
+  artifacts without falsely turning a hypothesis into an ADR.
+- `run_pipeline.py` orchestrates those repo-root tools while preserving lineage.
 
 ## Verify before you claim
 
-The kernel is not part of this plugin subtree — clone the full repo (see above) to run it.
-`python3 skillme_protocol_kernel.py --self-test` runs 14 structural test cases (happy path +
-violation cases) against the bundled reference implementation — stdlib-only, no network. Run
-it yourself before repeating any pass/fail claim about the kernel; do not take this file's
-prose on trust.
-```
-$ python3 skillme_protocol_kernel.py --self-test
-{"status": "PASS", "passed": 14, "test_count": 14, ...}
+The root kernel is not part of this plugin subtree. In a full clone:
+
+```bash
+python3 skillme_protocol_kernel.py --self-test
 ```
 
-## Session-tracking contract (enforced by a bundled hook, not just this prose)
+For the engineering companion, its own machine source of truth and kernel **are** shipped in
+the plugin subtree; see `../system-engineering-dag/SKILL.md`.
 
-Installing this plugin also installs a fail-closed `Stop` hook (`hooks/hooks.json`) that
-checks, at the end of every turn where this skill was loaded:
+## Session-tracking contract
 
-1. **TaskCreate was actually called** to track the run's phases (intake, agency/stakeholder
-   map, hypothesis evidence challenge, hypothesis portfolio) — not just this file's prose
-   telling you to.
-2. **If a run reached `VALID_CHECKPOINT`, `doc_ecosystem_bridge/bridge.py` was actually run**
-   against it before the turn ends — **only when that file is actually reachable on disk.**
-   A `git-subdir` plugin-only install (per this file's own note above) never fetches
-   `doc_ecosystem_bridge/`, since it lives at the full repo's root, outside the installed
-   `plugins/skillme/` subtree. Demanding it unconditionally would block a plugin-only session
-   forever with no possible way to satisfy the gate — the hook checks a few plausible paths
-   (the project dir, cwd, alongside a full repo clone) and skips this specific requirement
-   when none of them exist, rather than blocking indefinitely on something that was never
-   installed.
-
-If either applicable requirement is missing, the hook blocks the turn end with a `reason`
-naming exactly what's missing — act on it (call `TaskCreate`, run `bridge.py`) and the next
-`Stop` check passes cleanly; it does not hard-stop the session. This is deliberate: the two
-soft instructions above (use `TaskCreate`, run `bridge.py` at checkpoint) are advisory and can
-silently get skipped under time pressure — the hook makes them structural instead, exactly
-when structural enforcement is actually possible. It only activates for sessions that actually
-invoked this skill; it is a silent no-op for every other Bash/Skill/Stop event in a project
-where the plugin happens to be installed.
+Installing this plugin also installs a fail-closed `Stop` hook that, for turns where SkillMe
+was loaded, checks that run phases were structurally tracked and, when the full repo's bridge is
+actually available and a `VALID_CHECKPOINT` was reached, that the checkpoint bridge was run.
+If a required action is missing, the hook names what is missing; it does not silently claim the
+run is complete.
