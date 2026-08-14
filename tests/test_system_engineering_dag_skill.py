@@ -221,6 +221,52 @@ def test_destructive_change_classes_cannot_lose_recovery_paths():
         K.validate_spec(mutated)
 
 
+def test_multi_tenant_boundary_derives_isolation_and_restore_obligations():
+    result = K.compile_obligations(
+        {"multi_tenancy": "AFFECTED"},
+        {"triggers": ["multi_tenant_boundary_change"], "mode": "INTERVENTION"},
+        DAG,
+    )
+    assert result["risk_tier"] == "L2_HIGH"
+    assert {
+        "tenant_identity",
+        "data_isolation_test",
+        "cache_isolation_test",
+        "quota_noisy_neighbor_test",
+        "tenant_restore_test",
+    }.issubset(set(result["obligations"]))
+
+
+def test_affected_data_integrity_derives_business_recovery_obligations():
+    result = K.compile_obligations(
+        {"data_integrity": "AFFECTED"},
+        {"triggers": ["active_data_corruption"], "mode": "EMERGENCY_CHANGE"},
+        DAG,
+    )
+    assert result["risk_tier"] == "L3_CRITICAL"
+    assert {
+        "stop_or_scope_writes",
+        "repair_or_replay_plan",
+        "reconciliation_test",
+        "restore_path",
+    }.issubset(set(result["obligations"]))
+
+
+def test_decision_rules_require_activation_and_forbid_conditions():
+    assert {"sharding", "microservices", "multi_region", "knowledge_graph", "vector_retrieval"}.issubset(
+        set(DAG["decision_rules"])
+    )
+    for rule in DAG["decision_rules"].values():
+        assert rule["activate_if"]
+        assert rule["forbid_if"]
+
+
+def test_security_assurance_is_explicitly_tiered():
+    assert {"BASELINE", "SENSITIVE", "HIGH_ASSURANCE"}.issubset(set(DAG["security_assurance_levels"]))
+    for rule in DAG["security_assurance_levels"].values():
+        assert rule["requires"]
+
+
 def test_reference_keeps_deep_system_surfaces_without_forcing_runtime_context():
     text = REFERENCE.read_text(encoding="utf-8")
     for token in [
