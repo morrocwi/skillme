@@ -83,7 +83,8 @@ def validate_spec(spec: dict[str, Any]) -> dict[str, Any]:
             "spec_version", "nodes", "risk_tiers", "handoff_schema", "impact_status",
             "surfaces", "critical_surfaces", "obligation_rules", "waiver_schema",
             "artifact_metadata_schema", "release_schema", "required_release_path",
-            "destructive_change_classes", "recovery_invariants"
+            "destructive_change_classes", "recovery_invariants", "decision_rules",
+            "security_assurance_levels"
         ],
         "spec",
     )
@@ -119,7 +120,7 @@ def validate_spec(spec: dict[str, Any]) -> dict[str, Any]:
 
     surfaces = set(spec["surfaces"])
     for rule in spec["obligation_rules"]:
-        if rule["when_surface"] not in surfaces and rule["when_surface"] != "multi_tenancy":
+        if rule["when_surface"] not in surfaces:
             raise ProtocolError(f"obligation rule references unknown surface {rule['when_surface']}")
         if not rule.get("require"):
             raise ProtocolError(f"obligation rule for {rule['when_surface']} has no obligations")
@@ -138,6 +139,17 @@ def validate_spec(spec: dict[str, Any]) -> dict[str, Any]:
     }
     if not required_recovery_invariants.issubset(set(spec["recovery_invariants"])):
         raise ProtocolError("missing required recovery invariants")
+
+    for decision, rule in spec["decision_rules"].items():
+        if not rule.get("activate_if") or not rule.get("forbid_if"):
+            raise ProtocolError(f"decision rule {decision} must define activate_if and forbid_if")
+
+    required_assurance = {"BASELINE", "SENSITIVE", "HIGH_ASSURANCE"}
+    if not required_assurance.issubset(set(spec["security_assurance_levels"])):
+        raise ProtocolError("security assurance levels must include BASELINE/SENSITIVE/HIGH_ASSURANCE")
+    for level, rule in spec["security_assurance_levels"].items():
+        if not rule.get("requires"):
+            raise ProtocolError(f"security assurance level {level} has no requirements")
 
     return {"status": "PASS", "node_count": len(spec["nodes"]), "topological_order": order}
 
@@ -182,7 +194,7 @@ def compile_obligations(
     spec: dict[str, Any],
     waiver: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    unknown_surfaces = set(impact) - set(spec["surfaces"]) - {"multi_tenancy"}
+    unknown_surfaces = set(impact) - set(spec["surfaces"])
     if unknown_surfaces:
         raise ProtocolError(f"impact contains unknown surfaces {sorted(unknown_surfaces)}")
     invalid = {k: v for k, v in impact.items() if v not in spec["impact_status"]}
@@ -354,6 +366,25 @@ def self_test() -> dict[str, Any]:
     for item in ["external_side_effect_ledger", "reconciliation_test", "idempotency_test"]:
         assert item in payment["obligations"], item
     tests.append(("external_side_effects_require_reconciliation", True))
+
+    tenancy = compile_obligations(
+        {"multi_tenancy": "AFFECTED"},
+        {"triggers": ["multi_tenant_boundary_change"], "mode": "INTERVENTION"},
+        spec,
+    )
+    assert tenancy["risk_tier"] == "L2_HIGH"
+    for item in ["data_isolation_test", "cache_isolation_test", "tenant_restore_test"]:
+        assert item in tenancy["obligations"], item
+    tests.append(("multi_tenant_boundary_requires_isolation", True))
+
+    integrity = compile_obligations(
+        {"data_integrity": "AFFECTED"},
+        {"triggers": ["active_data_corruption"], "mode": "EMERGENCY_CHANGE"},
+        spec,
+    )
+    for item in ["stop_or_scope_writes", "repair_or_replay_plan", "reconciliation_test", "restore_path"]:
+        assert item in integrity["obligations"], item
+    tests.append(("data_integrity_derives_business_recovery", True))
 
     release = {
         "work_item_id": "ISSUE-38",
