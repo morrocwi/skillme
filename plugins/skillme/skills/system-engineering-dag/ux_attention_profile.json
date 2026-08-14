@@ -1,0 +1,210 @@
+{
+  "spec_version": "0.1.1",
+  "name": "issue-first-wireframe-attention-profile",
+  "status": "research-informed-heuristic-not-universal-law",
+  "purpose": "Prioritize issue comprehension and action in the first viewport while preserving scroll continuation and progressive disclosure.",
+  "integration": {
+    "surface": "issue_management_ui",
+    "mandatory_when": [
+      "product_is_issue_analysis_system",
+      "product_is_incident_or_work_item_system",
+      "screen_primary_task_is_understand_or_act_on_issue"
+    ],
+    "derived_obligations": [
+      "issue_first_wireframe",
+      "first_view_issue_capsule",
+      "attention_budget_review",
+      "first_view_primary_action",
+      "confirmed_unknown_visual_separation",
+      "mobile_issue_visibility",
+      "false_floor_check",
+      "wireframe_comprehension_test",
+      "first_view_performance_priority"
+    ]
+  },
+  "research_basis": [
+    {
+      "id": "fessenden_2018_scrolling_attention",
+      "title": "Scrolling and Attention",
+      "author": "Therese Fessenden",
+      "publisher": "Nielsen Norman Group",
+      "year": 2018,
+      "url": "https://www.nngroup.com/articles/scrolling-and-attention/",
+      "reported_sample": "120 participants; 130,000+ eye fixations across varied websites/tasks",
+      "findings": {
+        "screen_1_share_percent": 57,
+        "screen_2_increment_percent": 17,
+        "first_2_cumulative_percent": 74,
+        "screen_3_increment_percent": 7,
+        "first_3_cumulative_percent": 81,
+        "below_screen_3_aggregate_tail_percent": 19,
+        "first_screen_top_half_share_of_first_screen_attention": ">65%"
+      },
+      "caveat": "These are aggregate viewing-time observations, not a guaranteed per-user conversion curve and not a fixed pixel law."
+    },
+    {
+      "id": "still_2018_visual_hierarchy",
+      "title": "Web page visual hierarchy: Examining Faraday's guidelines for entry points",
+      "venue": "Computers in Human Behavior 84 (2018) 352-359",
+      "doi": "10.1016/j.chb.2018.03.014",
+      "finding": "Spatial position, color, and text style predicted earlier attention better than size alone."
+    },
+    {
+      "id": "khoury_et_al_2021_clutter",
+      "title": "How do we react to cluttered displays? Evidence from the first seconds of visual search in websites",
+      "venue": "Ergonomics",
+      "doi": "10.1080/00140139.2021.1927200",
+      "finding": "High-clutter websites produced a wider spread of attention during the first 3 seconds of visual search."
+    },
+    {
+      "id": "reinecke_et_al_2018_web_gist",
+      "title": "Web pages: What can you see in a single fixation?",
+      "venue": "Cognitive Research: Principles and Implications",
+      "doi": "10.1186/s41235-018-0099-2",
+      "finding": "Observers could classify page category and infer spatial layout above chance after a 120 ms fixation."
+    },
+    {
+      "id": "still_dashboard_position_2024",
+      "title": "The Effects of Layout Order on Interface Complexity: An Eye-Tracking Study for Dashboard Design",
+      "venue": "Sensors 24(18):5966",
+      "doi": "10.3390/s24185966",
+      "finding": "Layout order affects search behavior; placing the core chart in a left-centered position improved visual search in the studied dashboard conditions."
+    }
+  ],
+  "attention_budget": {
+    "interpretation": "Use as a prioritization prior for vertical information architecture, not as a prediction of exact user behavior.",
+    "bands": [
+      {
+        "id": "SCREEN_1",
+        "viewport_range": "0-1.0 viewport",
+        "observed_viewing_time_share_percent": 57,
+        "relative_attention_index_vs_screen_1": 100,
+        "priority": "CRITICAL",
+        "must_answer": [
+          "what_is_the_issue",
+          "issue_status",
+          "severity_or_risk",
+          "who_or_what_is_affected",
+          "what_is_confirmed_vs_unknown",
+          "primary_next_action",
+          "owner_or_responsible_role"
+        ]
+      },
+      {
+        "id": "SCREEN_2",
+        "viewport_range": "1.0-2.0 viewports",
+        "observed_viewing_time_share_percent": 17,
+        "relative_attention_index_vs_screen_1": 30,
+        "drop_from_previous_percent": 70.2,
+        "priority": "HIGH",
+        "recommended_content": [
+          "evidence_summary",
+          "hypotheses_and_challenges",
+          "architecture_impact_summary",
+          "affected_agencies",
+          "test_or_investigation_plan"
+        ]
+      },
+      {
+        "id": "SCREEN_3",
+        "viewport_range": "2.0-3.0 viewports",
+        "observed_viewing_time_share_percent": 7,
+        "relative_attention_index_vs_screen_1": 12,
+        "drop_from_previous_percent": 58.8,
+        "priority": "MEDIUM",
+        "recommended_content": [
+          "change_design",
+          "migration_and_compatibility",
+          "security_and_recovery_detail",
+          "test_evidence_detail",
+          "release_strategy"
+        ]
+      },
+      {
+        "id": "LONG_TAIL",
+        "viewport_range": ">3.0 viewports",
+        "observed_viewing_time_share_percent": 19,
+        "share_semantics": "aggregate across all remaining page depth; not 19% per screen",
+        "priority": "REFERENCE",
+        "recommended_content": [
+          "full_logs",
+          "audit_trail",
+          "historical_timeline",
+          "deep_architecture_reference",
+          "raw_evidence",
+          "appendices"
+        ]
+      }
+    ],
+    "first_screen_internal_rule": {
+      "top_half": "Reserve the strongest visual hierarchy for the issue capsule and primary action. Research summary reports >65% of first-screen viewing time in the top half.",
+      "bottom_half": "Use for compact evidence/impact preview and a visible continuation cue; do not create a false floor."
+    }
+  },
+  "issue_first_wireframe_contract": {
+    "first_view_must_not_be_dominated_by": [
+      "decorative_hero",
+      "branding_only",
+      "large_nonessential_image",
+      "navigation_megamenu",
+      "marketing_banner",
+      "generic_dashboard_metrics"
+    ],
+    "issue_capsule": {
+      "placement": "first_view_top_priority_region",
+      "required_fields": [
+        "issue_statement_one_sentence",
+        "issue_state",
+        "risk_or_severity",
+        "affected_scope",
+        "confirmed_summary",
+        "unknown_summary",
+        "primary_next_action",
+        "owner",
+        "freshness_or_last_evidence_time"
+      ],
+      "interaction": {
+        "primary_action_count": 1,
+        "secondary_actions_max": 2,
+        "deep_detail": "progressive_disclosure"
+      }
+    },
+    "mobile": {
+      "priority": "issue capsule must be visible before nonessential chrome/content",
+      "avoid": ["horizontal_dependency_for_core_answer", "nested_scroll_for_issue_summary"],
+      "continuation_cue": "show that more evidence/detail exists below without crowding the first viewport"
+    },
+    "desktop": {
+      "priority": "place issue capsule in the spatial entry region and logical-start reading path; do not rely on size alone",
+      "side_panel_rule": "secondary history/reference may use side panels only if they do not compete with the issue capsule"
+    },
+    "accessibility": {
+      "must": [
+        "semantic_heading_for_issue",
+        "keyboard_reachable_primary_action",
+        "status_not_conveyed_by_color_alone",
+        "zoom_and_reflow_preserve_issue_first_order"
+      ]
+    }
+  },
+  "wireframe_validation": {
+    "hard_fail": [
+      "issue_statement_not_visible_in_first_view",
+      "primary_next_action_not_visible_in_first_view_for_actionable_issue",
+      "unknown_present_but_hidden_as_if_resolved",
+      "decorative_or_generic_content_precedes_issue_answer",
+      "false_floor_hides_continuation",
+      "mobile_core_answer_requires_horizontal_scroll"
+    ],
+    "measure_in_usability_test": [
+      "time_to_identify_issue",
+      "time_to_identify_current_status",
+      "time_to_identify_next_action",
+      "first_fixation_or_first_interaction_region_if_eye_tracking_available",
+      "scroll_before_issue_comprehension_rate",
+      "wrong_next_action_rate",
+      "critical_unknown_missed_rate"
+    ],
+    "target_principle": "Users should be able to state the issue, its current status, and the next action without scrolling."
+  }
+}
