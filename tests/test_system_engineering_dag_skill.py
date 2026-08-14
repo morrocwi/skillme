@@ -3,6 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "plugins" / "skillme" / "skills" / "system-engineering-dag" / "SKILL.md"
+MAIN_SKILL = ROOT / "plugins" / "skillme" / "skills" / "skillme" / "SKILL.md"
 PLUGIN_README = ROOT / "plugins" / "skillme" / "README.md"
 
 
@@ -29,6 +30,15 @@ def test_issue_routing_requires_skillme_then_engineering_dag():
     ]
     for token in required:
         assert token in text, token
+
+
+def test_skillme_main_skill_mandatorily_routes_qualifying_system_issues():
+    text = MAIN_SKILL.read_text(encoding="utf-8")
+    assert "Mandatory software/system engineering adapter" in text
+    assert "MUST invoke the companion `system-engineering-dag` skill" in text
+    assert "tests_checker" in text
+    assert "direct_main_edit" in text
+    assert "reuse the same lineage" in text
 
 
 def test_engineering_dag_keeps_core_architecture_and_recovery_surfaces():
