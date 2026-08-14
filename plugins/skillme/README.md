@@ -17,7 +17,7 @@ What you get from installing this plugin:
   [`skills/skillme/SKILL.md`](skills/skillme/SKILL.md).
 - `system-engineering-dag` — the risk-proportional software/system engineering companion in
   [`skills/system-engineering-dag/SKILL.md`](skills/system-engineering-dag/SKILL.md).
-- The engineering companion also ships its own machine source of truth
+- The engineering companion ships its own machine source of truth
   (`system_engineering_dag.json`), stdlib-only validator/obligation compiler
   (`system_engineering_dag_kernel.py`), and deep on-demand reference (`REFERENCE.md`).
 - A bundled fail-closed `Stop` hook (`hooks/hooks.json` + `scripts/`) for the SkillMe run
@@ -34,17 +34,20 @@ backup/restore, disaster recovery, or production operations:
    stakeholder/agency mapping, issue-admission state, hypothesis/evidence challenge, rights
    gate, and `VALID_CHECKPOINT` semantics.
 2. After domain/topology detection, **MUST invoke `system-engineering-dag` before proposing or
-   implementing an architecture-impacting fix.** Reuse the same SkillMe lineage/checkpoint;
+   implementing any architecture-impacting fix.** Reuse the same SkillMe lineage/checkpoint;
    do not silently restart the issue analysis.
-3. The engineering adapter first emits a typed handoff, then classifies risk (`L0_TRIVIAL` →
-   `L3_CRITICAL`), marks surfaces `AFFECTED | NOT_AFFECTED | UNKNOWN`, and derives test,
+3. The engineering adapter emits a typed handoff, classifies risk (`L0_TRIVIAL` →
+   `L3_CRITICAL`), marks surfaces `AFFECTED | NOT_AFFECTED | UNKNOWN`, and derives tests,
    migration, security, recovery, and release obligations from actual impact. A typo does not
    run the same ceremony as a destructive database migration.
 4. Investigation and intervention are separate modes: temporary instrumentation may gather
    evidence without claiming a fix; emergency changes may bypass normal sequence only while
    retaining traceability, owner, minimum test, containment/rollback, evidence preservation,
    and post-hoc review.
-5. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
+5. High-complexity architecture choices such as sharding, microservices, multi-region, KG, and
+   vector retrieval have machine-readable `activate_if` and `forbid_if` conditions. Security
+   assurance is likewise tiered (`BASELINE`, `SENSITIVE`, `HIGH_ASSURANCE`).
+6. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
    release strategy → production verification**. Never edit `main` directly.
 
 A GitHub Issue is the active work-item adapter for this repository, not proof of root cause.
@@ -63,8 +66,9 @@ python3 -m pytest -q tests/test_system_engineering_dag_skill.py
 The engineering kernel verifies graph structure and behavioral protocol invariants — node
 uniqueness, dependency existence, acyclicity, required release ancestry, typed SkillMe handoff,
 risk routing, impact-derived obligations, critical unknown blocking, time-bounded waivers,
-destructive-change recovery paths, and release evidence requirements. It does **not** verify
-that a domain hypothesis or chosen engineering intervention is true.
+destructive-change recovery paths, decision-rule shape, security-assurance tiers, and release
+evidence requirements. It does **not** verify that a domain hypothesis or chosen engineering
+intervention is true.
 
 **Tier: `Dr` (design rationale)** — an architectural synthesis of established methods, not a
 proven result. See the full repo's README for the complete tier-honesty statement.
