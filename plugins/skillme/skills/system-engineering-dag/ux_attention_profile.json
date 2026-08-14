@@ -1,8 +1,27 @@
 {
-  "spec_version": "0.1.0",
+  "spec_version": "0.1.1",
   "name": "issue-first-wireframe-attention-profile",
   "status": "research-informed-heuristic-not-universal-law",
   "purpose": "Prioritize issue comprehension and action in the first viewport while preserving scroll continuation and progressive disclosure.",
+  "integration": {
+    "surface": "issue_management_ui",
+    "mandatory_when": [
+      "product_is_issue_analysis_system",
+      "product_is_incident_or_work_item_system",
+      "screen_primary_task_is_understand_or_act_on_issue"
+    ],
+    "derived_obligations": [
+      "issue_first_wireframe",
+      "first_view_issue_capsule",
+      "attention_budget_review",
+      "first_view_primary_action",
+      "confirmed_unknown_visual_separation",
+      "mobile_issue_visibility",
+      "false_floor_check",
+      "wireframe_comprehension_test",
+      "first_view_performance_priority"
+    ]
+  },
   "research_basis": [
     {
       "id": "fessenden_2018_scrolling_attention",
