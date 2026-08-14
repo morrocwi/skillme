@@ -1,27 +1,27 @@
 # skillme (Claude Code plugin)
 
-This is the installable plugin subtree for **SkillMe** — a
-philosophy-first protocol for analyzing any reported issue (software incident, complaint,
-conflict, policy question, research anomaly, everyday decision) as a finite, auditable
-retained difference instead of a guessed name, cause, or fix.
+This is the installable plugin subtree for **SkillMe** — a philosophy-first protocol for
+analyzing any reported issue (software incident, complaint, conflict, policy question,
+research anomaly, everyday decision) as a finite, auditable retained difference instead of a
+guessed name, cause, or fix.
 
 `git-subdir` plugin installs only pull this directory, so it carries its own `LICENSE` and this
-short README. It does **not** carry the canonical spec (`SKILLME.md`)
-or the standalone Python protocol kernel (`skillme_protocol_kernel.py`) — those live in the repo
-root at <https://github.com/morrocwi/skillme>. Clone the full repo if you need
-the full spec text or want to run the kernel's self-test yourself.
+short README. It does **not** carry the canonical root spec (`SKILLME.md`) or the standalone
+root Python protocol kernel (`skillme_protocol_kernel.py`) — those live in the repo root at
+<https://github.com/morrocwi/skillme>. Clone the full repo if you need the full root spec or
+want to run its self-test.
 
-What you get from installing this plugin: the `skillme` skill
-([`skills/skillme/SKILL.md`](skills/skillme/SKILL.md)) — a
-self-contained operational summary an AI assistant loads before analyzing a reported issue —
-plus the companion `system-engineering-dag` skill
-([`skills/system-engineering-dag/SKILL.md`](skills/system-engineering-dag/SKILL.md)) for
-production-grade software/system engineering work. The plugin also includes a bundled
-fail-closed `Stop` hook (`hooks/hooks.json` + `scripts/`) that activates automatically once
-this plugin is installed, no per-project settings.json edit needed. It only fires for sessions
-that actually invoke the `skillme` skill: it checks that `TaskCreate` was used to track the
-run's phases and, if a checkpoint reached `VALID_CHECKPOINT`, that
-`doc_ecosystem_bridge/bridge.py` was actually run against it, before letting the turn end.
+What you get from installing this plugin:
+
+- `skillme` — the issue-analysis protocol in
+  [`skills/skillme/SKILL.md`](skills/skillme/SKILL.md).
+- `system-engineering-dag` — the risk-proportional software/system engineering companion in
+  [`skills/system-engineering-dag/SKILL.md`](skills/system-engineering-dag/SKILL.md).
+- The engineering companion also ships its own machine source of truth
+  (`system_engineering_dag.json`), stdlib-only validator/obligation compiler
+  (`system_engineering_dag_kernel.py`), and deep on-demand reference (`REFERENCE.md`).
+- A bundled fail-closed `Stop` hook (`hooks/hooks.json` + `scripts/`) for the SkillMe run
+  tracking rules already documented in the main skill.
 
 ## Mandatory routing for software/system Issues
 
@@ -34,17 +34,37 @@ backup/restore, disaster recovery, or production operations:
    stakeholder/agency mapping, issue-admission state, hypothesis/evidence challenge, rights
    gate, and `VALID_CHECKPOINT` semantics.
 2. After domain/topology detection, **MUST invoke `system-engineering-dag` before proposing or
-   implementing any architecture-impacting fix.** Reuse the same SkillMe lineage/checkpoint;
+   implementing an architecture-impacting fix.** Reuse the same SkillMe lineage/checkpoint;
    do not silently restart the issue analysis.
-3. The engineering skill maps the issue into architecture impact, data/DB/cache/security
-   consequences, failure modes, test selection, migration/compatibility, backup/restore/DR,
-   rollback versus roll-forward, CI/CD, progressive release, observability/SRE, incident
-   response, and the learning loop back to SkillMe.
-4. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
-   progressive release → production verification**. Never edit `main` directly.
+3. The engineering adapter first emits a typed handoff, then classifies risk (`L0_TRIVIAL` →
+   `L3_CRITICAL`), marks surfaces `AFFECTED | NOT_AFFECTED | UNKNOWN`, and derives test,
+   migration, security, recovery, and release obligations from actual impact. A typo does not
+   run the same ceremony as a destructive database migration.
+4. Investigation and intervention are separate modes: temporary instrumentation may gather
+   evidence without claiming a fix; emergency changes may bypass normal sequence only while
+   retaining traceability, owner, minimum test, containment/rollback, evidence preservation,
+   and post-hoc review.
+5. For Git work, preserve **Issue → branch → tests/checker → PR → required review → merge →
+   release strategy → production verification**. Never edit `main` directly.
 
-A GitHub Issue is a work/traceability container, not proof of root cause. Passing architecture
-or test gates likewise does not promote a SkillMe hypothesis into fact.
+A GitHub Issue is the active work-item adapter for this repository, not proof of root cause.
+Passing architecture or test gates likewise does not promote a SkillMe hypothesis into fact.
+
+## Machine verification
+
+From the repository root:
+
+```bash
+python3 plugins/skillme/skills/system-engineering-dag/system_engineering_dag_kernel.py
+python3 plugins/skillme/skills/system-engineering-dag/system_engineering_dag_kernel.py --self-test
+python3 -m pytest -q tests/test_system_engineering_dag_skill.py
+```
+
+The engineering kernel verifies graph structure and behavioral protocol invariants — node
+uniqueness, dependency existence, acyclicity, required release ancestry, typed SkillMe handoff,
+risk routing, impact-derived obligations, critical unknown blocking, time-bounded waivers,
+destructive-change recovery paths, and release evidence requirements. It does **not** verify
+that a domain hypothesis or chosen engineering intervention is true.
 
 **Tier: `Dr` (design rationale)** — an architectural synthesis of established methods, not a
 proven result. See the full repo's README for the complete tier-honesty statement.
