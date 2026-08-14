@@ -20,7 +20,8 @@ description: >
 
 This file is intentionally short. Do not load the entire engineering reference unless the
 impact map says a surface is affected or unknown. The JSON spec and kernel are authoritative
-for graph shape, risk routing, typed handoff, obligations, waivers, and release invariants.
+for graph shape, risk routing, typed handoff, obligations, waivers, decision rules, security
+assurance, and release invariants.
 
 ## 1. Mandatory SkillMe handshake
 
@@ -89,6 +90,9 @@ risk_tiers:
       - public_api_change
       - infrastructure_change
       - payment_change
+      - multi_tenant_boundary_change
+      - encryption_key_change
+      - supply_chain_build_change
     requires:
       - typed_handoff
       - architecture_review
@@ -168,9 +172,9 @@ Mark every relevant surface:
 `UNKNOWN` is never silently converted to `NOT_AFFECTED`.
 
 Core surfaces include product/domain/state, data/KG, DB/transactions/storage/cache, API/events,
-search/vector/AI, frontend/UX, authn/authz/privacy/secrets, network/infra/config/supply-chain,
-performance/reliability, external side effects, backup/restore/DR, CI/CD/release, observability,
-SLOs, and incident runbooks.
+search/vector/AI, frontend/UX, authn/authz/privacy/secrets, multi-tenancy, network/infra/config/
+supply-chain, performance/reliability, external side effects, data integrity, backup/restore/DR,
+CI/CD/release, observability, SLOs, and incident runbooks.
 
 For a critical surface, `UNKNOWN` creates an investigation obligation and blocks release unless
 an explicit, time-bounded waiver is valid.
@@ -188,6 +192,8 @@ Examples:
 - `cache=AFFECTED` ⇒ key review, invalidation test, stale-data test, cache-down test, cache
   security review.
 - `authorization=AFFECTED` ⇒ negative authorization and cross-tenant access tests.
+- `multi_tenancy=AFFECTED` ⇒ tenant identity, data/cache isolation, noisy-neighbor, tenant restore.
+- `data_integrity=AFFECTED` ⇒ stop/scope writes, repair/replay plan, reconciliation, restore path.
 - `backup_restore=AFFECTED` ⇒ backup integrity, restore test, key-recovery test, business
   invariant reconciliation.
 - `payment_or_external_side_effects=AFFECTED` ⇒ idempotency, side-effect ledger,
@@ -195,15 +201,35 @@ Examples:
 
 Use the kernel to compile exact obligations. Do not manually invent a “complete” checklist.
 
-## 7. Optional complexity is opt-in
+## 7. Architecture decisions are evidence-gated
 
-KG, vector search, dedicated search infrastructure, sharding, multi-region, microservices, and
-similar complexity are **not universal requirements**. Activate them only when evidence and
-requirements justify them.
+Listing a technology does not justify using it. The canonical spec defines `activate_if` and
+`forbid_if` rules for high-complexity decisions including sharding, microservices, multi-region,
+knowledge graphs, and vector retrieval.
+
+Examples:
+
+- do not shard without a measured capacity/partition limit and a partitionable access pattern;
+- do not introduce microservices without real ownership/scaling/failure boundaries and an
+  operational platform capable of carrying the complexity;
+- do not add multi-region if a single region already satisfies declared SLO/RPO/RTO/residency;
+- do not add KG/vector infrastructure when simpler relational/lexical retrieval meets the need.
 
 World-class engineering includes knowing what **not** to build.
 
-## 8. Cache security invariants
+## 8. Security assurance is proportional
+
+The canonical spec defines:
+
+- `BASELINE` — ordinary low-sensitivity systems;
+- `SENSITIVE` — personal/confidential data, multi-tenant boundaries, payments/identity;
+- `HIGH_ASSURANCE` — regulated/high-impact data, large blast radius, safety/critical services.
+
+Higher levels add independent review/adversarial testing, hardened build provenance, recovery
+drills, and explicit residual-risk acceptance. Do not apply identical security ceremony to all
+changes, and do not downgrade a high-impact surface merely to simplify delivery.
+
+## 9. Cache security invariants
 
 When cache is affected:
 
@@ -213,13 +239,13 @@ When cache is affected:
 - secrets/credentials must not be cached;
 - stale private data behavior must be explicit.
 
-## 9. Multi-tenancy
+## 10. Multi-tenancy
 
 If multi-tenancy is present, treat it as an explicit affected surface and cover tenant identity,
 data isolation, cache isolation, quota/noisy-neighbor behavior, tenant-scoped audit,
 tenant deletion, migration, and tenant-scoped restore.
 
-## 10. Recovery is business correctness, not infrastructure boot
+## 11. Recovery is business correctness, not infrastructure boot
 
 Hard invariants:
 
@@ -233,7 +259,7 @@ Hard invariants:
 Never write merely `rollback available`. State what changes, target version/state, data
 compatibility assumptions, validation, and failure-of-rollback behavior.
 
-## 11. SLO/RPO/RTO precede architecture where relevant
+## 12. SLO/RPO/RTO precede architecture where relevant
 
 Criticality targets feed architecture:
 
@@ -241,13 +267,13 @@ Criticality targets feed architecture:
 
 Do not invent expensive multi-region/redundancy patterns before targets justify them.
 
-## 12. Observability is a design surface
+## 13. Observability is a design surface
 
 Do not stop at “logs, metrics, traces”. For affected production paths define telemetry schema,
 semantic naming, cardinality budget, sampling, PII redaction, ownership, retention/cost, trace
 propagation, and actionable alerts.
 
-## 13. Waivers and freshness
+## 14. Waivers, ownership, and freshness
 
 A `MUST` may be waived only through an auditable exception:
 
@@ -262,10 +288,10 @@ waiver:
   review_due_at: YYYY-MM-DD
 ```
 
-Critical artifacts must carry owner/evidence/status and verification freshness. A stale DR test,
-threat model, capacity model, or dependency map is not silently treated as current.
+Critical artifacts/nodes carry owner/evidence/status and verification freshness. A stale DR
+test, threat model, capacity model, or dependency map is not silently treated as current.
 
-## 14. Release contract
+## 15. Release contract
 
 A production candidate records, as applicable:
 
@@ -281,7 +307,7 @@ A production candidate records, as applicable:
 `deploy != release`. Select direct/rolling/canary/blue-green/shadow/progressive strategy by
 risk/blast radius/reversibility, not ideology.
 
-## 15. Machine verification
+## 16. Machine verification
 
 From this directory:
 
@@ -292,11 +318,12 @@ python3 system_engineering_dag_kernel.py --self-test
 
 The validator proves protocol structure such as node uniqueness, dependency existence,
 acyclicity, release-gate ancestry, destructive-change recovery paths, typed handoff, risk
-routing, impact-derived obligations, waiver shape, and release-record requirements.
+routing, impact-derived obligations, decision-rule shape, security-assurance tiers, waiver
+shape, and release-record requirements.
 
 It does **not** prove that the user's causal hypothesis or engineering decision is true.
 
-## 16. On-demand reference loading
+## 17. On-demand reference loading
 
 Read `REFERENCE.md` only for affected/unknown surfaces. Use its sections for:
 
@@ -311,7 +338,7 @@ Read `REFERENCE.md` only for affected/unknown surfaces. Use its sections for:
 - release/rollback/roll-forward
 - observability/SRE/incidents/governance/decommission
 
-## 17. Output order
+## 18. Output order
 
 For a qualifying Issue:
 
