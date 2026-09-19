@@ -211,8 +211,8 @@ VERIFICATION_PAYLOAD_REQUIRED = {
     "expected_exit_status",
 }
 
-# Phase 2 (2026-08-02, MC-02/MC-01 -- ratified via cpg/AGENTS.md step 6.5,
-# cpg PR #113): the actual "check" step Phase 1b's raw_result explicitly
+# Phase 2 (2026-08-02, MC-02/MC-01 -- ratified via AGENTS.md (the command center (private)) step 6.5,
+# the command center (private) PR #113): the actual "check" step Phase 1b's raw_result explicitly
 # refused to be -- hypothesis_runner.py's output is always
 # PENDING_INDEPENDENT_CHECK and never writes APPROVED. checker_result is
 # where a SEPARATE, later act declares that verdict. The kernel validates
@@ -241,7 +241,7 @@ CHECKER_VERDICTS = {
     "REJECTED",
 }
 
-# MIMCG L3+ requires a human final owner (cpg/AGENTS.md step 6.5, ratified
+# MIMCG L3+ requires a human final owner (AGENTS.md (the command center (private)) step 6.5, ratified
 # 2026-08-02) -- an AI checker is only eligible for L0-L2.
 CHECKER_TIERS_REQUIRING_HUMAN = {"L3", "L4", "L5"}
 
@@ -1168,7 +1168,7 @@ def validate(run: dict[str, Any]) -> dict[str, Any]:
                     errors.append(
                         f"INVALID_CHECKER_TIER:{hypothesis_id}:{tier}"
                     )
-                # MIMCG L3+ requires a human final owner (cpg/AGENTS.md step
+                # MIMCG L3+ requires a human final owner (AGENTS.md (the command center (private)) step
                 # 6.5, ratified 2026-08-02) -- structurally enforced here.
                 elif (
                     tier in CHECKER_TIERS_REQUIRING_HUMAN

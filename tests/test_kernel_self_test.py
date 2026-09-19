@@ -481,7 +481,7 @@ def test_checker_result_invalid_verdict_rejected():
 
 @pytest.mark.parametrize("tier", ["L3", "L4", "L5"])
 def test_checker_tier_l3_plus_requires_human_not_ai(tier):
-    # MIMCG L3+ requires a human final owner (cpg/AGENTS.md step 6.5,
+    # MIMCG L3+ requires a human final owner (AGENTS.md (the command center (private)) step 6.5,
     # ratified 2026-08-02) -- structurally enforced, not just documented.
     run = copy.deepcopy(_demo_checkpoint())
     checker = _valid_checker_result()

@@ -16,7 +16,7 @@ should surface the shared vocabulary both of them need — not a vocabulary spli
 > prose sections below: `[verified]` (real execution / tests passing) · `[Dr]`
 > (narrative judgment or known limitation, not yet tested) · `[Open]` (blocked or
 > unresolved). **Blocked** is reserved for items waiting on a founder decision — same
-> meaning as `cpg`'s own 🔴 OPEN HUMAN-GATES — never a loose label for "hard."
+> meaning as the command center (private)'s own 🔴 OPEN HUMAN-GATES — never a loose label for "hard."
 
 **Done**
 
