@@ -34,7 +34,7 @@ inline. Closed now, docs-only:
 > Full board (Done/Backlog cards, evidence tiers) lives in
 > `communication_glossary/README.md`'s own Kanban section — kept there as the single
 > source so this summary never drifts out of sync with it. Only **Blocked** items
-> (waiting on a founder decision, same meaning as `cpg`'s 🔴 OPEN HUMAN-GATES) are
+> (waiting on a founder decision, same meaning as the command center (private)'s 🔴 OPEN HUMAN-GATES) are
 > mirrored here for quick scanning:
 
 | card | tier | blocked-by |
@@ -68,7 +68,7 @@ the "growing word map" the founder's user-growth requirement needs. Design regis
 
 ## v0.4.10 — Phase 2: checker_result (MC-02 principal separation + MIMCG tier enforcement, 2026-08-02)
 
-Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an
+Founder ratified `DEC-mimcg-umbrella-skill` into AGENTS.md (the command center (private)) (step 6.5, the command center (private) PR #113) as an
 explicit `human_pi` act -- an AI ratifying its own governance escalation would have defeated the
 principle being enforced. With a real MIMCG gate now in force, this builds the actual "check"
 step Phase 1b's `raw_result` explicitly refused to be.

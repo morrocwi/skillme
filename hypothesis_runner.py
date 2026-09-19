@@ -13,7 +13,7 @@ named this exact scope split -- see CHANGELOG.md / SKILLME.md §14):
   It proves nothing about whether the hypothesis is true.
 - It does NOT implement principal-level (Phase 2) maker/checker separation --
   the OS-subuser substrate this workspace has scripted
-  (cpg/tools/agent_office/setup_agent_users.sh) has never actually been
+  (tools/agent_office/setup_agent_users.sh (the command center (private))) has never actually been
   provisioned on this machine (verified live: no anse-* OS users exist, and
   provisioning requires an interactive sudo run this script cannot perform).
   So this script uses Docker UID/mount separation instead, scoped to this

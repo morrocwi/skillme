@@ -19,7 +19,7 @@ Scope, stated honestly (same discipline as hypothesis_runner.py):
   declare any principal_id string. What this script guarantees is only that
   the DECLARED maker and DECLARED checker differ -- a structural floor, not
   a cryptographic one.
-- `--tier` (L0-L5, MIMCG, cpg/AGENTS.md step 6.5, ratified 2026-08-02) is
+- `--tier` (L0-L5, MIMCG, AGENTS.md (the command center (private)) step 6.5, ratified 2026-08-02) is
   REQUIRED. L3+ REQUIRES `--checker-type HUMAN` -- refused otherwise, by the
   kernel's own validate() when this script writes the result back into the
   checkpoint, not just by this script's own logic (defense in depth: both
@@ -158,7 +158,7 @@ def main() -> None:
     if args.tier in {"L3", "L4", "L5"} and args.checker_type == "AI":
         raise SystemExit(
             f"REFUSED: tier {args.tier} requires --checker-type HUMAN "
-            "(MIMCG, cpg/AGENTS.md step 6.5, ratified 2026-08-02) -- an AI "
+            "(MIMCG, AGENTS.md (the command center (private)) step 6.5, ratified 2026-08-02) -- an AI "
             "checker is only eligible for L0-L2."
         )
 

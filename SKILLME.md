@@ -3309,8 +3309,8 @@ skillme_run:
           resource_class: LIGHT_OR_HEAVY
           expected_exit_status: REQUIRED_INT
         checker_result: OPTIONAL
-          # Phase 2 (2026-08-02, MC-01/MC-02 -- ratified via cpg/AGENTS.md
-          # step 6.5, cpg PR #113). Fully independent of verification_payload
+          # Phase 2 (2026-08-02, MC-01/MC-02 -- ratified via AGENTS.md (the command center (private))
+          # step 6.5, the command center (private) PR #113). Fully independent of verification_payload
           # -- a card can have checker_result without ever having had a
           # mechanical payload (a human reviewed and approved by judgment),
           # or a verification_payload whose raw_result was never checked yet.
@@ -3764,7 +3764,7 @@ sibling script, it did not touch the kernel or its schema.
 
 ### Phase 2 — checker_result: MC-02 principal separation + MIMCG tier enforcement (2026-08-02, v0.4.10)
 
-Founder ratified `DEC-mimcg-umbrella-skill` into `cpg/AGENTS.md` (step 6.5, cpg PR #113) as an
+Founder ratified `DEC-mimcg-umbrella-skill` into AGENTS.md (the command center (private)) (step 6.5, the command center (private) PR #113) as an
 explicit `human_pi` act (the decision's own notes named this "a human_pi act, MC-01" — an AI
 ratifying its own governance escalation would defeat the exact principle being enforced). With
 a real, non-advisory MIMCG gate now in force workspace-wide, this entry builds the actual
@@ -4292,7 +4292,7 @@ a live LLM-API call, a network service, an async job runner, a query/retrieval s
     reframing (same move already applied to ARAYA's 0.00–1.00 scale) before any adoption.
 12. **BM25-backed search with a three-way status split (Open).** No search command exists in this
     repo today (confirmed by grep — the `cli.py search "<th/en>"` referenced elsewhere in this
-    workspace belongs to the separate `cpg` repo, not SkillMe). IF one is ever built: malformed-query
+    workspace belongs to the separate `the command center (private)` repo, not SkillMe). IF one is ever built: malformed-query
     and scope-not-found must stay distinct from zero-hits (A6); relevance surfaced only as ordinal
     rank, never a raw float (discrete-first floor); a top hit never presented as correct, only as
     relevance-to-query-terms (A4).
